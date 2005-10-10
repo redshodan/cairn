@@ -1,0 +1,30 @@
+CAIRN - Copy And Intelligently Restore via Network
+
+CAIRN is a modular copy and restore program for the imaging of a
+computer.  It can copy every file on a computer and gather information
+on how to recreate it from bare metal. CAIRN is primarily a network
+oriented restore program, but is also flexible enough to boot from any
+possible method.
+
+CAIRN is a completely modular system so any operating system should be
+supportable. Every single step needed to restore all the files is a
+separate module. The order of steps can be varied or rearranged as
+needed to fit the environment of the machine being restored. CAIRN can
+also be used to clone one machine to many. It has the intelligence to
+adjust the image to fit the machine being restored. It can adjust
+partition sizes, device types of drives and all the internal
+configuration of the operating system to match up with the changes.
+
+Besides having a copy and restore program, CAIRN will also have a
+utility program that the user can control multiple CAIRN restores from. 
+DHCP and PXE are used to network boot a machine into a small boot
+environment and from there CAIRN will restore the machine. This will
+also be the method in which the behavior of the CAIRN restore program
+will be customized. 
+
+The core operating systems that will be supported are Linux, Mac OS/X, 
+and Microsoft Windows. Besides the boot environment (which may vary with 
+operating system being restored, but will be primarily Linux) the 
+copy and restore program will be written in Python. The utility 
+program will be written in a combination of C, C++, and Python.
+

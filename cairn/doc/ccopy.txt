@@ -1,0 +1,9 @@
+
+Bundling procedure:
+
+1) PyZipFile to create a zipfile containing all the modules.
+2) zipimport to import from the zip.
+3) Have modules define the external commands/files that they need
+to function.
+4) check all of the modules dependencies.
+
