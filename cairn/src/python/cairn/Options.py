@@ -12,7 +12,7 @@ import cairn
 
 # module globals
 ourOpts = {}
-ourDefs = {}
+ourOptMap = {}
 
 DEFAULT = 0
 SHORT = 1
@@ -37,20 +37,16 @@ cliCommonOpts = {
  "verbose": [False, "v", BOOL, "Verbose operation"],
  "force": [False, "f", BOOL, "Force operation, ignoring errors"],
  "path": ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, "Path to find programs to run"],
- "help": [None, None, None, None]
+ "help": [False, "h", BOOL, None]
 }
 
-cliCopyOpts = {}
-cliRestoreOpts = {}
+cliCopyOpts = {"placeholder": [None, None, None, None]}
+cliRestoreOpts = {"placeholder": [None, None, None, None]}
 
 
 def get(name):
 	try:
 		return ourOpts[name]
-	except:
-		pass
-	try:
-		return ourDefs[name]
 	except:
 		pass
 	return None
@@ -62,27 +58,30 @@ def set(name, value):
 
 
 def init():
-	ourDefs["program"] = "unknown"
-	ourDefs["configFile"] = None
-	ourDefs["verbose"] = False
-	ourDefs["force"] = False
-	ourDefs["continue"] = False
-	ourDefs["path"] = "/sbin:/bin:/usr/sbin:/usr/bin"
+	ourOptMap.update(cliCommonOpts)
+	if get("program") == "copy":
+		ourOptMap.update(cliCopyOpts)
+	if get("program") == "restore":
+		ourOptMap.update(cliRestoreOpts)
+	for opt, row in ourOptMap.iteritems():
+		ourOpts[opt] = row[DEFAULT]
 	return
 
 
+def printOpts():
+	print "Options:"
+	for opt in sorted(ourOpts.keys()):
+		print "   %s: %s" % (opt, ourOpts[opt])
+
+
 def usage():
-	optMap = {}
-	optMap.update(cliCommonOpts)
 	if get("program") == "copy":
 		print cliCopyHelpHeader, "\n"
-		optMap.update(cliCopyOpts)
-		printOptMap(optMap)
+		printOptMap()
 		sys.exit(0)
 	elif get("program") == "restore":
 		print cliCopyHelpHeader, "\n"
-		optMap.update(cliRestoreOpts)
-		printOptMap(optMap)
+		printOptMap()
 		sys.exit(0)
 	else:
 		print "Incorrect mode of operation. Can not figure out the program."
@@ -90,29 +89,19 @@ def usage():
 	return
 
 
-def printOptMap(optMap):
-	for name in sorted(optMap.keys()):
-		print "  -%s, --%s - %s" % (optMap[name][SHORT], name, optMap[name][HELP])
+def printOptMap():
+	for name in sorted(ourOptMap.keys()):
+		print "  -%s, --%s - %s" % (ourOptMap[name][SHORT], name, ourOptMap[name][HELP])
 	return
 
 
 def parseCmdLineOpts():
 	try:
-		shortOpts, longOpts = buildOptions(cliCommonOpts)
+		shortOpts, longOpts = buildOptions(ourOptMap)
 		opts, args = getopt.getopt(sys.argv[1:], shortOpts, longOpts)
-		parseOpts(opts, args)
-		if get("program") == "copy":
-			shortOpts, longOpts = buildOptions(cliCopyOpts)
-			opts, args = getopt.getopt(sys.argv[1:], shortOpts, longOpts)
-			parseOpts(opts, args)
-		elif get("program") == "restore":
-			shortOpts, longOpts = buildOptions(cliRestoreOpts)
-			opts, args = getopt.getopt(sys.argv[1:], shortOpts, longOpts)
-			parseOpts(opts, args)
-		else:
-			print "Internal error. Invalid program type"
-			usage()
-	except getopt.GetoptError:
+		parseOpts(opts, args, ourOptMap)
+	except getopt.GetoptError, err:
+		print err
 		usage()
 	return
 
@@ -132,18 +121,17 @@ def buildOptions(optMap):
 	return string.joinfields(shortOpts, ""), longOpts
 
 
-def parseOpts(opts, args):
+def parseOpts(opts, args, optMap):
+	shortIndex = {}
+	for name in optMap.keys():
+		shortIndex[optMap[name][SHORT]] = name
 	for opt, arg in opts:
-		if opt in ("-v", "--verbose"):
-			set("verbose", True)
-		elif opt in ("-c", "--configfile"):
-			set("configFile", arg)
-		elif opt in ("--path"):
-			set("path", arg)
-		elif opt in ("-h", "--help"):
-			usage()
+		opt = string.replace(opt, "-", "")
+		if shortIndex.has_key(opt):
+			opt = shortIndex[opt]
+		if optMap.has_key(opt):
+			if optMap[opt][TYPE] == STR:
+				set(opt, arg)
+			else:
+				set(opt, True)
 	return
-
-
-
-#init()

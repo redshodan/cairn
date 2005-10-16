@@ -19,8 +19,8 @@ class Copy(object):
 
 
 	def run(self):
-		cairn.Options.init()
 		cairn.Options.set("program", "copy")
+		cairn.Options.init()
 		cairn.Options.parseCmdLineOpts()
 		sysdefs.load()
 		sysdefs.run()

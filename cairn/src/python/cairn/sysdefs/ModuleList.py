@@ -5,6 +5,7 @@ import string
 
 import cairn
 from cairn import sysdefs
+from cairn import Options
 
 
 class ModuleList(object):
@@ -28,6 +29,8 @@ class ModuleList(object):
 
 	def run(self, sysDef, sysInfo):
 		for module in self.__moduleList:
+			if Options.get("verbose"):
+				print "Running module: " + module.__name__
 			func = getattr(module, "run")
 			if not func(sysDef, sysInfo):
 				raise cairn.Exception("Failed to run module: " + module.__name__)
