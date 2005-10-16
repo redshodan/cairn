@@ -62,3 +62,8 @@ clean:
 	find build -maxdepth 1 | grep -v CVS | grep -v '^build$$' | grep -v .cvsignore | xargs rm -rf
 
 .PHONY: $(SUBDIRS) appweb python
+
+
+#### subversion
+svnignore:
+	misc/svnignore-update.sh

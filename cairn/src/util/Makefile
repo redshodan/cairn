@@ -29,7 +29,7 @@ LIST=$(shell find . \( $(LS) -name x \) -prune -type d -print)
 
 ####  Rules for make
 
-ifeq (Makefile.dep,$(wildcard Makefile.dep))
+ifeq (Makefile.autodep,$(wildcard Makefile.autodep))
 all: dirs $(TARGETS)
 else
 all: deprecurse
@@ -50,7 +50,7 @@ $(LIB_TARGETS): $(OBJTARGETS)
 	ranlib $(@)
 
 clean:
-	-rm -f Makefile.dep core *.o *~ $(OBJDIR)/*.o $(TARGETS)
+	-rm -f Makefile.autodep core *.o *~ $(OBJDIR)/*.o $(TARGETS)
 
 recurse: $(DO)
 	for a in $(LIST); do cd $$a; make $(DO); cd ..; done
@@ -60,11 +60,11 @@ deprecurse: dep
 
 dep: clean
 	$(COMPILER) $(FLAGS) -MM *.$(FILEEXT) | \
-	awk '$$1 ~ /:/{printf "$(OBJDIR)/%s\n", $$0} $$1 !~ /:/' > Makefile.dep
+	awk '$$1 ~ /:/{printf "$(OBJDIR)/%s\n", $$0} $$1 !~ /:/' > Makefile.autodep
 
 $(OBJDIR)/%.o : %.$(FILEEXT)
 	$(COMPILER) -c $(FLAGS) $< -o $@
 
-ifeq (Makefile.dep,$(wildcard Makefile.dep))
-include Makefile.dep
+ifeq (Makefile.autodep,$(wildcard Makefile.autodep))
+include Makefile.autodep
 endif

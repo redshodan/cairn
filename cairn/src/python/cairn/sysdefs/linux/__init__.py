@@ -19,4 +19,6 @@ def matchPlatform():
 
 
 def loadPlatform():
-	return sysdefs.selectPlatform(cairn.sysdefs.linux, distros)
+	platform = sysdefs.selectPlatform("cairn.sysdefs.linux", distros)
+	platform.load()
+	return platform

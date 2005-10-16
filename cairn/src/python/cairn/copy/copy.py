@@ -1,3 +1,6 @@
+"""CAIRN Copy Class"""
+
+
 import sys
 
 import cairn
@@ -7,10 +10,6 @@ import cairn.Options
 
 
 class Copy(object):
-	#modSet = Set()
-	customModList = None
-
-
 	def __init__(self):
 		pass
 	
@@ -20,13 +19,12 @@ class Copy(object):
 
 
 	def run(self):
+		cairn.Options.init()
 		cairn.Options.set("program", "copy")
 		cairn.Options.parseCmdLineOpts()
-		sysdefs.loadPlatform()
+		sysdefs.load()
+		sysdefs.run()
 		sysdefs.printSummary()
-		#self.modSet.load(self.customModList)
-		#self.modSet.run()
-
 
 def run():
 	try:

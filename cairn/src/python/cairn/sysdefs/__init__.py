@@ -8,12 +8,12 @@ import sys
 import re
 
 import cairn
-from cairn import ModUtils
 from cairn.sysdefs.SystemInfo import *
 
 
 __sysDef = object()
-__sysInfo = object()
+__sysInfo = SystemInfo()
+__sysModuleList = object()
 
 
 def getDef():
@@ -24,21 +24,41 @@ def getInfo():
 	return __info
 
 
+def load():
+	loadPlatform()
+	loadModuleList()
+	return
+
+
 def loadPlatform():
 	"""Platform selector"""
 
 	import cairn.sysdefs.linux
 	if linux.matchPlatform():
 		cairn.sysdefs.__sysDef = linux.loadPlatform()
-		cairn.sysdefs.__sysInfo = cairn.sysdefs.__sysDef.loadInfo()
 	else:
-		raise cairn.Exception(fairn.ERR_SYSDEF, "Unable to determine the system definition for this machine.")
+		raise cairn.Exception(cairn.ERR_SYSDEF, "Unable to determine the system definition for this machine.")
+	return
+
+
+def loadModuleList():
+	from cairn.sysdefs.ModuleList import ModuleList
+	cairn.sysdefs.__sysModuleList = ModuleList()
+	cairn.sysdefs.__sysModuleList.load(cairn.sysdefs.__sysDef,
+									   cairn.sysdefs.__sysInfo)
+	return
+
+
+def run():
+	cairn.sysdefs.__sysModuleList.run(cairn.sysdefs.__sysDef,
+									  cairn.sysdefs.__sysInfo)
+	return
 
 
 def printSummary():
 	cairn.sysdefs.__sysDef.printSummary();
 	cairn.sysdefs.__sysInfo.printSummary();
-
+	return
 
 
 ###
@@ -46,7 +66,7 @@ def printSummary():
 ###
 
 def selectPlatform(root, moduleNames):
-	defs = ModUtils.loadModules(root, moduleNames)
+	defs = loadModules(root, moduleNames)
 
 	partialMatches = []
 	exactMatches = []
@@ -56,17 +76,15 @@ def selectPlatform(root, moduleNames):
 
 	# Fall back to "Unknown" if none found
 	if len(exactMatches) == 0:
-		modules = ModUtils.loadModules(root, ["unknown"])
+		modules = loadModules(root, ["unknown"])
 		if len(modules) == 1:
 			platform = modules[0].getPlatform()
 			verifySysDef([], [], platform)
-			platform.load()
 			return platform
 		else:
 			raise cairn.Exception(cairn.ERR_SYSDEF, "No system definitions match this platform.")
 	# Found one, run with it
 	if len(exactMatches) == 1:
-		exactMatches[0].load()
 		return exactMatches[0]
 	# Multiple modules think they are right
 	elif len(exactMatches) > 1:
@@ -74,6 +92,7 @@ def selectPlatform(root, moduleNames):
 		for module in exactMatches:
 			print "  ", module.__name__
 		raise cairn.Exception(cairn.ERR_SYSDEF, "Multiple system definitions found. Please choose the correct one.")
+	return
 
 
 def verifySysDef(partialMatches, exactMatches, module):
@@ -82,9 +101,6 @@ def verifySysDef(partialMatches, exactMatches, module):
 		if (not (getattr(module, "matchPartial") and
 				 getattr(module, "matchExact") and
 				 getattr(module, "load") and
-				 getattr(module, "loadOS") and
-				 getattr(module, "loadPaths") and
-				 getattr(module, "loadArch") and
 				 getattr(module, "printSummary"))
 			and not cairn.Options.get("continue")):
 			raise
@@ -98,6 +114,7 @@ def verifySysDef(partialMatches, exactMatches, module):
 	func = getattr(module, "matchExact")
 	if func():
 		exactMatches.append(module)
+	return
 
 
 def findFileInPath(path, file):
@@ -110,3 +127,16 @@ def findFileInPath(path, file):
 		except:
 			pass
 	return None
+
+
+def loadModules(root, moduleNames):
+	modules = []
+	for name in moduleNames:
+		fullName = "%s.%s" % (root, name)
+		try:
+			__import__(fullName)
+			modules.append(sys.modules[fullName])
+		except ImportError, err:
+			raise cairn.Exception(cairn.ERR_MODULE,
+								  "Unable to import module %s" % fullName)
+	return modules
