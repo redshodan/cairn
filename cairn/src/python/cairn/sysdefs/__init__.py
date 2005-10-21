@@ -129,6 +129,16 @@ def findFileInPath(path, file):
 	return None
 
 
+def findPaths(sysdef, sysinfo, path, bins):
+	"""Finds the binaries in the bins map using the path supplied"""
+	sysinfo.set("PATH", path)
+	for key, val in bins.iteritems():
+		sysinfo.set(key, findFileInPath(path, val))
+		if not sysinfo.get(key):
+			raise cairn.Exception(cairn.ERR_BINARY, "Failed to find required binary: %s" % val)
+	return True
+
+
 def loadModules(root, moduleNames):
 	modules = []
 	for name in moduleNames:
@@ -138,5 +148,5 @@ def loadModules(root, moduleNames):
 			modules.append(sys.modules[fullName])
 		except ImportError, err:
 			raise cairn.Exception(cairn.ERR_MODULE,
-								  "Unable to import module %s" % fullName)
+								  "Unable to import module '%s'" % fullName)
 	return modules

@@ -1,4 +1,4 @@
-"""CAIRN Copy Class"""
+"""CAIRN Restore Class"""
 
 
 import sys
@@ -9,24 +9,26 @@ import cairn.Options as Options
 
 
 
-class Copy(object):
+class Restore(object):
 	def __init__(self):
-		pass
-	
+		return
+
 
 	def run(self):
-		Options.set("program", "copy")
+		Options.set("program", "restore")
 		Options.init()
 		Options.parseCmdLineOpts()
 		sysdefs.load()
 		sysdefs.run()
 		sysdefs.printSummary()
+		return
 
 def run():
 	try:
-		ccopy = Copy()
-		ccopy.run()
+		crestore = Restore()
+		crestore.run()
 	except cairn.Exception, err:
 		print "Error: %s" % err.msg
 		sys.exit(err.code)
 	sys.exit(0)
+	return

@@ -6,7 +6,7 @@ import os
 import re
 
 import cairn
-import cairn.Options
+import cairn.Options as Options
 from cairn import sysdefs
 from cairn.sysdefs.SystemInfo import *
 
@@ -43,7 +43,19 @@ class Unknown:
 
 
 	def getModuleList(self):
-		return "LoadOS; LoadArch; LoadPaths;"
+		if Options.get("program") == "copy":
+			return self.getCopyModuleList()
+		else:
+			return self.getRestoreModuleList()
+		return
+	
+
+	def getCopyModuleList(self):
+		return "LoadOS; LoadArch; copy.LoadPaths;"
+
+
+	def getRestoreModuleList(self):
+		return "LoadOS; LoadArch; restore.LoadPaths;"
 
 
 	def printSummary(self):
