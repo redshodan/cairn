@@ -18,12 +18,12 @@ $(BINDIR)/ccopy: $(LIBDIR)/cairn.zip $(SCRIPTS)/runcairn.sh
 
 
 clean:
-	find -name '*.pyc' | xargs rm -f
-	find -name '*~' | xargs rm -f
+	find . -name '*.pyc' | xargs rm -f
+	find . -name '*~' | xargs rm -f
 	rm -f $(BINDIR)/ccopy $(LIBDIR)/cairn.zip
 
 ls:
-	find -type f | grep -v CVS | grep -ve '*.pyc$$'
+	find . -type f | grep -v CVS | grep -ve '*.pyc$$'
 
 lsinc:
-	find -type f -name '*.py' | grep -v CVS | xargs grep -h "import" | grep -v "cairn" | sort | uniq
+	find . -type f -name '*.py' | grep -v .svn | xargs grep -h "import" | grep -v "cairn" | sort | uniq

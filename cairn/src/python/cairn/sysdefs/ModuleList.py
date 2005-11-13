@@ -5,7 +5,6 @@ import string
 
 import cairn
 from cairn import sysdefs
-from cairn import Options
 
 
 class ModuleList(object):
@@ -23,13 +22,14 @@ class ModuleList(object):
 			module = string.replace(module, " ", "")
 			if len(module) > 0:
 				moduleNames.append(module)
-		self.__moduleList = sysdefs.loadModules(sysDef.className(), moduleNames)
+		self.__moduleList = sysdefs.loadModules(sysDef.className(),
+												sysDef.classTemplate(), moduleNames)
 		return
 
 
 	def run(self, sysDef, sysInfo):
 		for module in self.__moduleList:
-			if Options.get("verbose"):
+			if cairn.verbose():
 				print "Running module: " + module.__name__
 			func = getattr(module, "run")
 			if not func(sysDef, sysInfo):

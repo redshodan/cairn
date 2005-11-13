@@ -1,6 +1,5 @@
-#
-# CAIRN System definitions
-#
+"""cairn.sysdefs.__init__
+   CAIRN System definitions"""
 
 
 import os
@@ -8,6 +7,7 @@ import sys
 import re
 
 import cairn
+from cairn import Options
 from cairn.sysdefs.SystemInfo import *
 
 
@@ -36,8 +36,12 @@ def loadPlatform():
 	import cairn.sysdefs.linux
 	if linux.matchPlatform():
 		cairn.sysdefs.__sysDef = linux.loadPlatform()
-	else:
-		raise cairn.Exception(cairn.ERR_SYSDEF, "Unable to determine the system definition for this machine.")
+		return
+	import cairn.sysdefs.darwin
+	if darwin.matchPlatform():
+		cairn.sysdefs.__sysDef = darwin.loadPlatform()
+		return
+	raise cairn.Exception(cairn.ERR_SYSDEF, "Unable to determine the system definition for this machine.")
 	return
 
 
@@ -45,13 +49,13 @@ def loadModuleList():
 	from cairn.sysdefs.ModuleList import ModuleList
 	cairn.sysdefs.__sysModuleList = ModuleList()
 	cairn.sysdefs.__sysModuleList.load(cairn.sysdefs.__sysDef,
-									   cairn.sysdefs.__sysInfo)
+					   cairn.sysdefs.__sysInfo)
 	return
 
 
 def run():
 	cairn.sysdefs.__sysModuleList.run(cairn.sysdefs.__sysDef,
-									  cairn.sysdefs.__sysInfo)
+					  cairn.sysdefs.__sysInfo)
 	return
 
 
@@ -66,7 +70,7 @@ def printSummary():
 ###
 
 def selectPlatform(root, moduleNames):
-	defs = loadModules(root, moduleNames)
+	defs = loadModules(root, None, moduleNames)
 
 	partialMatches = []
 	exactMatches = []
@@ -74,9 +78,9 @@ def selectPlatform(root, moduleNames):
 		platform = module.getPlatform()
 		verifySysDef(partialMatches, exactMatches, platform)
 
-	# Fall back to "Unknown" if none found
+	# Fall back to "Unknown" if None found
 	if len(exactMatches) == 0:
-		modules = loadModules(root, ["unknown"])
+		modules = loadModules(root, None, ["unknown"])
 		if len(modules) == 1:
 			platform = modules[0].getPlatform()
 			verifySysDef([], [], platform)
@@ -117,8 +121,8 @@ def verifySysDef(partialMatches, exactMatches, module):
 	return
 
 
-def findFileInPath(path, file):
-	paths = path.split(":")
+def findFileInPath(path, file, seperator = ":"):
+	paths = path.split(seperator)
 	for part in paths:
 		fullname = part + "/" + file
 		try:
@@ -139,14 +143,28 @@ def findPaths(sysdef, sysinfo, path, bins):
 	return True
 
 
-def loadModules(root, moduleNames):
+def loadModules(root, template, moduleNames):
+	# Try root first, then template
 	modules = []
 	for name in moduleNames:
-		fullName = "%s.%s" % (root, name)
-		try:
-			__import__(fullName)
-			modules.append(sys.modules[fullName])
-		except ImportError, err:
-			raise cairn.Exception(cairn.ERR_MODULE,
-								  "Unable to import module '%s'" % fullName)
+		if loadAModule("%s.%s" % (root, name), modules):
+			continue
+		if loadAModule("%s.%s.%s" % (root, Options.get("program"), name), modules):
+			continue
+		if template and loadAModule("%s.%s" % (template, name), modules):
+			continue
+		if loadAModule("%s.%s.%s" % (template, Options.get("program"), name),
+					   modules):
+			continue
+		raise cairn.Exception(cairn.ERR_MODULE,
+							  "Unable to import module %s" % (name))
 	return modules
+
+
+def loadAModule(module, modules):
+	try:
+		__import__(module)
+		modules.append(sys.modules[module])
+		return True
+	except ImportError, err:
+		return False

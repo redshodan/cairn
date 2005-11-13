@@ -4,7 +4,7 @@
 import sys
 
 import cairn
-from cairn import sysdefs 
+from cairn import sysdefs
 import cairn.Options as Options
 
 
@@ -12,7 +12,7 @@ import cairn.Options as Options
 class Copy(object):
 	def __init__(self):
 		pass
-	
+
 
 	def run(self):
 		Options.set("program", "copy")

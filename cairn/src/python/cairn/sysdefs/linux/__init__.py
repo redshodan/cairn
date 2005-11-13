@@ -1,4 +1,5 @@
-"""Linux system definitions"""
+"""cairn.sysdefs.linux.__init__
+   Linux system definitions"""
 
 
 import sys

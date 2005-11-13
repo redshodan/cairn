@@ -2,6 +2,7 @@
 
 
 from types import *
+from cairn import Options
 
 
 # Error codes
@@ -20,3 +21,7 @@ class Exception(Exception):
 			self.code = one
 			self.msg = two
 
+def verbose():
+	if Options.get("verbose"):
+		return True
+	return False
