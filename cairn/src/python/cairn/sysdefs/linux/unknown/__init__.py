@@ -24,6 +24,10 @@ class Unknown(UNIX):
 		return "cairn.sysdefs.linux.unknown"
 
 
+	def classTemplate(self):
+		return "cairn.sysdefs.templates.unix"
+
+
 	def printSummary(self):
 		print "System definition:  %s Linux" % (self.name())
 		return

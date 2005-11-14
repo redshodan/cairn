@@ -1,8 +1,11 @@
 """Unknown Linux LoadOS Module"""
 
 
+import cairn.sysdefs.templates.unix.LoadOS as tmpl
 
-class LoadOS(cairn.sysdefs.templates.unix.LoadOS):
+
+
+class LoadOS(tmpl.LoadOS):
 	def __init__(self):
 		return
 

@@ -7,13 +7,13 @@ import cairn.sysdefs.templates.unix.LoadArch as tmpl
 
 
 
-class LoadArch(tmpl.LoadOS):
+class LoadArch(tmpl.LoadArch):
 	def __init__(self):
 		return
 
 
 	def run(self, sysdef, sysinfo):
-		if not super(LoadArch).run():
+		if not super(LoadArch, self).run(sysdef, sysinfo):
 			return false
 
 		modelNameRE = re.compile("^model name")
