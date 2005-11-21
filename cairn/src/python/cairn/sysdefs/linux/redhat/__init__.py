@@ -6,7 +6,7 @@ from cairn.sysdefs.linux.unknown import Unknown
 
 
 
-def getPlatform():
+def getClass():
 	return RedHat()
 
 

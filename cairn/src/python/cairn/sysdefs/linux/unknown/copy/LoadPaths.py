@@ -5,11 +5,6 @@ import cairn.sysdefs.templates.unix.LoadPaths as tmpl
 
 
 
-__PATH = "/sbin:/usr/sbin:/bin:/usr/bin"
-__BINS = { "PART_TOOL" : "sfdisk", "ARCHIVE_TOOL" : "tar" }
-
-
-
 def getClass():
 	return LoadPaths()
 
@@ -17,8 +12,8 @@ def getClass():
 
 class LoadPaths(tmpl.LoadPaths):
 	def getPath(self):
-		return __PATH
+		return "/sbin:/usr/sbin:/bin:/usr/bin"
 
 
 	def getBins(self):
-		return __BINS
+		return { "PART_TOOL" : "sfdisk", "ARCHIVE_TOOL" : "tar" }
