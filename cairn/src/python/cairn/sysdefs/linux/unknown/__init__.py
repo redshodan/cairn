@@ -6,7 +6,7 @@ from cairn.sysdefs.templates.unix import *
 
 
 
-def getPlatform():
+def getClass():
 	return Unknown()
 
 

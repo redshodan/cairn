@@ -8,11 +8,12 @@ import cairn
 
 
 
+def getClass():
+	return LoadArch()
+
+
+
 class LoadArch(object):
-	def __init__(self):
-		return
-
-
 	def run(self, sysdef, sysinfo):
 		sysname, nodename, release, version, machine = os.uname()
 		sysinfo.set("CPU", machine)
@@ -22,8 +23,3 @@ class LoadArch(object):
 			  (machine == "ppc")):
 			sysinfo.set("ARCH", machine)
 		return True
-
-
-def run(sysdef, sysinfo):
-	mod = LoadArch()
-	return mod.run(sysdef, sysinfo)

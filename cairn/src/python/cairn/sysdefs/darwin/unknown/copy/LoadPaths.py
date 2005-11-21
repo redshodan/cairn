@@ -1,14 +1,19 @@
 """Unknown Darwin system definitions"""
 
 
-import cairn
-import cairn.sysdefs as sysdefs
+import cairn.sysdefs.templates.unix.LoadPaths as tmpl
 
 
-__PATH = "/sbin:/usr/sbin:/bin:/usr/bin"
-__BINS = { "PART_TOOL" : "fdisk", "ARCHIVE_TOOL" : "tar" }
+
+def getClass():
+	return LoadPaths()
 
 
-def run(sysdef, sysinfo):
-	sysdefs.findPaths(sysdef, sysinfo, __PATH, __BINS)
-	return True
+
+class LoadPaths(tmpl.LoadPaths):
+	def getPath(self):
+		return "/sbin:/usr/sbin:/bin:/usr/bin"
+
+
+	def getBins(self):
+		return  { "PART_TOOL" : "fdisk", "ARCHIVE_TOOL" : "tar" }

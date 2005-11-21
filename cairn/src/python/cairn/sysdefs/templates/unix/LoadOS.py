@@ -5,11 +5,12 @@ import os
 
 
 
+def getClass():
+	return LoadOS()
+
+
+
 class LoadOS(object):
-	def __init__(self):
-		return
-
-
 	def nameOS(self):
 		return "UNIX"
 
@@ -24,8 +25,3 @@ class LoadOS(object):
 		sysinfo.set("OS_VER_STR", release)
 		sysinfo.set("OS_DISTRO", sysdef.name())
 		return True
-
-
-def run(sysdef, sysinfo):
-	mod = LoadOS()
-	return mod.run(sysdef, sysinfo)

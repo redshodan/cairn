@@ -7,6 +7,11 @@ import cairn.sysdefs.templates.unix.LoadArch as tmpl
 
 
 
+def getClass():
+	return LoadArch()
+
+
+
 class LoadArch(tmpl.LoadArch):
 	def __init__(self):
 		return
@@ -24,8 +29,3 @@ class LoadArch(tmpl.LoadArch):
 				sysinfo.set("CPU_STR", arr[1])
 		cpuinfo.close()
 		return True
-
-
-def run(sysdef, sysinfo):
-	mod = LoadArch()
-	return mod.run(sysdef, sysinfo)

@@ -20,8 +20,13 @@ class Exception(Exception):
 		else:
 			self.code = one
 			self.msg = two
+		return
 
-def verbose():
-	if Options.get("verbose"):
+
+def verbose(str = None):
+	if str and Options.get("verbose"):
+		print str
+		return True
+	elif Options.get("verbose"):
 		return True
 	return False

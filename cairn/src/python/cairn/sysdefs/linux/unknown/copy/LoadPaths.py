@@ -1,14 +1,24 @@
 """Unknown Linux system definitions"""
 
 
-import cairn
-import cairn.sysdefs as sysdefs
+import cairn.sysdefs.templates.unix.LoadPaths as tmpl
+
 
 
 __PATH = "/sbin:/usr/sbin:/bin:/usr/bin"
 __BINS = { "PART_TOOL" : "sfdisk", "ARCHIVE_TOOL" : "tar" }
 
 
-def run(sysdef, sysinfo):
-	sysdefs.findPaths(sysdef, sysinfo, __PATH, __BINS)
-	return True
+
+def getClass():
+	return LoadPaths()
+
+
+
+class LoadPaths(tmpl.LoadPaths):
+	def getPath(self):
+		return __PATH
+
+
+	def getBins(self):
+		return __BINS

@@ -13,12 +13,12 @@ from cairn.sysdefs.SystemInfo import *
 
 
 
-def getPlatform():
-	return Unknown()
+def getClass():
+	return UNIX()
 
 
 
-class UNIX:
+class UNIX(object):
 	def __init__(self):
 		return
 
@@ -33,10 +33,6 @@ class UNIX:
 
 	def name(self):
 		return "UNIX"
-
-
-	def className(self):
-		return "cairn.sysdefs.templates.unix"
 
 
 	def load(self):

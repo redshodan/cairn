@@ -9,11 +9,12 @@ import re
 import cairn
 from cairn import Options
 from cairn.sysdefs.SystemInfo import *
+from cairn.sysdefs import IModule
 
 
 __sysDef = object()
 __sysInfo = SystemInfo()
-__sysModuleList = object()
+__sysModuleList = []
 
 
 def getDef():
@@ -46,16 +47,18 @@ def loadPlatform():
 
 
 def loadModuleList():
-	from cairn.sysdefs.ModuleList import ModuleList
-	cairn.sysdefs.__sysModuleList = ModuleList()
-	cairn.sysdefs.__sysModuleList.load(cairn.sysdefs.__sysDef,
-					   cairn.sysdefs.__sysInfo)
+	cairn.sysdefs.__sysModuleList = IModule.loadList(cairn.sysdefs.__sysDef)
 	return
 
 
 def run():
-	cairn.sysdefs.__sysModuleList.run(cairn.sysdefs.__sysDef,
-					  cairn.sysdefs.__sysInfo)
+	for module in cairn.sysdefs.__sysModuleList:
+		if cairn.verbose():
+			print "Running module: " + module.__name__
+		func = getattr(module, "getClass")
+		obj = func()
+		if not obj.run(cairn.sysdefs.__sysDef, cairn.sysdefs.__sysInfo):
+			raise cairn.Exception("Failed to run module: " + module.__name__)
 	return
 
 
@@ -70,19 +73,19 @@ def printSummary():
 ###
 
 def selectPlatform(root, moduleNames):
-	defs = loadModules(root, None, moduleNames)
+	defs = IModule.loadModulesByName(root, moduleNames)
 
 	partialMatches = []
 	exactMatches = []
 	for module in defs:
-		platform = module.getPlatform()
+		platform = module.getClass()
 		verifySysDef(partialMatches, exactMatches, platform)
 
 	# Fall back to "Unknown" if None found
 	if len(exactMatches) == 0:
-		modules = loadModules(root, None, ["unknown"])
+		modules = IModule.loadModulesByName(root, ["unknown"])
 		if len(modules) == 1:
-			platform = modules[0].getPlatform()
+			platform = modules[0].getClass()
 			verifySysDef([], [], platform)
 			return platform
 		else:
@@ -121,50 +124,11 @@ def verifySysDef(partialMatches, exactMatches, module):
 	return
 
 
-def findFileInPath(path, file, seperator = ":"):
-	paths = path.split(seperator)
-	for part in paths:
-		fullname = part + "/" + file
-		try:
-			os.stat(fullname)
-			return fullname
-		except:
-			pass
-	return None
-
-
-def findPaths(sysdef, sysinfo, path, bins):
+def findPaths(path, bins):
 	"""Finds the binaries in the bins map using the path supplied"""
-	sysinfo.set("PATH", path)
+	cairn.sysdefs.__sysInfo.set("PATH", path)
 	for key, val in bins.iteritems():
-		sysinfo.set(key, findFileInPath(path, val))
-		if not sysinfo.get(key):
+		cairn.sysdefs.__sysInfo.set(key, IModule.findFileInPath(path, val))
+		if not cairn.sysdefs.__sysInfo.get(key):
 			raise cairn.Exception(cairn.ERR_BINARY, "Failed to find required binary: %s" % val)
 	return True
-
-
-def loadModules(root, template, moduleNames):
-	# Try root first, then template
-	modules = []
-	for name in moduleNames:
-		if loadAModule("%s.%s" % (root, name), modules):
-			continue
-		if loadAModule("%s.%s.%s" % (root, Options.get("program"), name), modules):
-			continue
-		if template and loadAModule("%s.%s" % (template, name), modules):
-			continue
-		if loadAModule("%s.%s.%s" % (template, Options.get("program"), name),
-					   modules):
-			continue
-		raise cairn.Exception(cairn.ERR_MODULE,
-							  "Unable to import module %s" % (name))
-	return modules
-
-
-def loadAModule(module, modules):
-	try:
-		__import__(module)
-		modules.append(sys.modules[module])
-		return True
-	except ImportError, err:
-		return False
