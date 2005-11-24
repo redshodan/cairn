@@ -11,3 +11,9 @@ for DIR in ${DIRS}; do
 		svn propset svn:ignore -F ${TOP}/misc/svnignore .
 	fi
 done
+cd ${TOP}
+
+# Adjust a few special cases
+cp ${TOP}/misc/svnignore /tmp/svnignore-tmp
+echo build >> /tmp/svnignore-tmp
+svn propset svn:ignore -F /tmp/svnignore-tmp .

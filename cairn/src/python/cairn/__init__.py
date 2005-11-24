@@ -23,7 +23,23 @@ class Exception(Exception):
 		return
 
 
+def debug(str = None):
+	if str and Options.get("verbose"):
+		print str
+		return True
+	elif Options.get("verbose"):
+		return True
+	return False
+
 def verbose(str = None):
+	if str and Options.get("verbose"):
+		print str
+		return True
+	elif Options.get("verbose"):
+		return True
+	return False
+
+def log(str = None):
 	if str and Options.get("verbose"):
 		print str
 		return True
