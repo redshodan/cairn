@@ -26,6 +26,6 @@ class LoadArch(tmpl.LoadArch):
 		for line in cpuinfo.readlines():
 			if modelNameRE.match(line):
 				arr = line.split(": ")
-				sysinfo.set("CPU_STR", arr[1])
+				sysinfo.set("arch/cpu-str", arr[1])
 		cpuinfo.close()
 		return True

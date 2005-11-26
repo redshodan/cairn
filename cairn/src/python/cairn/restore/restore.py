@@ -28,7 +28,7 @@ def run():
 		crestore = Restore()
 		crestore.run()
 	except cairn.Exception, err:
-		print "Error: %s" % err.msg
+		err.printSelf()
 		sys.exit(err.code)
 	sys.exit(0)
 	return

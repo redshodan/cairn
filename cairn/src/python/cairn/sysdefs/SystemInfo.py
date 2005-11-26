@@ -10,72 +10,180 @@ the getValue() function.
 
 
 Operating System
-   OS                - Base OS name.
-   OS_VER            - Base OS version.
-   OS_VER_SHORT      - Base OS version, shortened to major and minor.
-   OS_VER_STR        - Base OS version string
-   OS_DISTRO_VENDOR  - OS distribution vendor name.
-   OS_DISTRO         - OS distribution name.
-   OS_DISTRO_VER     - OS distribution version.
+   <os>
+     <name>                  - Base OS name.
+     <version>               - Base OS version.
+     <version-short>         - Base OS version, shortened to major and minor.
+     <version-str>           - Base OS version string
+     <distribution-vender>   - OS distribution vendor name.
+     <distribution>          - OS distribution name.
+     <distribution-version>  - OS distribution version.
+   </os>
 
 Architecture
-   ARCH              - Architecture
-   CPU               - CPU type
-   CPU_STR           - CPU type string
+   <arch>
+     <name>                - Architecture
+	 <cpu>                 - CPU type
+     <cpu-str>             - CPU type string
+   </arch>
 
 Environment
-   PATH              - System binary path
-   PART_TOOL         - Partitioning tool to use
-   ARCHIVE_TOOL      - Archiving tool to use
+   <env>
+     <path>                - System binary path
+     <part-tool>           - Partitioning tool to use
+	 <archive-tool>        - Archiving tool to use
+   </arch>
 """
 
 
+from xml.dom import minidom
+import string
+
+import cairn
+
 
 class SystemInfo(object):
-	values = {}
-
-
 	def __init__(self):
-		# Operating System
-		self.values["OS"] = "unknown"
-		self.values["OS_VER_SHORT"] = "unknown"
-		self.values["OS_VER"] = "unknown"
-		self.values["OS_DISTRO_VENDOR"] = "unknown"
-		self.values["OS_DISTRO"] = "unknown"
-		self.values["OS_DISTRO_VER"] = "unknown"
-
-		# Architecture
-		self.values["ARCH"] = "unknown"
-		self.values["CPU"] = "unknown"
-		self.values["CPU_STR"] = "unknown"
-
-		# Environment
-		self.values["PATH"] = "unknown"
-		self.values["PART_TOOL"] = "unknown"
-		self.values["ARCHIVE_TOOL"] = "unknown"
+		self.createNew()
+		self.doc.normalize()
+		return
 
 
+	# Simple string based name/value pair accessors
 	def get(self, name):
-		try:
-			return self.values[name]
-		except:
-			return None
+		elem = self.getElem(name)
+		if elem:
+			return self.getText(elem)
+		return None
 
 
 	def set(self, name, value):
-		self.values[name] = value
+		elem = self.getElem(name)
+		if not elem:
+			raise cairn.Exception("In SystemInfo, tag %s was not found" % name)
+		self.emptyElem(elem)
+		text = self.doc.createTextNode(value)
+		elem.appendChild(text)
+		return
+
+
+	# Document handling
+	def createNew(self):
+		impl = minidom.getDOMImplementation()
+		self.doc = impl.createDocument(None, "system-info", None)
+		self.root = self.doc.documentElement
+		self.createOSElem()
+		self.createArchElem()
+		self.createEnvElem()
+		return
+
+
+	def createOSElem(self):
+		os = self.createElem(self.root, "os")
+		elem = self.createElem(os, "name")
+		self.createText(elem, "unknown")
+		elem = self.createElem(os, "version-short")
+		self.createText(elem, "unknown")
+		elem = self.createElem(os, "version")
+		self.createText(elem, "unknown")
+		elem = self.createElem(os, "version-str")
+		self.createText(elem, "unknown")
+		elem = self.createElem(os, "distribution-vendor")
+		self.createText(elem, "unknown")
+		elem = self.createElem(os, "distribution")
+		self.createText(elem, "unknown")
+		elem = self.createElem(os, "distribution-version")
+		self.createText(elem, "unknown")
+		return os
+
+
+	def createArchElem(self):
+		arch = self.createElem(self.root, "arch")
+		elem = self.createElem(arch, "name")
+		self.createText(elem, "unknown")
+		elem = self.createElem(arch, "cpu")
+		self.createText(elem, "unknown")
+		elem = self.createElem(arch, "cpu-str")
+		self.createText(elem, "unknown")
+		return arch
+
+
+	def createEnvElem(self):
+		env = self.createElem(self.root, "env")
+		elem = self.createElem(env, "path")
+		self.createText(elem, "unknown")
+		elem = self.createElem(env, "part-tool")
+		self.createText(elem, "unknown")
+		elem = self.createElem(env, "archive-tool")
+		self.createText(elem, "unknown")
+		return env
+
+
+	def createElem(self, root, name):
+		elem = self.doc.createElement(name)
+		root.appendChild(elem)
+		return elem
+
+
+	def createText(self, root, name):
+		elem = self.doc.createTextNode(name)
+		root.appendChild(elem)
+		return elem
+
+
+	def getElem(self, name, root = None):
+		if not root:
+			root = self.root
+		arr = string.split(name, "/")
+		elem = root.getElementsByTagName(arr[0])
+		if not elem:
+			return None
+		if len(arr) > 1:
+			return self.getElem(arr[1], elem[0])
+		if len(elem) == 1:
+			return elem[0]
+		else:
+			return elem
+		return
+
+
+	def getText(self, elem):
+		ret = ""
+		for child in elem.childNodes:
+			if child.nodeType == child.TEXT_NODE:
+				ret = ret + child.data
+		return ret
+
+
+	def emptyElem(self, elem):
+		while elem.hasChildNodes():
+			child = elem.removeChild(elem.firstChild)
+			child.unlink()
+		return
+
+
+	def printXML(self):
+		print self.doc.toprettyxml("   ")
+		return
+
+
+	def saveToFile(self, file):
+		self.doc.writexml(file)
+		return
 
 
 	def printSummary(self):
 		print "System Information:"
-		print "  OS:       %s, %s, %s" % (self.get("OS"),
-										  self.get("OS_VER_SHORT"),
-										  self.get("OS_VER"))
-		print "  Distro:   %s, %s, %s" % (self.get("OS_DISTRO_VENDOR"),
-										  self.get("OS_DISTRO"),
-										  self.get("OS_DISTRO_VER"))
-		print "  Arch:     %s, %s, %s" % (self.get("ARCH"), self.get("CPU"),
-										  self.get("CPU_STR"))
-		print "  ENV:      path: " + self.get("PATH")
-		print "            part: " + self.get("PART_TOOL")
-		print "            archive: " + self.get("ARCHIVE_TOOL")
+		print "  OS:       %s, %s, %s" % (self.get("os/name"),
+										  self.get("os/version-short"),
+										  self.get("os/version"))
+		print "  Distro:   %s, %s, %s" % (self.get("os/distribution-vendor"),
+										  self.get("os/distribution"),
+										  self.get("os/distribution-version"))
+		print "  Arch:     %s, %s, %s" % (self.get("arch/name"), self.get("arch/cpu"),
+										  self.get("arch/cpu-str"))
+		print "  ENV:      path: " + self.get("env/path")
+		print "            part: " + self.get("env/part-tool")
+		print "            archive: " + self.get("env/archive-tool")
+		self.printXML()
+		return

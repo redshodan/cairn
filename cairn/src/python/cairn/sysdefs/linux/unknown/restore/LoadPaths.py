@@ -6,7 +6,7 @@ import cairn.sysdefs.templates.unix.LoadPaths as tmpl
 
 
 __PATH = "/sbin:/usr/sbin:/bin:/usr/bin"
-__BINS = { "PART_TOOL" : "sfdisk", "ARCHIVE_TOOL" : "tar" }
+__BINS = { "env/part-tool" : "sfdisk", "env/archive-tool" : "tar" }
 
 
 

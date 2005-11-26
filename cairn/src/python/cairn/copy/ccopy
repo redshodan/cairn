@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 
 
+# Import the std copy module first, otherwise python goes tarded later on
+# if a different std module tries to use the std copy.
+import copy
+
 from cairn.copy import copy
 
 

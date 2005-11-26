@@ -42,7 +42,8 @@ def loadPlatform():
 	if darwin.matchPlatform():
 		cairn.sysdefs.__sysDef = darwin.loadPlatform()
 		return
-	raise cairn.Exception(cairn.ERR_SYSDEF, "Unable to determine the system definition for this machine.")
+	raise cairn.Exception("Unable to determine the system definition for this machine.",
+						  cairn.ERR_SYSDEF)
 	return
 
 
@@ -89,7 +90,8 @@ def selectPlatform(root, moduleNames):
 			verifySysDef([], [], platform)
 			return platform
 		else:
-			raise cairn.Exception(cairn.ERR_SYSDEF, "No system definitions match this platform.")
+			raise cairn.Exception("No system definitions match this platform.",
+								  cairn.ERR_SYSDEF)
 	# Found one, run with it
 	if len(exactMatches) == 1:
 		return exactMatches[0]
@@ -98,7 +100,7 @@ def selectPlatform(root, moduleNames):
 		print "There are mutiple system definition matchs:"
 		for module in exactMatches:
 			print "  ", module.__name__
-		raise cairn.Exception(cairn.ERR_SYSDEF, "Multiple system definitions found. Please choose the correct one.")
+		raise cairn.Exception("Multiple system definitions found. Please choose the correct one.", cairn.ERR_SYSDEF)
 	return
 
 
@@ -112,9 +114,8 @@ def verifySysDef(partialMatches, exactMatches, module):
 			and not cairn.Options.get("continue")):
 			raise
 	except:
-		raise cairn.Exception(cairn.ERR_SYSDEF,
-							  "Incomplete system definition code in module " +
-							  str(module))
+		raise cairn.Exception("Incomplete system definition code in module " +
+							  str(module), cairn.ERR_SYSDEF)
 	func = getattr(module, "matchPartial")
 	if func():
 		partialMatches.append(module)
@@ -126,9 +127,10 @@ def verifySysDef(partialMatches, exactMatches, module):
 
 def findPaths(path, bins):
 	"""Finds the binaries in the bins map using the path supplied"""
-	cairn.sysdefs.__sysInfo.set("PATH", path)
+	cairn.sysdefs.__sysInfo.set("env/path", path)
 	for key, val in bins.iteritems():
 		cairn.sysdefs.__sysInfo.set(key, IModule.findFileInPath(path, val))
 		if not cairn.sysdefs.__sysInfo.get(key):
-			raise cairn.Exception(cairn.ERR_BINARY, "Failed to find required binary: %s" % val)
+			raise cairn.Exception("Failed to find required binary: %s" % val,
+								  cairn.ERR_BINARY)
 	return True

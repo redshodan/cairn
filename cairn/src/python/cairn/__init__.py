@@ -6,20 +6,25 @@ from cairn import Options
 
 
 # Error codes
-ERR_MODULE = 1
-ERR_SYSDEF = 2
-ERR_BINARY = 3
+ERR_UNKNOWN = 1
+ERR_MODULE = 2
+ERR_SYSDEF = 3
+ERR_BINARY = 4
 
 
 
 class Exception(Exception):
-	def __init__(self, one, two = None):
-		if type(one) is ListType:
-			self.code = one[0]
-			self.msg = one[1] % two
+	def __init__(self, msg, code = None):
+		self.msg = msg
+		if code:
+			self.code = code
 		else:
-			self.code = one
-			self.msg = two
+			self.code = ERR_UNKNOWN
+		return
+
+
+	def printSelf(self):
+		print "Error: %s" % self.msg
 		return
 
 
@@ -31,6 +36,7 @@ def debug(str = None):
 		return True
 	return False
 
+
 def verbose(str = None):
 	if str and Options.get("verbose"):
 		print str
@@ -38,6 +44,7 @@ def verbose(str = None):
 	elif Options.get("verbose"):
 		return True
 	return False
+
 
 def log(str = None):
 	if str and Options.get("verbose"):

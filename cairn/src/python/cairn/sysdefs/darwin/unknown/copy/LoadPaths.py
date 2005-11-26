@@ -16,4 +16,4 @@ class LoadPaths(tmpl.LoadPaths):
 
 
 	def getBins(self):
-		return  { "PART_TOOL" : "fdisk", "ARCHIVE_TOOL" : "tar" }
+		return  { "env/part-tool" : "fdisk", "env/archive-tool" : "tar" }
