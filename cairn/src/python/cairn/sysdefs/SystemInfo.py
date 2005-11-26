@@ -185,5 +185,4 @@ class SystemInfo(object):
 		print "  ENV:      path: " + self.get("env/path")
 		print "            part: " + self.get("env/part-tool")
 		print "            archive: " + self.get("env/archive-tool")
-		self.printXML()
 		return

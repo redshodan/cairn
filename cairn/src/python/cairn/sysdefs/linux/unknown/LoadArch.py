@@ -2,6 +2,7 @@
 
 
 import re
+import string
 
 import cairn.sysdefs.templates.unix.LoadArch as tmpl
 
@@ -25,6 +26,7 @@ class LoadArch(tmpl.LoadArch):
 		cpuinfo = file("/proc/cpuinfo", "r")
 		for line in cpuinfo.readlines():
 			if modelNameRE.match(line):
+				line = string.strip(line)
 				arr = line.split(": ")
 				sysinfo.set("arch/cpu-str", arr[1])
 		cpuinfo.close()
