@@ -19,7 +19,7 @@ class Arch(tmpl.Arch):
 
 
 	def run(self, sysdef, sysinfo):
-		if not super(LoadArch, self).run(sysdef, sysinfo):
+		if not super(Arch, self).run(sysdef, sysinfo):
 			return false
 
 		modelNameRE = re.compile("^model name")
