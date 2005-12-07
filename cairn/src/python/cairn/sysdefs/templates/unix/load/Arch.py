@@ -1,4 +1,4 @@
-"""Generic UNIX LoadArch Module"""
+"""Generic unix.load.Arch Module"""
 
 
 import os
@@ -9,11 +9,11 @@ import cairn
 
 
 def getClass():
-	return LoadArch()
+	return Arch()
 
 
 
-class LoadArch(object):
+class Arch(object):
 	def run(self, sysdef, sysinfo):
 		sysname, nodename, release, version, machine = os.uname()
 		sysinfo.set("arch/cpu", machine)

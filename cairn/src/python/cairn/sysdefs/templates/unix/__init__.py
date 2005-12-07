@@ -40,11 +40,11 @@ class UNIX(object):
 
 
 	def getModuleList(self):
-		return self.getInitModuleList() + self.getMainModuleList()
+		return "load;"
 
 
 	def getInitModuleList(self):
-		return "LoadOS; LoadArch; LoadPaths;"
+		return "load.OS; load.Arch; load.Paths;"
 
 	def getMainModuleList(self):
 		return ""

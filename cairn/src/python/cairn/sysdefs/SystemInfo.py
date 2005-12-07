@@ -70,7 +70,7 @@ class SystemInfo(object):
 	# Document handling
 	def createNew(self):
 		impl = minidom.getDOMImplementation()
-		self.doc = impl.createDocument(None, "system-info", None)
+		self.doc = impl.createDocument(None, "cairn-image", None)
 		self.root = self.doc.documentElement
 		self.createOSElem()
 		self.createArchElem()

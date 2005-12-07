@@ -20,14 +20,6 @@ class Unknown(UNIX):
 		return "Unknown"
 
 
-	def className(self):
-		return "cairn.sysdefs.darwin.unknown"
-
-
-	def classTemplate(self):
-		return "cairn.sysdefs.templates.unix"
-
-
 	def printSummary(self):
 		print "System definition:  %s Darwin" % (self.name())
 		return

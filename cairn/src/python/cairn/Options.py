@@ -25,11 +25,12 @@ BOOL = 2
 cliCopyHelpHeader = "usage: ccopy [args] file"
 cliRestoreHelpHeader = "usage: crestore [args] file"
 
-# Options and their cmdline arguements are arranged in an array of arrays. Each sub-array
-# contains the name of the option, its default value and the short cmdline flag for it. The
-# option name will be used for the long form of the cmdline flag. The short cmdline flag
-# needs to follow the syntax of the getopt package. They will be strung together to make
-# a single string that will be passed to getopt. Adding a new entry in the correct option list
+# Options and their cmdline arguements are arranged in an array of arrays. Each
+# sub-array contains the name of the option, its default value and the short
+# cmdline flag for it. The option name will be used for the long form of the
+# cmdline flag. The short cmdline flag needs to follow the syntax of the
+# getopt package. They will be strung together to make a single string that
+# will be passed to getopt. Adding a new entry in the correct option list
 # is all that is needed to add in more options.
 cliCommonOpts = {
  "modules": [None, "m", STR, "List of modules to load"],

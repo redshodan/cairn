@@ -1,19 +1,19 @@
-"""Unknown Linux LoadArch Module"""
+"""linux.unknown.load.Arch Module"""
 
 
 import re
 import string
 
-import cairn.sysdefs.templates.unix.LoadArch as tmpl
+import cairn.sysdefs.templates.unix.load.Arch as tmpl
 
 
 
 def getClass():
-	return LoadArch()
+	return Arch()
 
 
 
-class LoadArch(tmpl.LoadArch):
+class Arch(tmpl.Arch):
 	def __init__(self):
 		return
 

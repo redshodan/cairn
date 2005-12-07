@@ -48,7 +48,8 @@ def loadPlatform():
 
 
 def loadModuleList():
-	cairn.sysdefs.__sysModuleList = IModule.loadList(cairn.sysdefs.__sysDef)
+	cairn.sysdefs.__sysModuleList = IModule.loadList(cairn.sysdefs.__sysDef,
+													 cairn.sysdefs.__sysDef.getModuleList())
 	return
 
 
@@ -56,7 +57,10 @@ def run():
 	for module in cairn.sysdefs.__sysModuleList:
 		if cairn.verbose():
 			print "Running module: " + module.__name__
-		func = getattr(module, "getClass")
+		try:
+			func = getattr(module, "getClass")
+		except:
+			raise cairn.Exception("Module %s does not have a getClass() function" % module.__name__)
 		obj = func()
 		if not obj.run(cairn.sysdefs.__sysDef, cairn.sysdefs.__sysInfo):
 			raise cairn.Exception("Failed to run module: " + module.__name__)

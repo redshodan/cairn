@@ -1,4 +1,4 @@
-"""Generic UNIX LoadOS Module"""
+"""Generic unix.load.OS Module"""
 
 
 import os
@@ -6,11 +6,11 @@ import os
 
 
 def getClass():
-	return LoadOS()
+	return OS()
 
 
 
-class LoadOS(object):
+class OS(object):
 	def nameOS(self):
 		return "UNIX"
 
