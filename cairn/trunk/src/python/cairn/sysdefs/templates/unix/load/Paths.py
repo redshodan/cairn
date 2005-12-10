@@ -24,6 +24,6 @@ class Paths(object):
 		return self.__BINS
 
 
-	def run(self, sysdef, sysinfo):
+	def run(self, sysdef):
 		sysdefs.findPaths(self.getPath(), self.getBins())
 		return True

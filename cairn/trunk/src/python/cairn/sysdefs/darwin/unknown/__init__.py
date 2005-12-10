@@ -13,6 +13,7 @@ def getClass():
 
 class Unknown(UNIX):
 	def __init__(self):
+		super(Unknown, self).__init__()
 		return
 
 
@@ -20,6 +21,6 @@ class Unknown(UNIX):
 		return "Unknown"
 
 
-	def printSummary(self):
+	def __printSummary(self):
 		print "System definition:  %s Darwin" % (self.name())
 		return

@@ -13,6 +13,7 @@ def getClass():
 
 class RedHat(Unknown):
 	def __init__(self):
+		super(RedHat, self).__init__()
 		return
 
 

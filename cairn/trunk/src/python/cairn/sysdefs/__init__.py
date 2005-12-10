@@ -8,13 +8,10 @@ import re
 
 import cairn
 from cairn import Options
-from cairn.sysdefs.SystemInfo import *
-from cairn.sysdefs import IModule
+import cairn.sysdefs.IModule
 
 
 __sysDef = object()
-__sysInfo = SystemInfo()
-__sysModuleList = []
 
 
 def getDef():
@@ -22,12 +19,17 @@ def getDef():
 
 
 def getInfo():
-	return __info
+	return __sysDef.info
+
+
+def getModuleList():
+	return __sysDef.moduleList
 
 
 def load():
 	loadPlatform()
 	loadModuleList()
+	verifyModuleList()
 	return
 
 
@@ -48,13 +50,21 @@ def loadPlatform():
 
 
 def loadModuleList():
-	cairn.sysdefs.__sysModuleList = IModule.loadList(cairn.sysdefs.__sysDef,
-													 cairn.sysdefs.__sysDef.getModuleList())
+	modules = IModule.ModuleList()
+	IModule.loadList(cairn.sysdefs.__sysDef, cairn.sysdefs.__sysDef.getModuleString(),
+					 modules)
+	cairn.sysdefs.__sysDef.moduleList = modules
+	return
+
+
+def verifyModuleList():
+	for module in getModuleList().iter():
+		verifyModule(module);
 	return
 
 
 def run():
-	for module in cairn.sysdefs.__sysModuleList:
+	for module in getModuleList().iter():
 		if cairn.verbose():
 			print "Running module: " + module.__name__
 		try:
@@ -62,14 +72,13 @@ def run():
 		except:
 			raise cairn.Exception("Module %s does not have a getClass() function" % module.__name__)
 		obj = func()
-		if not obj.run(cairn.sysdefs.__sysDef, cairn.sysdefs.__sysInfo):
+		if not obj.run(cairn.sysdefs.__sysDef):
 			raise cairn.Exception("Failed to run module: " + module.__name__)
 	return
 
 
 def printSummary():
 	cairn.sysdefs.__sysDef.printSummary();
-	cairn.sysdefs.__sysInfo.printSummary();
 	return
 
 
@@ -78,19 +87,21 @@ def printSummary():
 ###
 
 def selectPlatform(root, moduleNames):
-	defs = IModule.loadModulesByName(root, moduleNames)
+	defs = IModule.ModuleList()
+	IModule.loadModulesByName(root, moduleNames, defs)
 
 	partialMatches = []
 	exactMatches = []
-	for module in defs:
+	for module in defs.iter():
 		platform = module.getClass()
 		verifySysDef(partialMatches, exactMatches, platform)
 
 	# Fall back to "Unknown" if None found
 	if len(exactMatches) == 0:
-		modules = IModule.loadModulesByName(root, ["unknown"])
-		if len(modules) == 1:
-			platform = modules[0].getClass()
+		modules = IModule.ModuleList()
+		IModule.loadModulesByName(root, ["unknown"], modules)
+		if len(modules.iter()) == 1:
+			platform = modules.iter()[0].getClass()
 			verifySysDef([], [], platform)
 			return platform
 		else:
@@ -105,6 +116,16 @@ def selectPlatform(root, moduleNames):
 		for module in exactMatches:
 			print "  ", module.__name__
 		raise cairn.Exception("Multiple system definitions found. Please choose the correct one.", cairn.ERR_SYSDEF)
+	return
+
+
+def verifyModule(module):
+	try:
+		if (not (getattr(module, "getClass"))
+			and not cairn.Options.get("continue")):
+			raise
+	except:
+		raise cairn.Exception("Incomplete module " + str(module), cairn.ERR_SYSDEF)
 	return
 
 
@@ -131,10 +152,13 @@ def verifySysDef(partialMatches, exactMatches, module):
 
 def findPaths(path, bins):
 	"""Finds the binaries in the bins map using the path supplied"""
-	cairn.sysdefs.__sysInfo.set("env/path", path)
+	getInfo().set("env/path", path)
 	for key, val in bins.iteritems():
-		cairn.sysdefs.__sysInfo.set(key, IModule.findFileInPath(path, val))
-		if not cairn.sysdefs.__sysInfo.get(key):
+		getInfo().set(key, IModule.findFileInPath(path, val))
+		if not getInfo().get(key):
 			raise cairn.Exception("Failed to find required binary: %s" % val,
 								  cairn.ERR_BINARY)
 	return True
+
+
+

@@ -9,7 +9,7 @@ import re
 import cairn
 import cairn.Options as Options
 from cairn import sysdefs
-from cairn.sysdefs.SystemInfo import *
+from cairn.sysdefs.SystemDefinition import *
 
 
 
@@ -18,38 +18,20 @@ def getClass():
 
 
 
-class UNIX(object):
+class UNIX(SystemDefinition):
 	def __init__(self):
+		super(UNIX, self).__init__()
 		return
-
-
-	def matchPartial(self):
-		return False
-
-
-	def matchExact(self):
-		return False
 
 
 	def name(self):
 		return "UNIX"
 
 
-	def load(self):
-		return
-
-
-	def getModuleList(self):
+	def getModuleString(self):
 		return "load;"
 
 
-	def getInitModuleList(self):
-		return "load.OS; load.Arch; load.Paths;"
-
-	def getMainModuleList(self):
-		return ""
-
-
-	def printSummary(self):
+	def __printSummary(self):
 		print "System definition:  Generic UNIX"
 		return

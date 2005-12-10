@@ -10,7 +10,7 @@ import cairn
 from cairn import Options
 
 
-def loadList(sysDef, moduleString, prefix = None):
+def loadList(sysDef, moduleString, modules, prefix = None):
 	moduleNames = []
 	for module in string.split(moduleString, ";"):
 		module = string.replace(module, " ", "")
@@ -19,7 +19,8 @@ def loadList(sysDef, moduleString, prefix = None):
 				moduleNames.append("%s.%s" % (prefix, module))
 			else:
 				moduleNames.append(module)
-	return loadModulesByInst(sysDef, moduleNames)
+	loadModulesByInst(sysDef, moduleNames, modules)
+	return
 
 
 def findFileInPath(path, file, seperator = ":"):
@@ -34,10 +35,9 @@ def findFileInPath(path, file, seperator = ":"):
 	return None
 
 
-def loadModulesByInst(sysDef, moduleNames):
+def loadModulesByInst(sysDef, moduleNames, modules):
 	"""Find corresponding modules following the module 'hierarchy'. For each try
 	   the program version then the main module."""
-	modules = []
 	for name in moduleNames:
 		foundModule = None
 		for curRoot in sysDef.__class__.__mro__:
@@ -58,7 +58,7 @@ def loadModulesByInst(sysDef, moduleNames):
 								  "Unable to import module %s" % (name))
 		if not checkSubModule(sysDef, name, foundModule, modules):
 			modules.append(foundModule)
-	return modules
+	return
 
 
 def checkSubModule(sysDef, name, module, modules):
@@ -67,21 +67,21 @@ def checkSubModule(sysDef, name, module, modules):
 	except AttributeError:
 		return False
 	moduleNames = func()
-	subModules = loadList(sysDef, moduleNames, name)
-	for subModule in subModules:
+	subModules = ModuleList()
+	loadList(sysDef, moduleNames, subModules, name)
+	for subModule in subModules.iter():
 		modules.append(subModule)
 	return True
 
 
-def loadModulesByName(root, moduleNames):
-	modules = []
+def loadModulesByName(root, moduleNames, modules):
 	for name in moduleNames:
 		module = loadAModule("%s.%s" % (root, name))
 		if not module:
 			raise cairn.Exception(cairn.ERR_MODULE,
 								  "Unable to import module %s" % (name))
 		modules.append(module)
-	return modules
+	return
 
 
 def loadAModule(module):
@@ -94,3 +94,32 @@ def loadAModule(module):
 			return sys.modules[module]
 	except ImportError, err:
 		return None
+
+
+
+
+class ModuleList(object):
+	"""cairn.sysdefs.IModule.ModuleList - A list of modules to run"""
+
+
+	def __init__(self):
+		self.__list = []
+		self.__curModule = 0
+
+
+	def iter(self):
+		return self.__list
+
+
+	def append(self, module):
+		self.__list.append(module)
+		return
+
+
+	def me(self):
+		return self.__curModule
+
+
+	def name(self, index):
+		return getattr(self.__list[index], "__name__")
+

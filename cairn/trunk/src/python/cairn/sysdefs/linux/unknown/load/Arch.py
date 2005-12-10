@@ -18,8 +18,8 @@ class Arch(tmpl.Arch):
 		return
 
 
-	def run(self, sysdef, sysinfo):
-		if not super(Arch, self).run(sysdef, sysinfo):
+	def run(self, sysdef):
+		if not super(Arch, self).run(sysdef):
 			return false
 
 		modelNameRE = re.compile("^model name")
@@ -28,6 +28,6 @@ class Arch(tmpl.Arch):
 			if modelNameRE.match(line):
 				line = string.strip(line)
 				arr = line.split(": ")
-				sysinfo.set("arch/cpu-str", arr[1])
+				sysdef.info().set("arch/cpu-str", arr[1])
 		cpuinfo.close()
 		return True
