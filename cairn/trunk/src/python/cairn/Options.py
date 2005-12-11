@@ -36,6 +36,14 @@ def setVerboseOpt(opt, arg):
 	return
 
 
+def setInfoOpt(opt, arg):
+	if (arg.find("=") < 0):
+		raise cairn.Exception("Invalid parameter to --set. Must be in the form: key=val")
+	words = arg.split("=")
+	sysInfoOpts[words[0]] = words[1]
+	return
+
+
 # Options and their cmdline arguements are arranged in an array of arrays. Each
 # sub-array contains the name of the option, its default value and the short
 # cmdline flag for it. The option name will be used for the long form of the
@@ -44,18 +52,21 @@ def setVerboseOpt(opt, arg):
 # will be passed to getopt. Adding a new entry in the correct option list
 # is all that is needed to add in more options.
 cliCommonOpts = {
- "modules": [None, "m", STR, None, "List of modules to load."],
  "configfile": [None, "c", STR, None, "Config file to load."],
- "verbose": [False, "v", BOOL, setVerboseOpt,
-			 "Verbose operation. Multiple flags will increase verboseness."],
  "force": [False, "f", BOOL, None, "Force operation, ignoring errors."],
+ "help": [False, "h", BOOL, None, None],
+ "modules": [None, "m", STR, None, "List of modules to load."],
  "path": ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, None,
 		  "Path to find programs to run."],
- "help": [False, "h", BOOL, None, None]
+ "set": [None, "s", STR, setInfoOpt,
+		 "Set a system info option, overriding discovered value"],
+ "verbose": [False, "v", BOOL, setVerboseOpt,
+			 "Verbose operation. Multiple flags will increase verboseness."]
 }
 
 cliCopyOpts = {"placeholder": [None, None, None, None]}
 cliRestoreOpts = {"placeholder": [None, None, None, None]}
+sysInfoOpts = {}
 
 
 def get(name):
@@ -69,6 +80,10 @@ def get(name):
 def set(name, value):
 	ourOpts[name] = value
 	return
+
+
+def getSysInfoOpts():
+	return sysInfoOpts
 
 
 def init():

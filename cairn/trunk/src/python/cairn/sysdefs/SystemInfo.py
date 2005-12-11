@@ -40,11 +40,13 @@ from xml.dom import minidom
 import string
 
 import cairn
+from cairn import Options
 
 
 class SystemInfo(object):
 	def __init__(self):
 		self.createNew()
+		self.setOpts(Options.getSysInfoOpts())
 		self.doc.normalize()
 		return
 
@@ -57,14 +59,32 @@ class SystemInfo(object):
 		return None
 
 
-	def set(self, name, value):
+	def set(self, name, value, overridden = False):
 		elem = self.getElem(name)
 		if not elem:
 			raise cairn.Exception("In SystemInfo, tag %s was not found" % name)
+		if elem.getAttribute("overridden"):
+			return
 		self.emptyElem(elem)
 		text = self.doc.createTextNode(value)
 		elem.appendChild(text)
+		if overridden:
+			elem.setAttribute("overridden", "true")
 		return
+
+
+	def setOpts(self, options):
+		for key, val in options.iteritems():
+			self.set(key, val, True)
+		return
+
+
+	def isOverriden(self, name):
+		elem = self.getElem(name)
+		if elem.hasAttribute("overriden"):
+			return true
+		else:
+			return false
 
 
 	# Document handling
