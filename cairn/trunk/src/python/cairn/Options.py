@@ -44,6 +44,11 @@ def setInfoOpt(opt, arg):
 	return
 
 
+def setHelpOpt(opt, arg):
+	usage()
+	return
+
+
 # Options and their cmdline arguements are arranged in an array of arrays. Each
 # sub-array contains the name of the option, its default value and the short
 # cmdline flag for it. The option name will be used for the long form of the
@@ -54,18 +59,22 @@ def setInfoOpt(opt, arg):
 cliCommonOpts = {
  "configfile": [None, "c", STR, None, "Config file to load."],
  "force": [False, "f", BOOL, None, "Force operation, ignoring errors."],
- "help": [False, "h", BOOL, None, None],
+ "help": [False, "h", BOOL, setHelpOpt, None],
  "modules": [None, "m", STR, None, "List of modules to load."],
  "path": ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, None,
 		  "Path to find programs to run."],
  "set": [None, "s", STR, setInfoOpt,
 		 "Set a system info option, overriding discovered value"],
+ "sysdef": [None, None, STR, None,
+			"Manually choose the system definition eg: linux.redhat"],
  "verbose": [False, "v", BOOL, setVerboseOpt,
 			 "Verbose operation. Multiple flags will increase verboseness."]
 }
 
-cliCopyOpts = {"placeholder": [None, None, None, None]}
-cliRestoreOpts = {"placeholder": [None, None, None, None]}
+cliCopyOpts = {}
+cliRestoreOpts = {}
+#cliCopyOpts = {"placeholder": [None, None, None, None]}
+#cliRestoreOpts = {"placeholder": [None, None, None, None]}
 sysInfoOpts = {}
 
 
@@ -99,7 +108,7 @@ def init():
 
 def printOpts():
 	print "Options:"
-	for opt in sorted(ourOpts.keys()):
+	for opt in ourOptMap.keys():
 		print "   %s: %s" % (opt, ourOpts[opt])
 
 
@@ -119,16 +128,21 @@ def usage():
 
 
 def printOptMap():
-	for name in sorted(ourOptMap.keys()):
-		print "  -%s, --%s - %s" % (ourOptMap[name][SHORT], name, ourOptMap[name][HELP])
+	for name in ourOptMap.keys():
+		if ourOptMap[name][SHORT]:
+			print "  -%s, --%s - %s" % (ourOptMap[name][SHORT], name,
+										ourOptMap[name][HELP])
+		else:
+			print "  --%s - %s" % (name, ourOptMap[name][HELP])
 	return
 
 
 def parseCmdLineOpts():
 	try:
 		shortOpts, longOpts = buildOptions(ourOptMap)
-		opts, args = getopt.getopt(sys.argv[1:], shortOpts, longOpts)
+		opts, args = getopt.gnu_getopt(sys.argv[1:], shortOpts, longOpts)
 		parseOpts(opts, args, ourOptMap)
+		ourOptMap.keys().sort()
 	except getopt.GetoptError, err:
 		print err
 		usage()
@@ -140,12 +154,14 @@ def buildOptions(optMap):
 	longOpts = [None] * len(optMap)
 	i = 0
 	for name, row in optMap.iteritems():
-		if row[SHORT]:
-			if row[TYPE] == STR:
+		if row[TYPE] == STR:
+			if row[SHORT]:
 				shortOpts[i] = row[SHORT] + ":"
-			else:
+			longOpts[i] = name + "="
+		else:
+			if row[SHORT]:
 				shortOpts[i] = row[SHORT]
-		longOpts[i] = name
+			longOpts[i] = name
 		i = i + 1
 	return string.joinfields(shortOpts, ""), longOpts
 
@@ -153,9 +169,10 @@ def buildOptions(optMap):
 def parseOpts(opts, args, optMap):
 	shortIndex = {}
 	for name in optMap.keys():
-		shortIndex[optMap[name][SHORT]] = name
+		if optMap[name][SHORT]:
+			shortIndex[optMap[name][SHORT]] = name
 	for opt, arg in opts:
-		opt = string.replace(opt, "-", "")
+		opt = opt.replace("-", "")
 		if shortIndex.has_key(opt):
 			opt = shortIndex[opt]
 		if optMap.has_key(opt):

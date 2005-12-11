@@ -36,6 +36,14 @@ def load():
 def loadPlatform():
 	"""Platform selector"""
 
+	import cairn.sysdefs
+	userSysdef = Options.get("sysdef")
+	if userSysdef:
+		words = userSysdef.split(".")
+		root = ".".join(words[0:len(words)-1])
+		cairn.sysdefs.__sysDef = selectPlatform(root, [words[len(words)-1]], True)
+		return
+
 	import cairn.sysdefs.linux
 	if linux.matchPlatform():
 		cairn.sysdefs.__sysDef = linux.loadPlatform()
@@ -66,8 +74,7 @@ def verifyModuleList():
 
 def run():
 	for module in getModuleList().iter():
-		if cairn.verbose():
-			print "Running module: " + module.__name__
+		cairn.verbose("Running module: " + module.__name__)
 		try:
 			func = getattr(module, "getClass")
 		except:
@@ -87,7 +94,7 @@ def printSummary():
 ### Utility functions used by sysdef modules.
 ###
 
-def selectPlatform(root, moduleNames):
+def selectPlatform(root, moduleNames, force = False):
 	defs = IModule.ModuleList()
 	IModule.loadModulesByName(root, moduleNames, defs)
 
@@ -96,6 +103,9 @@ def selectPlatform(root, moduleNames):
 	for module in defs.iter():
 		platform = module.getClass()
 		verifySysDef(partialMatches, exactMatches, platform)
+		# Forcing a sysdef, ignore what the module thinks.
+		if force:
+			return platform
 
 	# Fall back to "Unknown" if None found
 	if len(exactMatches) == 0:
@@ -108,6 +118,7 @@ def selectPlatform(root, moduleNames):
 		else:
 			raise cairn.Exception("No system definitions match this platform.",
 								  cairn.ERR_SYSDEF)
+
 	# Found one, run with it
 	if len(exactMatches) == 1:
 		return exactMatches[0]
@@ -117,6 +128,9 @@ def selectPlatform(root, moduleNames):
 		for module in exactMatches:
 			print "  ", module.__name__
 		raise cairn.Exception("Multiple system definitions found. Please choose the correct one.", cairn.ERR_SYSDEF)
+	elif len(exactMatches) < 0:
+		raise cairn.Exception("No system definitions match this platform.",
+							  cairn.ERR_SYSDEF)
 	return
 
 
