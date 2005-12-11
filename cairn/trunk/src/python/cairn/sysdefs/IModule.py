@@ -3,36 +3,19 @@
 
 import os
 import sys
-import re
-import string
 
 import cairn
 from cairn import Options
+from cairn.sysdefs import ModuleSpec
 
 
-def loadList(sysDef, moduleString, modules, prefix = None):
-	moduleNames = []
-	for module in string.split(moduleString, ";"):
-		module = string.replace(module, " ", "")
-		if len(module) > 0:
-			if prefix:
-				moduleNames.append("%s.%s" % (prefix, module))
-			else:
-				moduleNames.append(module)
+def loadList(sysDef, moduleSpec, userModuleSpec, modules, prefix):
+	moduleNames = ModuleSpec.parseModuleSpec(sysDef, moduleSpec, userModuleSpec, prefix)
+	if cairn.verbose():
+		print "Module list:"
+		print moduleNames
 	loadModulesByInst(sysDef, moduleNames, modules)
 	return
-
-
-def findFileInPath(path, file, seperator = ":"):
-	paths = path.split(seperator)
-	for part in paths:
-		fullname = part + "/" + file
-		try:
-			os.stat(fullname)
-			return fullname
-		except:
-			pass
-	return None
 
 
 def loadModulesByInst(sysDef, moduleNames, modules):
@@ -68,7 +51,7 @@ def checkSubModule(sysDef, name, module, modules):
 		return False
 	moduleNames = func()
 	subModules = ModuleList()
-	loadList(sysDef, moduleNames, subModules, name)
+	loadList(sysDef, moduleNames, None, subModules, name)
 	for subModule in subModules.iter():
 		modules.append(subModule)
 	return True
@@ -94,6 +77,18 @@ def loadAModule(module):
 			return sys.modules[module]
 	except ImportError, err:
 		return None
+
+
+def findFileInPath(path, file, seperator = ":"):
+	paths = path.split(seperator)
+	for part in paths:
+		fullname = part + "/" + file
+		try:
+			os.stat(fullname)
+			return fullname
+		except:
+			pass
+	return None
 
 
 

@@ -51,8 +51,9 @@ def loadPlatform():
 
 def loadModuleList():
 	modules = IModule.ModuleList()
+	userModuleSpec = Options.get("modules")
 	IModule.loadList(cairn.sysdefs.__sysDef, cairn.sysdefs.__sysDef.getModuleString(),
-					 modules)
+					 userModuleSpec, modules, None)
 	cairn.sysdefs.__sysDef.moduleList = modules
 	return
 
