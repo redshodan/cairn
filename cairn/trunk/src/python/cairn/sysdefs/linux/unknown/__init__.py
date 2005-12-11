@@ -13,7 +13,7 @@ def getClass():
 
 class Unknown(UNIX):
 	def __init__(self):
-		super(Unknown, self).__init___()
+		super(Unknown, self).__init__()
 		return
 
 
