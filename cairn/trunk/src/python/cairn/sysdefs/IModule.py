@@ -12,26 +12,25 @@ from cairn.sysdefs import ModuleSpec
 def loadList(sysDef, moduleSpec, userModuleSpec, modules, prefix):
 	moduleNames = ModuleSpec.parseModuleSpec(sysDef, moduleSpec, userModuleSpec, prefix)
 	if cairn.verbose():
-		print "Module list:"
-		print moduleNames
-	loadModulesByInst(sysDef, moduleNames, modules)
+		print "Module list:", moduleNames
+	loadModulesByInst(sysDef, moduleNames, userModuleSpec, modules)
 	return
 
 
-def loadModulesByInst(sysDef, moduleNames, modules):
+def loadModulesByInst(sysDef, moduleNames, userModuleSpec, modules):
 	"""Find corresponding modules following the module 'hierarchy'. For each try
 	   the program version then the main module."""
 	for name in moduleNames:
 		foundModule = None
 		for curRoot in sysDef.__class__.__mro__:
 			fullName = "%s.%s.%s" % (curRoot.__module__, Options.get("program"), name)
-			cairn.verbose("Looking for %s" % fullName)
+			cairn.vverbose("  Looking for %s" % fullName)
 			foundModule = loadAModule(fullName)
 			if foundModule:
 				cairn.verbose("Found %s" % fullName)
 				break
 			fullName = "%s.%s" % (curRoot.__module__, name)
-			cairn.verbose("Looking for %s" % fullName)
+			cairn.vverbose("  Looking for %s" % fullName)
 			foundModule = loadAModule(fullName)
 			if foundModule:
 				cairn.verbose("Found %s" % fullName)
@@ -39,19 +38,20 @@ def loadModulesByInst(sysDef, moduleNames, modules):
 		if not foundModule:
 			raise cairn.Exception(cairn.ERR_MODULE,
 								  "Unable to import module %s" % (name))
-		if not checkSubModule(sysDef, name, foundModule, modules):
+		if not checkSubModule(sysDef, name, foundModule, userModuleSpec, modules):
 			modules.append(foundModule)
 	return
 
 
-def checkSubModule(sysDef, name, module, modules):
+def checkSubModule(sysDef, name, module, userModuleSpec, modules):
 	try:
 		func = getattr(module, "getSubModules")
 	except AttributeError:
 		return False
 	moduleNames = func()
 	subModules = ModuleList()
-	loadList(sysDef, moduleNames, None, subModules, name)
+	cairn.verbose("Found sub-module %s: %s" % (name, moduleNames))
+	loadList(sysDef, moduleNames, userModuleSpec, subModules, name)
 	for subModule in subModules.iter():
 		modules.append(subModule)
 	return True

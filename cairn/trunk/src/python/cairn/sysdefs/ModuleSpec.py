@@ -5,6 +5,7 @@
 # Syntax. Spaces are removed.
 #
 #   string -- Letters, numbers and '_'. ';' seperates words. '()' can combine words.
+#             Nested '()' are not allowed.
 #
 #   /pattern/string -- Replace regexp 'pattern' with 'string'
 #   string1=string2 -- Replace 'string1' with 'string2'
@@ -32,24 +33,41 @@ def parseModuleSpec(sysDef, moduleSpec, userModuleSpec, prefix):
 
 
 def splitModuleSpec(moduleSpec, prefix):
+	# First check for ()'s
+	largeWords = []
+	if (moduleSpec.find("(") >= 0) and (moduleSpec.find(")") >= 0):
+		for largeWord in re.split("\(*\)", moduleSpec):
+			largeWords.append(largeWord)
+	else:
+		largeWords.append(moduleSpec)
+
 	moduleNames = []
-	for module in string.split(moduleSpec, ";"):
-		module = string.replace(module, " ", "")
-		if len(module) > 0:
-			if prefix:
-				moduleNames.append("%s.%s" % (prefix, module))
-			else:
-				moduleNames.append(module)
+	for largeWord in largeWords:
+		if largeWord.find("(") >= 0:
+			applyPrefix(moduleNames, largeWord.replace("(", ""), prefix)
+		else:
+			for module in string.split(largeWord, ";"):
+				applyPrefix(moduleNames, module, prefix)
 	return moduleNames
+
+
+def applyPrefix(moduleNames, module, prefix):
+	module = string.replace(module, " ", "")
+	if len(module) > 0:
+		if prefix:
+			moduleNames.append("%s.%s" % (prefix, module))
+		else:
+			moduleNames.append(module)
+	return
 
 
 def applySpec(moduleNames, userModuleNames):
 	for userModule in userModuleNames:
 		if userModule.startswith("/"):
 			applyRE(moduleNames, userModule)
-		elif userModule.find("="):
+		elif (userModule.find("=") >= 0):
 			applyReplace(moduleNames, userModule)
-		elif userModule.find("<") or userModule.find(">"):
+		elif (userModule.find("<") >= 0) or (userModule.find(">") >= 0):
 			applyInsert(moduleNames, userModule)
 
 
@@ -74,7 +92,7 @@ def applyReplace(moduleNames, userModule):
 
 
 def applyInsert(moduleNames, userModule):
-	if userModule.find("<"):
+	if (userModule.find("<") >= 0):
 		before = True
 		words = userModule.split("<")
 	else:

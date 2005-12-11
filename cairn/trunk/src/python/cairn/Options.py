@@ -17,13 +17,24 @@ ourOptMap = {}
 DEFAULT = 0
 SHORT = 1
 TYPE = 2
-HELP = 3
+SETTER = 3
+HELP = 4
 STR = 1
 BOOL = 2
 
 # module defines
 cliCopyHelpHeader = "usage: ccopy [args] file"
 cliRestoreHelpHeader = "usage: crestore [args] file"
+
+
+# Custom opt setters. Have to be here before the opts array.
+def setVerboseOpt(opt, arg):
+	if get(opt):
+		set(opt, get(opt) + 1)
+	else:
+		set(opt, 1)
+	return
+
 
 # Options and their cmdline arguements are arranged in an array of arrays. Each
 # sub-array contains the name of the option, its default value and the short
@@ -33,12 +44,14 @@ cliRestoreHelpHeader = "usage: crestore [args] file"
 # will be passed to getopt. Adding a new entry in the correct option list
 # is all that is needed to add in more options.
 cliCommonOpts = {
- "modules": [None, "m", STR, "List of modules to load"],
- "configfile": [None, "c", STR, "Config file to load"],
- "verbose": [False, "v", BOOL, "Verbose operation"],
- "force": [False, "f", BOOL, "Force operation, ignoring errors"],
- "path": ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, "Path to find programs to run"],
- "help": [False, "h", BOOL, None]
+ "modules": [None, "m", STR, None, "List of modules to load."],
+ "configfile": [None, "c", STR, None, "Config file to load."],
+ "verbose": [False, "v", BOOL, setVerboseOpt,
+			 "Verbose operation. Multiple flags will increase verboseness."],
+ "force": [False, "f", BOOL, None, "Force operation, ignoring errors."],
+ "path": ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, None,
+		  "Path to find programs to run."],
+ "help": [False, "h", BOOL, None, None]
 }
 
 cliCopyOpts = {"placeholder": [None, None, None, None]}
@@ -131,8 +144,16 @@ def parseOpts(opts, args, optMap):
 		if shortIndex.has_key(opt):
 			opt = shortIndex[opt]
 		if optMap.has_key(opt):
-			if optMap[opt][TYPE] == STR:
-				set(opt, arg)
+			if optMap[opt][SETTER]:
+				optMap[opt][SETTER](opt, arg)
 			else:
-				set(opt, True)
+				defSetter(optMap, opt, arg)
+	return
+
+
+def defSetter(optMap, opt, arg):
+	if optMap[opt][TYPE] == STR:
+		set(opt, arg)
+	else:
+		set(opt, True)
 	return

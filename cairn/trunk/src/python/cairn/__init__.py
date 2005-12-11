@@ -46,6 +46,24 @@ def verbose(str = None):
 	return False
 
 
+def vverbose(str = None):
+	if str and (Options.get("verbose") >= 2):
+		print str
+		return True
+	elif Options.get("verbose"):
+		return True
+	return False
+
+
+def vvverbose(str = None):
+	if str and (Options.get("verbose") >= 3):
+		print str
+		return True
+	elif Options.get("verbose"):
+		return True
+	return False
+
+
 def log(str = None):
 	if str and Options.get("verbose"):
 		print str
