@@ -6,6 +6,7 @@ import cairn
 
 
 from cairn.sysdefs.SystemInfo import *
+from cairn import Options
 from cairn.sysdefs import IModule
 
 
@@ -40,4 +41,6 @@ class SystemDefinition(object):
 	def printSummary(self):
 		self.__printSummary()
 		self.info.printSummary()
+		if Options.get("printinfo"):
+			self.info.printXML()
 		return

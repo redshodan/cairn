@@ -63,6 +63,7 @@ cliCommonOpts = {
  "modules": [None, "m", STR, None, "List of modules to load."],
  "path": ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, None,
 		  "Path to find programs to run."],
+ "printinfo" : [False, None, BOOL, None, "Print the generated info out."],
  "set": [None, "s", STR, setInfoOpt,
 		 "Set a system info option, overriding discovered value"],
  "sysdef": [None, None, STR, None,
@@ -73,8 +74,6 @@ cliCommonOpts = {
 
 cliCopyOpts = {}
 cliRestoreOpts = {}
-#cliCopyOpts = {"placeholder": [None, None, None, None]}
-#cliRestoreOpts = {"placeholder": [None, None, None, None]}
 sysInfoOpts = {}
 
 
