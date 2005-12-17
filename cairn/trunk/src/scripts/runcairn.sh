@@ -1,24 +1,44 @@
-#!/bin/bash
+#!/bin/sh
 
-LIB="/tmp/ccopy.lib"
-PWD=`pwd`
-BASENAME=`basename $0`
-echo $0 | egrep -sq '^/'
-if [ $? -eq 0 ]; then
-	FILENAME="${PWD}/${BASENAME}"
-else
-	FILENAME="${PWD}/$0"
-fi
+python - $0 $* <<EOF
+import os, os.path, sys, tempfile, atexit
 
+def cleanup():
+	try: os.unlink(libname)
+	except: pass
+	try: os.rmdir(libdir)
+	except: pass
 
-ARCHIVE_START=`awk '/^__ARCHIVE__$/ { print NR + 1; exit 0; }' ${FILENAME}`
+atexit.register(cleanup)
 
-tail -n +${ARCHIVE_START} ${FILENAME} > ${LIB}
-export PYTHONPATH=${LIB}
+cmdname = os.path.abspath(sys.argv[1])
+sys.argv = sys.argv[2:]
+archive = file(cmdname, "rb")
+pos = 0
+for line in archive:
+	pos = pos + len(line)
+	if line.startswith("__ARCHIVE__"):
+		break
+archive.seek(pos)
 
-if [ "$BASENAME" == "ccopy" ]; then
-	python -c "from cairn.copy import copy; copy.run();" $*
-fi
+libdir = tempfile.mkdtemp()
+libname = os.path.join(libdir, "cairn.lib")
+lib = file(libname, "w+b")
+line = archive.read(1048576)
+while line:
+	lib.write(line)
+	line = archive.read(1048576)
+archive.close()
+lib.close()
+
+sys.path.append(libname)
+
+if cmdname.endswith("copy"):
+	from cairn.copy import copy
+	copy.run()
+else:
+	print "Unable to determine program name."
+EOF
 
 exit $?
 

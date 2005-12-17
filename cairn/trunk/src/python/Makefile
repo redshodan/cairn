@@ -9,7 +9,7 @@ all: ccopy
 
 ccopy: $(BINDIR)/ccopy
 
-$(LIBDIR)/cairn.zip: $(PYTHON_FILES) 
+$(LIBDIR)/cairn.zip: $(PYTHON_FILES) clean
 	zip -qr $@ cairn
 
 $(BINDIR)/ccopy: $(LIBDIR)/cairn.zip $(SCRIPTS)/runcairn.sh
