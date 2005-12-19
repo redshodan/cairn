@@ -33,11 +33,25 @@ Environment
      <part-tool>           - Partitioning tool to use
 	 <archive-tool>        - Archiving tool to use
    </arch>
+
+Hardware
+   <hardware>
+     <drive name="">
+	   <device>
+	   <os-driver>
+	   <partition name="">
+	     <device>
+	     <label>
+		 <type>
+		 <fs-type>
+		 <mount>
+	   </partition>
+	 </drive>
+   </hardware>
 """
 
 
 from xml.dom import minidom
-import string
 
 import cairn
 from cairn import Options
@@ -59,17 +73,40 @@ class SystemInfo(object):
 		return None
 
 
+	def getNamed(self, name, instName):
+		elems = self.getElems(name)
+		if not elems:
+			return None
+		for elem in elems:
+			if elem.getAttribute("name") == instName:
+				return elem
+		return None
+
+
+	def getDef(self, name):
+		val = self.get(name)
+		if not val:
+			return "unknown"
+		return val
+
+
 	def set(self, name, value, overridden = False):
 		elem = self.getElem(name)
 		if not elem:
-			raise cairn.Exception("In SystemInfo, tag %s was not found" % name)
+			elem = self.createElem(self.root, name)
 		if elem.getAttribute("overridden"):
 			return
-		self.emptyElem(elem)
-		text = self.doc.createTextNode(value)
-		elem.appendChild(text)
+		self.setText(elem, value)
 		if overridden:
 			elem.setAttribute("overridden", "true")
+		return
+
+
+	def setChild(self, root, name, value):
+		elem = self.getElem(name, root)
+		if not elem:
+			elem = self.createElem(root, name)
+		self.setText(elem, value)
 		return
 
 
@@ -86,8 +123,9 @@ class SystemInfo(object):
 		else:
 			return false
 
-
-	# Document handling
+	###
+	### Document creation
+	###
 	def createNew(self):
 		impl = minidom.getDOMImplementation()
 		self.doc = impl.createDocument(None, "cairn-image", None)
@@ -95,76 +133,123 @@ class SystemInfo(object):
 		self.createOSElem()
 		self.createArchElem()
 		self.createEnvElem()
+		self.createHardwareElem()
 		return
 
 
 	def createOSElem(self):
 		os = self.createElem(self.root, "os")
 		elem = self.createElem(os, "name")
-		self.createText(elem, "unknown")
 		elem = self.createElem(os, "version-short")
-		self.createText(elem, "unknown")
 		elem = self.createElem(os, "version")
-		self.createText(elem, "unknown")
 		elem = self.createElem(os, "version-str")
-		self.createText(elem, "unknown")
 		elem = self.createElem(os, "distribution-vendor")
-		self.createText(elem, "unknown")
 		elem = self.createElem(os, "distribution")
-		self.createText(elem, "unknown")
 		elem = self.createElem(os, "distribution-version")
-		self.createText(elem, "unknown")
 		return os
 
 
 	def createArchElem(self):
 		arch = self.createElem(self.root, "arch")
 		elem = self.createElem(arch, "name")
-		self.createText(elem, "unknown")
 		elem = self.createElem(arch, "cpu")
-		self.createText(elem, "unknown")
 		elem = self.createElem(arch, "cpu-str")
-		self.createText(elem, "unknown")
 		return arch
 
 
 	def createEnvElem(self):
 		env = self.createElem(self.root, "env")
 		elem = self.createElem(env, "path")
-		self.createText(elem, "unknown")
 		elem = self.createElem(env, "part-tool")
-		self.createText(elem, "unknown")
 		elem = self.createElem(env, "archive-tool")
-		self.createText(elem, "unknown")
 		return env
 
 
+	def createHardwareElem(self):
+		return self.createElem(self.root, "hardware")
+
+
+	def createDriveElem(self, name):
+		hardware = self.getElem("hardware")
+		drive = self.doc.createElement("drive")
+		hardware.appendChild(drive)
+		drive.setAttribute("name", name)
+		elem = self.createElem(drive, "device")
+		elem = self.createElem(drive, "os-driver")
+		return drive
+
+
+	def createPartitionElem(self, drive, name):
+		part = self.doc.createElement("partition")
+		drive.appendChild(part)
+		part.setAttribute("name", name)
+		elem = self.createElem(part, "device")
+		elem = self.createElem(part, "label")
+		elem = self.createElem(part, "type")
+		elem = self.createElem(part, "fs-type")
+		elem = self.createElem(part, "mount")
+		return part
+
+
+	###
+	### XML utilities
+	###
 	def createElem(self, root, name):
-		elem = self.doc.createElement(name)
+		arr = name.split("/")
+		elem = self.getLocalElements(root, arr[0])
+		if len(arr) > 1:
+			if not elem:
+				elem = self.doc.createElement(arr[0])
+				root.appendChild(elem)
+				return self.createElem(elem, "/".join(arr[1:]))
+			else:
+				return self.createElem(elem[0], "/".join(arr[1:]))
+		if len(arr) == 1:
+			if elem and elem[0]:
+				return elem[0]
+			else:
+				elem = self.doc.createElement(arr[0])
+				root.appendChild(elem)
+				return elem
+		return
+
+
+	def setText(self, root, value):
+		self.emptyElem(root)
+		elem = self.doc.createTextNode(value)
 		root.appendChild(elem)
 		return elem
 
 
-	def createText(self, root, name):
-		elem = self.doc.createTextNode(name)
-		root.appendChild(elem)
-		return elem
+	def getElems(self, name, root = None):
+		if not root:
+			root = self.root
+		arr = name.split("/")
+		elem = self.getLocalElements(root, arr[0])
+		if not elem:
+			return []
+		if len(arr) > 1:
+			return self.getElems("/".join(arr[1:]), elem[0])
+		if len(elem) >= 1:
+			return elem
+		return []
 
 
 	def getElem(self, name, root = None):
-		if not root:
-			root = self.root
-		arr = string.split(name, "/")
-		elem = root.getElementsByTagName(arr[0])
-		if not elem:
-			return None
-		if len(arr) > 1:
-			return self.getElem(arr[1], elem[0])
-		if len(elem) == 1:
-			return elem[0]
+		elems = self.getElems(name, root)
+		if len(elems) == 1:
+			return elems[0]
 		else:
-			return elem
+			return elems
 		return
+
+
+	def getLocalElements(self, root, name):
+		ret = []
+		for elem in root.childNodes:
+			if elem.nodeName == name:
+				ret.append(elem)
+		return ret
 
 
 	def getText(self, elem):
@@ -194,15 +279,29 @@ class SystemInfo(object):
 
 	def printSummary(self):
 		print "System Information:"
-		print "  OS:       %s, %s, %s" % (self.get("os/name"),
-										  self.get("os/version-short"),
-										  self.get("os/version"))
-		print "  Distro:   %s, %s, %s" % (self.get("os/distribution-vendor"),
-										  self.get("os/distribution"),
-										  self.get("os/distribution-version"))
-		print "  Arch:     %s, %s, %s" % (self.get("arch/name"), self.get("arch/cpu"),
-										  self.get("arch/cpu-str"))
-		print "  ENV:      path: " + self.get("env/path")
-		print "            part: " + self.get("env/part-tool")
-		print "            archive: " + self.get("env/archive-tool")
+		print "  OS:       %s, %s, %s" % (self.getDef("os/name"),
+										  self.getDef("os/version-short"),
+										  self.getDef("os/version"))
+		print "  Distro:   %s, %s, %s" % (self.getDef("os/distribution-vendor"),
+										  self.getDef("os/distribution"),
+										  self.getDef("os/distribution-version"))
+		print "  Arch:     %s, %s, %s" % (self.getDef("arch/name"),
+										  self.getDef("arch/cpu"),
+										  self.getDef("arch/cpu-str"))
+		print "  ENV:      path: " + self.getDef("env/path")
+		print "            part: " + self.getDef("env/part-tool")
+		print "            archive: " + self.getDef("env/archive-tool")
+		self.printDrives()
+		return
+
+
+	def printDrives(self):
+		print "  Drives:"
+		for drive in self.getElems("hardware/drive"):
+			print "    %s: %s" % (drive.getAttribute("name"),
+								  self.getText(self.getElem("device", drive)))
+			for part in self.getElems("partition", drive):
+				print "      part %s: label=%s type=%s" % (part.getAttribute("name"),
+														   self.getText(self.getElem("label", part)),
+														   self.getText(self.getElem("type", part)))
 		return

@@ -29,7 +29,7 @@ class UNIX(SystemDefinition):
 
 
 	def getModuleString(self):
-		return "load;"
+		return "load; hardware;"
 
 
 	def __printSummary(self):
