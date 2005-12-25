@@ -39,6 +39,7 @@ Hardware
      <drive name="">
 	   <device>
 	   <os-driver>
+	   <part-tool-cfg>
 	   <partition name="">
 	     <device>
 	     <label>
@@ -66,8 +67,8 @@ class SystemInfo(object):
 
 
 	# Simple string based name/value pair accessors
-	def get(self, name):
-		elem = self.getElem(name)
+	def get(self, name, root = None):
+		elem = self.getElem(name, root)
 		if elem:
 			return self.getText(elem)
 		return None
@@ -188,6 +189,7 @@ class SystemInfo(object):
 		elem = self.createElem(part, "type")
 		elem = self.createElem(part, "fs-type")
 		elem = self.createElem(part, "mount")
+		elem = self.createElem(part, "part-tool-cfg")
 		return part
 
 
@@ -299,9 +301,7 @@ class SystemInfo(object):
 		print "  Drives:"
 		for drive in self.getElems("hardware/drive"):
 			print "    %s: %s" % (drive.getAttribute("name"),
-								  self.getText(self.getElem("device", drive)))
+								  self.get("device", drive))
 			for part in self.getElems("partition", drive):
-				print "      part %s: label=%s type=%s" % (part.getAttribute("name"),
-														   self.getText(self.getElem("label", part)),
-														   self.getText(self.getElem("type", part)))
+				print "      part %s: device=%s label=%s type=%s fs-type=%s mount=%s" % (part.getAttribute("name"), self.get("device", part), self.get("label", part), self.get("type", part), self.get("fs-type", part), self.get("mount", part))
 		return

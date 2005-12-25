@@ -1,4 +1,4 @@
-"""cairn.sysdefs.ModuleSpec - Module spcification string parser"""
+"""cairn.sysdefs.ModuleSpec - Module specification string parser"""
 
 
 #

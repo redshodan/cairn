@@ -17,3 +17,4 @@ cd ${TOP}
 cp ${TOP}/misc/svnignore /tmp/svnignore-tmp
 echo build >> /tmp/svnignore-tmp
 svn propset svn:ignore -F /tmp/svnignore-tmp .
+rm /tmp/svnignore-tmp

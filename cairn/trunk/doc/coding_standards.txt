@@ -4,21 +4,28 @@ follow the existing code's style if you are modifying something.
 
 General guidelines:
 
-1) Module names are all lowercase since they map to directory names.
+- Python package names are all lowercase since they map to directory names.
+  Directories containing different C/C++ code are the same. One exception is
+  for python packages that are to replace a particular python module in the
+  sysdef structure of code. Do not mix the same words with different cases
+  due to different filesystem case handling.
 
-2) Class names start with a capitalized letter and use camel case for words, not
+- Python module names start with a capitalized letter and use camel case for
+  words, no underscores. C/C++ modules are the same.
+
+- Class names start with a capitalized letter and use camel case for words, no
 underscores.
 
-3) Class member functions start with a lowercase letter and use camel case for
-words, not underscores.
+- Class member functions start with a lowercase letter and use camel case for
+words, no underscores.
 
-4) Class member variables are like member functions with a prefix. In the case
+- Class member variables are like member functions with a prefix. In the case
 of Python the 'self' is enough of a prefix. For private member variables use
 two underscores '__'. This is the python standard for private variables. For
 C++ use 'my' for class members, and 'our' for static members (this is a pretty
 common C++ standard. The Python standard proposed here is an adaption of it)
 
-5) Keep the line length to under 80 characters when possible. Some function
+- Keep the line length to under 80 characters when possible. Some function
 names and string literals can take up too much space. Other than that try to
 wrap to the next line and indent to previous symbol. Example:
 
@@ -29,13 +36,13 @@ wrap to the next line and indent to previous symbol. Example:
 
 A couple of guidelines due to the oddities of the Python language:
 
-1) At the end of each function put a 'return' statement at the top level of
+- At the end of each function put a 'return' statement at the top level of
 indentation (or block level). Even if its not needed. This makes it a lot
 easier to tell where a function stops and another begins. Relying on indentation
 is good and all, but if the function grows too big it can be hard to follow
-across scrolling bounderies.
+across scrolling bounderies. Colorization of keywords (eg return) helps a lot.
 
-2) Use TABs when indenting Python code. This way the person viewing the code
-can set their TAB stops to what ever size they wish and it will always work
-out to be correct visually. It also prevents a mixture of tabs and spaces
-which can confuse the Python interpreter.
+- Set your editor to use TABs when indenting Python code. This way the person
+viewing the code can set their TAB stops to what ever size they wish and it
+will always work out to be correct visually. It also prevents a mixture of
+tabs and spaces which can confuse the Python interpreter.

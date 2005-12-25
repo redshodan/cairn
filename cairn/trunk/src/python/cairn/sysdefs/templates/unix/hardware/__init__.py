@@ -6,4 +6,4 @@ import cairn
 
 
 def getSubModules():
-	return "Drives; FSTab;"
+	return "Drives; Partitions; FSTab;"

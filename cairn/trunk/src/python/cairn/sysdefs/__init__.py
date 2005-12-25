@@ -82,6 +82,7 @@ def run():
 		obj = func()
 		if not obj.run(cairn.sysdefs.__sysDef):
 			raise cairn.Exception("Failed to run module: " + module.__name__)
+		getModuleList().next()
 	return
 
 

@@ -23,17 +23,12 @@ def loadModulesByInst(sysDef, moduleNames, userModuleSpec, modules):
 	for name in moduleNames:
 		foundModule = None
 		for curRoot in sysDef.__class__.__mro__:
-			fullName = "%s.%s.%s" % (curRoot.__module__, Options.get("program"), name)
-			cairn.vverbose("  Looking for %s" % fullName)
-			foundModule = loadAModule(fullName)
+			foundModule = loadAModule("%s.%s.%s" % (curRoot.__module__,
+													Options.get("program"), name))
 			if foundModule:
-				cairn.verbose("Found %s" % fullName)
 				break
-			fullName = "%s.%s" % (curRoot.__module__, name)
-			cairn.vverbose("  Looking for %s" % fullName)
-			foundModule = loadAModule(fullName)
+			foundModule = loadAModule("%s.%s" % (curRoot.__module__, name))
 			if foundModule:
-				cairn.verbose("Found %s" % fullName)
 				break
 		if not foundModule:
 			raise cairn.Exception(cairn.ERR_MODULE,
@@ -44,11 +39,17 @@ def loadModulesByInst(sysDef, moduleNames, userModuleSpec, modules):
 
 
 def checkSubModule(sysDef, name, module, userModuleSpec, modules):
+	getSubModules = None
 	try:
-		func = getattr(module, "getSubModules")
+		getSubModules = getattr(module, "getSubModules")
 	except AttributeError:
 		return False
-	moduleNames = func()
+	try:
+		getClass = getattr(module, "getClass")
+		modules.append(module)
+	except AttributeError:
+		pass
+	moduleNames = getSubModules()
 	subModules = ModuleList()
 	cairn.verbose("Found sub-module %s: %s" % (name, moduleNames))
 	loadList(sysDef, moduleNames, userModuleSpec, subModules, name)
@@ -68,12 +69,14 @@ def loadModulesByName(root, moduleNames, modules):
 
 
 def loadAModule(module):
+	cairn.vverbose("  Looking for %s" % module)
 	try:
 		__import__(module)
 		try:
 			getattr(sys.modules[module], "empty")
 			return None
 		except:
+			cairn.verbose("Found %s" % module)
 			return sys.modules[module]
 	except ImportError, err:
 		return None
@@ -106,6 +109,11 @@ class ModuleList(object):
 		return self.__list
 
 
+	def next(self):
+		self.__curModule = self.__curModule + 1
+		return
+
+
 	def append(self, module):
 		self.__list.append(module)
 		return
@@ -118,3 +126,33 @@ class ModuleList(object):
 	def name(self, index):
 		return getattr(self.__list[index], "__name__")
 
+
+	def find(self, name):
+		index = 0
+		for module in self.__list:
+			if getattr(module, "__name__") == name:
+				return index
+			index = index + 1
+		return -1
+
+
+	def replace(self, name, newModName):
+		index = self.find(name)
+		if index < 0:
+			raise cairn.Exception(cairn.ERR_MODULE,
+								  "Unable to import module %s" % (newModName))
+		module = loadAModule(newModName)
+		if not module:
+			raise cairn.Exception(cairn.ERR_MODULE,
+								  "Unable to import module %s" % (newModName))
+		self.__list[index] = module
+		return True
+
+
+	def insertAfterMe(self, newModName):
+		module = loadAModule(newModName)
+		if not module:
+			raise cairn.Exception(cairn.ERR_MODULE,
+								  "Unable to import module %s" % (newModName))
+		self.__list.insert(self.__curModule + 1, module)
+		return True
