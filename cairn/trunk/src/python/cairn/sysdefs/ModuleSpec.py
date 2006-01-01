@@ -11,6 +11,9 @@
 #   string1=string2 -- Replace 'string1' with 'string2'
 #   string1<string2 -- Insert 'string2' before 'string1'
 #   string1>string2 -- Insert 'string2' after 'string1'
+#   -string         -- Remove 'string' from the default
+#   ^string         -- Prepend 'string' onto the default
+#   $string         -- Append 'string' onto the default
 #
 
 
@@ -69,6 +72,12 @@ def applySpec(moduleNames, userModuleNames):
 			applyReplace(moduleNames, userModule)
 		elif (userModule.find("<") >= 0) or (userModule.find(">") >= 0):
 			applyInsert(moduleNames, userModule)
+		elif (userModule.find("-") >= 0):
+			applyRemove(moduleNames, userModule)
+		elif (userModule.find("^") >= 0):
+			applyPrepend(moduleNames, userModule)
+		elif (userModule.find("$") >= 0):
+			applyAppend(moduleNames, userModule)
 
 
 def applyRE(moduleNames, userModule):
@@ -106,4 +115,22 @@ def applyInsert(moduleNames, userModule):
 			else:
 				moduleNames.insert(i+1, words[1])
 			break
+	return
+
+
+def applyRemove(moduleNames, userModule):
+	try:
+		moduleNames.remove(userModule[1:])
+	except ValueError:
+		pass
+	return
+
+
+def applyPrepend(moduleNames, userModule):
+	moduleNames.insert(0, userModule[1:])
+	return
+
+
+def applyAppend(moduleNames, userModule):
+	moduleNames.append(userModule[1:])
 	return

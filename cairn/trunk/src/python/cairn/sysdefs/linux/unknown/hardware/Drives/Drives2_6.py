@@ -7,6 +7,8 @@ import re
 
 import cairn
 import cairn.sysdefs.templates.unix.hardware.Drives as tmpl
+from cairn.sysdefs.linux.unknown.hardware import Drives
+
 
 
 def getClass():
@@ -16,6 +18,8 @@ def getClass():
 class Drives2_6(tmpl.Drives):
 	def run(self, sysdef):
 		for device in os.listdir("/sys/block"):
+			if not Drives.matchDevice(device):
+				continue
 			removable = file("/sys/block/%s/removable" % device, "r")
 			for line in removable:
 				break

@@ -12,7 +12,7 @@ def cleanup():
 atexit.register(cleanup)
 
 cmdname = os.path.abspath(sys.argv[1])
-sys.argv = sys.argv[2:]
+sys.argv = sys.argv[1:]
 archive = file(cmdname, "rb")
 pos = 0
 for line in archive:

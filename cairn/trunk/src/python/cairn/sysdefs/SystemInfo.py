@@ -46,6 +46,11 @@ Hardware
 		 <type>
 		 <fs-type>
 		 <mount>
+		 <space>
+		   <total>
+		   <used>
+		   <free>
+		 </space>
 	   </partition>
 	 </drive>
    </hardware>
@@ -193,6 +198,12 @@ class SystemInfo(object):
 		return part
 
 
+	def createPartitionSpaceElem(self, part):
+		space = self.doc.createElement("space")
+		part.appendChild(space)
+		return space
+
+
 	###
 	### XML utilities
 	###
@@ -303,5 +314,9 @@ class SystemInfo(object):
 			print "    %s: %s" % (drive.getAttribute("name"),
 								  self.get("device", drive))
 			for part in self.getElems("partition", drive):
-				print "      part %s: device=%s label=%s type=%s fs-type=%s mount=%s" % (part.getAttribute("name"), self.get("device", part), self.get("label", part), self.get("type", part), self.get("fs-type", part), self.get("mount", part))
+				print "      part %s: device=%s label=%s type=%s fs-type=%s mount=%s" % (part.getAttribute("name"), self.get("device", part), self.get("label", part), self.get("type", part), self.get("fs-type", part), self.get("mount", part)),
+				space = self.getElem("space", part)
+				if space:
+					print " (space: total=%s used=%s free=%s)" % (self.get("total", space), self.get("used", space), self.get("free", space)),
+				print
 		return
