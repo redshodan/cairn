@@ -5,20 +5,18 @@ import cairn.sysdefs.templates.unix.LoadPaths as tmpl
 
 
 
-__PATH = "/sbin:/usr/sbin:/bin:/usr/bin"
-__BINS = { "env/part-tool" : "sfdisk", "env/archive-tool" : "tar" }
-
-
-
 def getClass():
 	return LoadPaths()
 
 
 
 class LoadPaths(tmpl.LoadPaths):
-	def getPath(self):
-		return __PATH
-
-
-	def getBins(self):
-		return __BINS
+	def __init__(self):
+		super(Paths, self).__init__()
+		bins_org = self.__BINS
+		self.__BINS = { "env/tools/mkfs.ext2" : [sysdefs.PATH_REQUIRED,
+												 "mkfs.ext2"],
+						"env/tools/mkfs.ext3" : [sysdefs.PATH_REQUIRED,
+												 "mkfs.ext3"]
+					  }
+		self.__BINS.update(bins_org)

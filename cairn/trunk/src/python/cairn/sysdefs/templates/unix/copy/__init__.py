@@ -1,1 +1,1 @@
-"""Generic UNIX Copy Modules"""
+"""templates.unix.copy Module"""

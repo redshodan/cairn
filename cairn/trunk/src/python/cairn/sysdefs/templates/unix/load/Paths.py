@@ -12,9 +12,11 @@ def getClass():
 
 
 class Paths(object):
+
 	def __init__(self):
 		self.__PATH = ""
-		self.__BINS = {"ERROR" : "Invalid base function called"}
+		self.__BINS = {"ERROR" : [sysdefs.REQUIRED,
+								  "Invalid base function called"]}
 
 	def getPath(self):
 		return self.__PATH

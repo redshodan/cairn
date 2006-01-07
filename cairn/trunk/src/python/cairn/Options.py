@@ -44,6 +44,12 @@ def setInfoOpt(opt, arg):
 	return
 
 
+def setMetaFileName(opt, arg):
+	set(opt, True)
+	sysInfoOpts["archive/metafilename"] = arg
+	return
+
+
 def setHelpOpt(opt, arg):
 	usage()
 	return
@@ -58,6 +64,7 @@ def setHelpOpt(opt, arg):
 # is all that is needed to add in more options.
 cliCommonOpts = {
  "configfile": [None, "c", STR, None, "Config file to load."],
+ "dumpmeta": [None, None, STR, setMetaFileName, "Dump the metafile and exit"],
  "force": [False, "f", BOOL, None, "Force operation, ignoring errors."],
  "help": [False, "h", BOOL, setHelpOpt, None],
  "modules": [None, "m", STR, None, "List of modules to load."],

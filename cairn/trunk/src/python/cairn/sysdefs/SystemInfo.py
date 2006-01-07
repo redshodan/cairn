@@ -11,49 +11,63 @@ the getValue() function.
 
 Operating System
    <os>
-     <name>                  - Base OS name.
-     <version>               - Base OS version.
-     <version-short>         - Base OS version, shortened to major and minor.
-     <version-str>           - Base OS version string
-     <distribution-vender>   - OS distribution vendor name.
-     <distribution>          - OS distribution name.
-     <distribution-version>  - OS distribution version.
+     <name/>                  - Base OS name.
+     <version/>               - Base OS version.
+     <version-short/>         - Base OS version, shortened to major and minor.
+     <version-str/>           - Base OS version string
+     <distribution-vender/>   - OS distribution vendor name.
+     <distribution/>          - OS distribution name.
+     <distribution-version/>  - OS distribution version.
    </os>
 
 Architecture
    <arch>
-     <name>                - Architecture
-	 <cpu>                 - CPU type
-     <cpu-str>             - CPU type string
+     <name/>                - Architecture
+	 <cpu/>                 - CPU type
+     <cpu-str/>             - CPU type string
    </arch>
 
 Environment
    <env>
-     <path>                - System binary path
-     <part-tool>           - Partitioning tool to use
-	 <archive-tool>        - Archiving tool to use
+     <path/>                - System binary path
+	 <archive-tool>
+	 <zip-tool>
+	 <tools>
+	                        - sysdef dependent tools
+     </tools>
    </arch>
 
 Hardware
    <hardware>
      <drive name="">
-	   <device>
-	   <os-driver>
-	   <part-tool-cfg>
+	   <device/>
+	   <os-driver/>
+	   <part-tool-cfg/>
 	   <partition name="">
-	     <device>
-	     <label>
-		 <type>
-		 <fs-type>
-		 <mount>
+	     <device/>
+	     <label/>
+		 <type/>
+		 <fs-type/>
+		 <mount/>
 		 <space>
-		   <total>
-		   <used>
-		   <free>
+		   <total/>
+		   <used/>
+		   <free/>
 		 </space>
 	   </partition>
 	 </drive>
    </hardware>
+
+Archive
+   <archive>
+     <filename/>
+     <md5sum/>
+	 <size/>
+	 <offset/>
+	 <metafilename/>
+     <zip-tool/>
+   </archive>
+
 """
 
 
@@ -140,6 +154,7 @@ class SystemInfo(object):
 		self.createArchElem()
 		self.createEnvElem()
 		self.createHardwareElem()
+		self.createArchiveElem()
 		return
 
 
@@ -166,8 +181,7 @@ class SystemInfo(object):
 	def createEnvElem(self):
 		env = self.createElem(self.root, "env")
 		elem = self.createElem(env, "path")
-		elem = self.createElem(env, "part-tool")
-		elem = self.createElem(env, "archive-tool")
+		elem = self.createElem(env, "tools")
 		return env
 
 
@@ -202,6 +216,18 @@ class SystemInfo(object):
 		space = self.doc.createElement("space")
 		part.appendChild(space)
 		return space
+
+
+	def createArchiveElem(self):
+		archive = self.createElem(self.root, "archive")
+		elem = self.createElem(archive, "filename")
+		elem = self.createElem(archive, "md5sum")
+		elem = self.createElem(archive, "size")
+		elem = self.createElem(archive, "offset")
+		elem = self.createElem(archive, "metafilename")
+		self.setText(elem, "/etc/cairn/cairn-image.xml")
+		elem = self.createElem(archive, "zip-tool")
+		return archive
 
 
 	###
@@ -302,8 +328,11 @@ class SystemInfo(object):
 										  self.getDef("arch/cpu"),
 										  self.getDef("arch/cpu-str"))
 		print "  ENV:      path: " + self.getDef("env/path")
-		print "            part: " + self.getDef("env/part-tool")
-		print "            archive: " + self.getDef("env/archive-tool")
+		print "            archive-tool: " + self.getDef("env/archive-tool")
+		print "            zip-tool: " + self.getDef("env/zip-tool")
+		print "            tools: "
+		for tool in self.getElem("env/tools").childNodes:
+			print "               %s: %s" % (tool.nodeName, self.getText(tool))
 		self.printDrives()
 		return
 
