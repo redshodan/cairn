@@ -13,10 +13,9 @@ def getClass():
 class LoadPaths(tmpl.LoadPaths):
 	def __init__(self):
 		super(Paths, self).__init__()
-		bins_org = self.__BINS
-		self.__BINS = { "env/tools/mkfs.ext2" : [sysdefs.PATH_REQUIRED,
-												 "mkfs.ext2"],
-						"env/tools/mkfs.ext3" : [sysdefs.PATH_REQUIRED,
-												 "mkfs.ext3"]
-					  }
-		self.__BINS.update(bins_org)
+		bins = { "env/tools/mkfs.ext2" : [sysdefs.PATH_REQUIRED,
+										  "mkfs.ext2"],
+				 "env/tools/mkfs.ext3" : [sysdefs.PATH_REQUIRED,
+										  "mkfs.ext3"]
+			   }
+		self.__BINS.update(bins)
