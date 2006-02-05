@@ -17,6 +17,7 @@ class EstimateSize(object):
 
 	def run(self, sysdef):
 		if sysdef.info.get("archive/excludes"):
+			return True
 		return True
 
 

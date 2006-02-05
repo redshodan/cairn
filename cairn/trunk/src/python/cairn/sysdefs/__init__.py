@@ -12,6 +12,7 @@ import cairn.sysdefs.IModule
 
 
 __sysdef = object()
+__quit = False
 
 
 PATH_GROUP = 0
@@ -80,6 +81,9 @@ def verifyModuleList():
 def run():
 	cairn.verbose("Final module list: " + getModuleList().toString())
 	for module in getModuleList().iter():
+		if haveQuit():
+			cairn.verbose("Module requested quit")
+			break
 		cairn.verbose("Running module: " + module.__name__)
 		try:
 			func = getattr(module, "getClass")
@@ -95,6 +99,15 @@ def run():
 def printSummary():
 	cairn.sysdefs.__sysdef.printSummary();
 	return
+
+
+def quit():
+	cairn.sysdefs.__quit = True
+	return
+
+
+def haveQuit():
+	return cairn.sysdefs.__quit
 
 
 ###

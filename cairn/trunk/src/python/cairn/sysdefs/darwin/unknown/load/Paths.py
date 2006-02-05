@@ -15,8 +15,8 @@ class Paths(tmpl.Paths):
 	def __init__(self):
 		self.__PATH = "/sbin:/usr/sbin:/bin:/usr/bin"
 		self.__BINS = { "env/tools/part" : [sysdefs.PATH_REQUIRED, "fdisk"],
-						"env/disktool" : [sysdefs.PATH_REQUIRED, "disktool"],
-						"env/diskutil" : [sysdefs.PATH_REQUIRED, "diskutil"],
+						"env/tools/disktool" : [sysdefs.PATH_REQUIRED, "disktool"],
+						"env/tools/diskutil" : [sysdefs.PATH_REQUIRED, "diskutil"],
 						"env/archive-tool" : [sysdefs.PATH_GROUP,
 											  {"env/tools/tar" : "tar",
 											   "env/tools/star" : "star"}],

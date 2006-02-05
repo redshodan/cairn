@@ -20,11 +20,11 @@ class Partitions(tmpl.Partitions):
 
 
 	def definePartitions(self, sysdef, drive):
-		cmd = "%s -l %s" % (sysdef.info.get("env/part-tool"),
+		cmd = "%s -l %s" % (sysdef.info.get("env/tools/part"),
 							sysdef.info.get("device", drive))
 		ret = commands.getstatusoutput(cmd)
 		if ret[0] != 0:
-			msg = "Failed to run %s to find drive information:\n" % sysdef.info.get("env/part-tool")
+			msg = "Failed to run %s to find drive information:\n" % sysdef.info.get("env/tools/part")
 			raise cairn.Exception(msg + ret[1])
 		sysdef.info.setChild(drive, "part-tool-cfg", ret[1])
 		partNum = 1

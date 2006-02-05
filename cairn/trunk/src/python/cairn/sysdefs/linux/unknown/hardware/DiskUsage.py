@@ -27,11 +27,11 @@ class DiskUsage(tmpl.DiskUsage):
 		if (not sysdef.info.get("mount", partition) or
 			(sysdef.info.get("mount", partition) == "none")):
 			return
-		cmd = "%s -k %s" % (sysdef.info.get("env/diskfree"),
+		cmd = "%s -k %s" % (sysdef.info.get("env/tools/diskfree"),
 							sysdef.info.get("mount", partition))
 		ret = commands.getstatusoutput(cmd)
 		if ret[0] != 0:
-			msg = "Failed to run %s to find disk usage information:\n" % sysdef.info.get("env/diskfree")
+			msg = "Failed to run %s to find disk usage information:\n" % sysdef.info.get("env/tools/diskfree")
 			raise cairn.Exception(msg + ret[1])
 		device = sysdef.info.get("device", partition)
 		space = None

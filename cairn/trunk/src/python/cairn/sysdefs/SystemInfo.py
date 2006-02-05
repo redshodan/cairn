@@ -211,7 +211,7 @@ class SystemInfo(object):
 
 	def createDriveElem(self, name):
 		hardware = self.getElem("hardware")
-		drive = self.createElem(hardware, "drive")
+		drive = self.createElem(hardware, "drive", True)
 		drive.setAttribute("name", name)
 		elem = self.createElem(drive, "device")
 		elem = self.createElem(drive, "os-driver")
@@ -219,7 +219,7 @@ class SystemInfo(object):
 
 
 	def createPartitionElem(self, drive, name):
-		part = self.createElem(drive, "partition")
+		part = self.createElem(drive, "partition", True)
 		part.setAttribute("name", name)
 		elem = self.createElem(part, "device")
 		elem = self.createElem(part, "label")
@@ -264,7 +264,7 @@ class SystemInfo(object):
 	###
 	### XML utilities
 	###
-	def createElem(self, root, name):
+	def createElem(self, root, name, multi = False):
 		arr = name.split("/")
 		elem = self.getLocalElements(root, arr[0])
 		if len(arr) > 1:
@@ -275,7 +275,7 @@ class SystemInfo(object):
 			else:
 				return self.createElem(elem[0], "/".join(arr[1:]))
 		if len(arr) == 1:
-			if elem and elem[0]:
+			if elem and elem[0] and not multi:
 				return elem[0]
 			else:
 				elem = self.doc.createElement(arr[0])

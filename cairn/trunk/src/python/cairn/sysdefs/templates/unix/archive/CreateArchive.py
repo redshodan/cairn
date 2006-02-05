@@ -51,7 +51,7 @@ class CreateArchive(object):
 		return
 
 
-	def startTool(sysdef, archive, tool):
+	def startTool(self, sysdef, archive, tool):
 		cmd = sysdef.info.get(tool)
 		try:
 			pipes = os.popen3(cmd, "b")
@@ -60,7 +60,7 @@ class CreateArchive(object):
 		return pipes
 
 
-	def runPipe(sysdef, archiveTool, zipTool):
+	def runPipe(self, sysdef, archiveTool, zipTool):
 		return
 
 
@@ -69,7 +69,7 @@ class CreateArchive(object):
 			archive = self.prepShar(sysdef)
 		else:
 			archive = self.prepArchive(sysdef)
-		self.runArchiveTools(sysdef, archive)
+		self.runTools(sysdef, archive)
 		return True
 
 

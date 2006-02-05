@@ -83,6 +83,7 @@ cliCommonOpts = {
  "path" : ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, "env/path", None,
 		   "Path to find programs to run."],
  "printmeta" : [False, None, BOOL, None, None, "Print the generated info out."],
+ "summary" : [False, None, BOOL, None, None, "Print a summary of generated info."],
  "set" : [None, "s", STR, None, setInfoOpt,
 		  "Set a system info option, overriding discovered value"],
  "sysdef" : [None, None, STR, None, None,

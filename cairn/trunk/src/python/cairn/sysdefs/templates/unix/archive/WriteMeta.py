@@ -19,8 +19,8 @@ class WriteMeta(object):
 	def createFile(self, sysdef):
 		metaFileName = sysdef.info.get("archive/metafilename")
 		try:
-			path = os.path.dirname(metaFileName)
-			os.mkdirs(path[0])
+			path = re.split("/[^/]*$", metaFileName)
+			os.makedirs(path[0], 0700)
 		except:
 			pass
 		try:

@@ -21,9 +21,9 @@ class Partitions(tmpl.Partitions):
 
 
 	def definePartitions(self, sysdef, drive):
-		ret = commands.getstatusoutput("%s list %s" % (sysdef.info.get("env/diskutil"), drive.getAttribute("name")))
+		ret = commands.getstatusoutput("%s list %s" % (sysdef.info.get("env/tools/diskutil"), drive.getAttribute("name")))
 		if ret[0] != 0:
-			msg = "Failed to run %s to find drive information:\n" % sysdef.info.get("env/diskutil")
+			msg = "Failed to run %s to find drive information:\n" % sysdef.info.get("env/tools/diskutil")
 			raise cairn.Exception(msg + ret[1])
 		partNum = 1
 		for line in ret[1].split("\n"):

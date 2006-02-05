@@ -20,7 +20,6 @@ class Copy(object):
 		Options.parseCmdLineOpts()
 		sysdefs.load()
 		sysdefs.run()
-		sysdefs.printSummary()
 
 def run():
 	try:

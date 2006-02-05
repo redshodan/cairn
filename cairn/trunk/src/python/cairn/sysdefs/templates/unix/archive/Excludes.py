@@ -1,6 +1,9 @@
 """templates.unix.archive.Excludes Module"""
 
 
+import os
+import re
+
 import cairn
 from cairn import Options
 
@@ -62,6 +65,11 @@ class Excludes(object):
 		if not sysdef.info.get("archive/excludes"):
 			return
 		excludesFileName = sysdef.info.get("archive/excludes-file")
+		try:
+			path = re.split("/[^/]*$", excludesFileName)
+			os.makedirs(path[0], 0700)
+		except:
+			pass
 		try:
 			excludesFile = file(excludesFileName, "w")
 			for exclude in sysdef.info.get("archive/excludes").split(";"):

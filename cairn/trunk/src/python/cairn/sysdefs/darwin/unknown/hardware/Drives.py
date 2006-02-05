@@ -21,9 +21,9 @@ class Drives(tmpl.Drives):
 
 
 	def listDrives(self, sysdef):
-		ret = commands.getstatusoutput("%s -l" % sysdef.info.get("env/disktool"))
+		ret = commands.getstatusoutput("%s -l" % sysdef.info.get("env/tools/disktool"))
 		if ret[0] != 0:
-			msg = "Failed to run %s to find drive information:\n" % sysdef.info.get("env/disktool")
+			msg = "Failed to run %s to find drive information:\n" % sysdef.info.get("env/tools/disktool")
 			raise cairn.Exception(msg + ret[1])
 		drives = []
 		for line in ret[1].split("\n"):
@@ -37,9 +37,9 @@ class Drives(tmpl.Drives):
 
 	def defineDrives(self, sysdef, drives):
 		for driveName in drives:
-			ret = commands.getstatusoutput("%s info %s" % (sysdef.info.get("env/diskutil"), driveName))
+			ret = commands.getstatusoutput("%s info %s" % (sysdef.info.get("env/tools/diskutil"), driveName))
 			if ret[0] != 0:
-				msg = "Failed to run %s to find drive information:\n" % sysdef.info.get("env/diskutil")
+				msg = "Failed to run %s to find drive information:\n" % sysdef.info.get("env/tools/diskutil")
 				raise cairn.Exception(msg + ret[1])
 			if not re.search("Protocol:(\s)*Disk Image", ret[1]):
 				drive = sysdef.info.createDriveElem(driveName)
