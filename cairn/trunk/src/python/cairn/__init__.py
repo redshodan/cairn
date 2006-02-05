@@ -28,6 +28,11 @@ class Exception(Exception):
 		return
 
 
+def warn(str):
+	print "Warning: " + str
+	return
+
+
 def debug(str = None):
 	if str and Options.get("verbose"):
 		print str

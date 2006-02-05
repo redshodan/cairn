@@ -31,6 +31,22 @@ class SystemDefinition(object):
 
 
 	def getModuleString(self):
+		if Options.get("program") == "copy":
+			return self.getInitModuleString() + self.getCopyModuleString()
+		elif Options.get("program") == "restore":
+			return self.getInitModuleString() + self.getRestoreModuleString()
+		return
+
+
+	def getInitModuleString(self):
+		return "load; hardware;"
+
+
+	def getCopyModuleString(self):
+		return "archive;"
+
+
+	def getRestoreModuleString(self):
 		return ""
 
 
@@ -41,6 +57,6 @@ class SystemDefinition(object):
 	def printSummary(self):
 		self.__printSummary()
 		self.info.printSummary()
-		if Options.get("printinfo"):
+		if Options.get("printmeta"):
 			self.info.printXML()
 		return

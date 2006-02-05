@@ -2,7 +2,6 @@
 
 
 import os
-import commands
 import re
 
 import cairn

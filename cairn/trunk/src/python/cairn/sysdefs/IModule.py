@@ -9,20 +9,20 @@ from cairn import Options
 from cairn.sysdefs import ModuleSpec
 
 
-def loadList(sysDef, moduleSpec, userModuleSpec, modules, prefix):
-	moduleNames = ModuleSpec.parseModuleSpec(sysDef, moduleSpec, userModuleSpec, prefix)
+def loadList(sysdef, moduleSpec, userModuleSpec, modules, prefix):
+	moduleNames = ModuleSpec.parseModuleSpec(sysdef, moduleSpec, userModuleSpec, prefix)
 	if cairn.verbose():
 		print "Module list:", moduleNames
-	loadModulesByInst(sysDef, moduleNames, userModuleSpec, modules)
+	loadModulesByInst(sysdef, moduleNames, userModuleSpec, modules)
 	return
 
 
-def loadModulesByInst(sysDef, moduleNames, userModuleSpec, modules):
+def loadModulesByInst(sysdef, moduleNames, userModuleSpec, modules):
 	"""Find corresponding modules following the module 'hierarchy'. For each try
 	   the program version then the main module."""
 	for name in moduleNames:
 		foundModule = None
-		for curRoot in sysDef.__class__.__mro__:
+		for curRoot in sysdef.__class__.__mro__:
 			foundModule = loadAModule("%s.%s.%s" % (curRoot.__module__,
 													Options.get("program"), name))
 			if foundModule:
@@ -33,15 +33,15 @@ def loadModulesByInst(sysDef, moduleNames, userModuleSpec, modules):
 		if not foundModule:
 			raise cairn.Exception(cairn.ERR_MODULE,
 								  "Unable to import module %s" % (name))
-		if not checkSubModule(sysDef, name, foundModule, userModuleSpec, modules):
+		if not checkSubModule(sysdef, name, foundModule, userModuleSpec, modules):
 			modules.append(foundModule)
 	return
 
 
-def checkSubModule(sysDef, name, module, userModuleSpec, modules):
-	getSubModules = None
+def checkSubModule(sysdef, name, module, userModuleSpec, modules):
+	getSubModuleString = None
 	try:
-		getSubModules = getattr(module, "getSubModules")
+		getSubModuleString = getattr(module, "getSubModuleString")
 	except AttributeError:
 		return False
 	try:
@@ -49,10 +49,10 @@ def checkSubModule(sysDef, name, module, userModuleSpec, modules):
 		modules.append(module)
 	except AttributeError:
 		pass
-	moduleNames = getSubModules()
+	moduleNames = getSubModuleString(sysdef)
 	subModules = ModuleList()
 	cairn.verbose("Found sub-module %s: %s" % (name, moduleNames))
-	loadList(sysDef, moduleNames, userModuleSpec, subModules, name)
+	loadList(sysdef, moduleNames, userModuleSpec, subModules, name)
 	for subModule in subModules.iter():
 		modules.append(subModule)
 	return True
@@ -156,3 +156,13 @@ class ModuleList(object):
 								  "Unable to import module %s" % (newModName))
 		self.__list.insert(self.__curModule + 1, module)
 		return True
+
+
+	def toString(self):
+		str = None
+		for module in self.__list:
+			if not str:
+				str = module.__name__
+			else:
+				str = "%s, %s" % (str, module.__name__)
+		return str

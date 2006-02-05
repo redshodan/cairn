@@ -24,7 +24,7 @@ import cairn
 from cairn import Options
 
 
-def parseModuleSpec(sysDef, moduleSpec, userModuleSpec, prefix):
+def parseModuleSpec(sysdef, moduleSpec, userModuleSpec, prefix):
 	moduleNames = splitModuleSpec(moduleSpec, prefix)
 	if userModuleSpec:
 		userModuleNames = splitModuleSpec(userModuleSpec, None)

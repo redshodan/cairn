@@ -11,7 +11,7 @@ from cairn import Options
 import cairn.sysdefs.IModule
 
 
-__sysDef = object()
+__sysdef = object()
 
 
 PATH_GROUP = 0
@@ -20,15 +20,15 @@ PATH_REQUIRED = 2
 
 
 def getDef():
-	return __sysDef
+	return __sysdef
 
 
 def getInfo():
-	return __sysDef.info
+	return __sysdef.info
 
 
 def getModuleList():
-	return __sysDef.moduleList
+	return __sysdef.moduleList
 
 
 def load():
@@ -46,16 +46,16 @@ def loadPlatform():
 	if userSysdef:
 		words = userSysdef.split(".")
 		root = ".".join(words[0:len(words)-1])
-		cairn.sysdefs.__sysDef = selectPlatform(root, [words[len(words)-1]], True)
+		cairn.sysdefs.__sysdef = selectPlatform(root, [words[len(words)-1]], True)
 		return
 
 	import cairn.sysdefs.linux
 	if linux.matchPlatform():
-		cairn.sysdefs.__sysDef = linux.loadPlatform()
+		cairn.sysdefs.__sysdef = linux.loadPlatform()
 		return
 	import cairn.sysdefs.darwin
 	if darwin.matchPlatform():
-		cairn.sysdefs.__sysDef = darwin.loadPlatform()
+		cairn.sysdefs.__sysdef = darwin.loadPlatform()
 		return
 	raise cairn.Exception("Unable to determine the system definition for this machine.",
 						  cairn.ERR_SYSDEF)
@@ -65,9 +65,9 @@ def loadPlatform():
 def loadModuleList():
 	modules = IModule.ModuleList()
 	userModuleSpec = Options.get("modules")
-	IModule.loadList(cairn.sysdefs.__sysDef, cairn.sysdefs.__sysDef.getModuleString(),
+	IModule.loadList(cairn.sysdefs.__sysdef, cairn.sysdefs.__sysdef.getModuleString(),
 					 userModuleSpec, modules, None)
-	cairn.sysdefs.__sysDef.moduleList = modules
+	cairn.sysdefs.__sysdef.moduleList = modules
 	return
 
 
@@ -78,6 +78,7 @@ def verifyModuleList():
 
 
 def run():
+	cairn.verbose("Final module list: " + getModuleList().toString())
 	for module in getModuleList().iter():
 		cairn.verbose("Running module: " + module.__name__)
 		try:
@@ -85,14 +86,14 @@ def run():
 		except:
 			raise cairn.Exception("Module %s does not have a getClass() function" % module.__name__)
 		obj = func()
-		if not obj.run(cairn.sysdefs.__sysDef):
+		if not obj.run(cairn.sysdefs.__sysdef):
 			raise cairn.Exception("Failed to run module: " + module.__name__)
 		getModuleList().next()
 	return
 
 
 def printSummary():
-	cairn.sysdefs.__sysDef.printSummary();
+	cairn.sysdefs.__sysdef.printSummary();
 	return
 
 

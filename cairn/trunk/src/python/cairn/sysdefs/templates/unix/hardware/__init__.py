@@ -5,5 +5,5 @@ import cairn
 
 
 
-def getSubModules():
+def getSubModuleString(sysdef):
 	return "Drives; Partitions; FSTab; DiskUsage"

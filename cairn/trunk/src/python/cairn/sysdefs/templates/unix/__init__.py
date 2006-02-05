@@ -28,10 +28,6 @@ class UNIX(SystemDefinition):
 		return "UNIX"
 
 
-	def getModuleString(self):
-		return "load; hardware;"
-
-
 	def __printSummary(self):
 		print "System definition:  Generic UNIX"
 		return

@@ -27,6 +27,11 @@ Architecture
      <cpu-str/>             - CPU type string
    </arch>
 
+Machine
+   <machine>
+     <name/>
+   </machine>
+
 Environment
    <env>
      <path/>                - System binary path
@@ -65,7 +70,11 @@ Archive
 	 <size/>
 	 <offset/>
 	 <metafilename/>
+     <excludes/>
+	 <archive-tool/>
+	 <archive-tool-cmd/>
      <zip-tool/>
+     <zip-tool-cmd/>
    </archive>
 
 """
@@ -75,6 +84,10 @@ from xml.dom import minidom
 
 import cairn
 from cairn import Options
+
+
+PADDING_INT = 25
+PADDING_MD5 = 32
 
 
 class SystemInfo(object):
@@ -143,6 +156,7 @@ class SystemInfo(object):
 		else:
 			return false
 
+
 	###
 	### Document creation
 	###
@@ -152,6 +166,7 @@ class SystemInfo(object):
 		self.root = self.doc.documentElement
 		self.createOSElem()
 		self.createArchElem()
+		self.createMachineElem()
 		self.createEnvElem()
 		self.createHardwareElem()
 		self.createArchiveElem()
@@ -178,6 +193,11 @@ class SystemInfo(object):
 		return arch
 
 
+	def createMachineElem(self):
+		machine = self.createElem(self.root, "machine")
+		elem = self.createElem(machine, "name")
+
+
 	def createEnvElem(self):
 		env = self.createElem(self.root, "env")
 		elem = self.createElem(env, "path")
@@ -191,8 +211,7 @@ class SystemInfo(object):
 
 	def createDriveElem(self, name):
 		hardware = self.getElem("hardware")
-		drive = self.doc.createElement("drive")
-		hardware.appendChild(drive)
+		drive = self.createElem(hardware, "drive")
 		drive.setAttribute("name", name)
 		elem = self.createElem(drive, "device")
 		elem = self.createElem(drive, "os-driver")
@@ -200,8 +219,7 @@ class SystemInfo(object):
 
 
 	def createPartitionElem(self, drive, name):
-		part = self.doc.createElement("partition")
-		drive.appendChild(part)
+		part = self.createElem(drive, "partition")
 		part.setAttribute("name", name)
 		elem = self.createElem(part, "device")
 		elem = self.createElem(part, "label")
@@ -213,20 +231,33 @@ class SystemInfo(object):
 
 
 	def createPartitionSpaceElem(self, part):
-		space = self.doc.createElement("space")
-		part.appendChild(space)
+		space = self.createElem(part, "space")
+		elem = self.createElem(space, "total")
+		elem = self.createElem(space, "used")
+		elem = self.createElem(space, "free")
 		return space
 
 
 	def createArchiveElem(self):
 		archive = self.createElem(self.root, "archive")
 		elem = self.createElem(archive, "filename")
-		elem = self.createElem(archive, "md5sum")
-		elem = self.createElem(archive, "size")
-		elem = self.createElem(archive, "offset")
+		elem = self.createPaddedElem(archive, "md5sum", PADDING_MD5)
+		elem = self.createPaddedElem(archive, "size", PADDING_INT)
+		elem = self.createPaddedElem(archive, "offset", PADDING_INT)
+		elem = self.createElem(archive, "estimated-size")
+		elem = self.createElem(archive, "date")
 		elem = self.createElem(archive, "metafilename")
 		self.setText(elem, "/etc/cairn/cairn-image.xml")
+		elem = self.createElem(archive, "excludes")
+		elem = self.createElem(archive, "excludes-file")
+		self.setText(elem, "/etc/cairn/excludes")
+		elem = self.createElem(archive, "user-excludes-file")
+		elem = self.createElem(archive, "archive-tool")
+		elem = self.createElem(archive, "archive-tool-cmd")
 		elem = self.createElem(archive, "zip-tool")
+		elem = self.createElem(archive, "zip-tool-cmd")
+		elem = self.createElem(archive, "shar")
+		self.setText(elem, "True")
 		return archive
 
 
@@ -251,6 +282,12 @@ class SystemInfo(object):
 				root.appendChild(elem)
 				return elem
 		return
+
+
+	# Create a padded size elem big enough to hold any sane sized number
+	def createPaddedElem(self, root, name, size):
+		elem = self.createElem(root, name)
+		self.setText(elem, "".zfill(size))
 
 
 	def setText(self, root, value):

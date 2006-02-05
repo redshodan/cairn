@@ -5,5 +5,5 @@ import cairn
 
 
 
-def getSubModules():
-	return "OS; Arch; Paths;"
+def getSubModuleString(sysdef):
+	return "OS; Arch; Machine; Paths;"

@@ -14,11 +14,15 @@ import cairn
 ourOpts = {}
 ourOptMap = {}
 
+# Option value indicies
 DEFAULT = 0
 SHORT = 1
 TYPE = 2
-SETTER = 3
-HELP = 4
+INFO_TAG = 3
+SETTER = 4
+HELP = 5
+
+# Option types
 STR = 1
 BOOL = 2
 
@@ -36,17 +40,20 @@ def setVerboseOpt(opt, arg):
 	return
 
 
+def setExclude(opt, arg):
+	optVal = get(opt)
+	if optVal:
+		set(opt, optVal + ";" + arg)
+	else:
+		set(opt, arg)
+	return
+
+
 def setInfoOpt(opt, arg):
 	if (arg.find("=") < 0):
 		raise cairn.Exception("Invalid parameter to --set. Must be in the form: key=val")
 	words = arg.split("=")
 	sysInfoOpts[words[0]] = words[1]
-	return
-
-
-def setMetaFileName(opt, arg):
-	set(opt, True)
-	sysInfoOpts["archive/metafilename"] = arg
 	return
 
 
@@ -63,23 +70,35 @@ def setHelpOpt(opt, arg):
 # will be passed to getopt. Adding a new entry in the correct option list
 # is all that is needed to add in more options.
 cliCommonOpts = {
- "configfile": [None, "c", STR, None, "Config file to load."],
- "dumpmeta": [None, None, STR, setMetaFileName, "Dump the metafile and exit"],
- "force": [False, "f", BOOL, None, "Force operation, ignoring errors."],
- "help": [False, "h", BOOL, setHelpOpt, None],
- "modules": [None, "m", STR, None, "List of modules to load."],
- "path": ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, None,
-		  "Path to find programs to run."],
- "printinfo" : [False, None, BOOL, None, "Print the generated info out."],
- "set": [None, "s", STR, setInfoOpt,
-		 "Set a system info option, overriding discovered value"],
- "sysdef": [None, None, STR, None,
-			"Manually choose the system definition eg: linux.redhat"],
- "verbose": [False, "v", BOOL, setVerboseOpt,
-			 "Verbose operation. Multiple flags will increase verboseness."]
+ "configfile" : [None, "c", STR, None, None, "Config file to load."],
+ "dumpmeta" : [None, None, STR, "archive/metafilename", None,
+			   "Dump the metafile and exit"],
+ "exclude" : [None, "x", STR, None, setExclude,
+			  "Exclude a file or directory, can specify multiple times"],
+ "exclude-from" : [None, "X", STR, "archive/user-excludes-file", None,
+				   "File containing exclude directives"],
+ "force" : [False, "f", BOOL, None, None, "Force operation, ignoring errors."],
+ "help" : [False, "h", BOOL, None, setHelpOpt, None],
+ "modules" : [None, "m", STR, None, None, "List of modules to load."],
+ "path" : ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, "env/path", None,
+		   "Path to find programs to run."],
+ "printmeta" : [False, None, BOOL, None, None, "Print the generated info out."],
+ "set" : [None, "s", STR, None, setInfoOpt,
+		  "Set a system info option, overriding discovered value"],
+ "sysdef" : [None, None, STR, None, None,
+			 "Manually choose the system definition eg: linux.redhat"],
+ "verbose" : [False, "v", BOOL, None, setVerboseOpt,
+			  "Verbose operation. Multiple flags will increase verboseness."]
 }
 
-cliCopyOpts = {}
+cliCopyOpts = {
+ "archive" : ["tar", None, STR, None, None,
+			  "Archive type to use: tar, star"],
+ "noshar" : [None, None, BOOL, "archive/shar", None,
+			 "Create a plain archive without the metadata prepended."],
+ "zip" : ["bzip2", None, STR, None, None, "Zip type to use: bzip2, gzip"]
+}
+
 cliRestoreOpts = {}
 sysInfoOpts = {}
 
@@ -112,12 +131,6 @@ def init():
 	return
 
 
-def printOpts():
-	print "Options:"
-	for opt in ourOptMap.keys():
-		print "   %s: %s" % (opt, ourOpts[opt])
-
-
 def usage():
 	if get("program") == "copy":
 		print cliCopyHelpHeader, "\n"
@@ -134,7 +147,9 @@ def usage():
 
 
 def printOptMap():
-	for name in ourOptMap.keys():
+	keys = ourOptMap.keys()
+	keys.sort()
+	for name in keys:
 		if ourOptMap[name][SHORT]:
 			print "  -%s, --%s - %s" % (ourOptMap[name][SHORT], name,
 										ourOptMap[name][HELP])
@@ -148,7 +163,6 @@ def parseCmdLineOpts():
 		shortOpts, longOpts = buildOptions(ourOptMap)
 		opts, args = getopt.gnu_getopt(sys.argv[1:], shortOpts, longOpts)
 		parseOpts(opts, args, ourOptMap)
-		ourOptMap.keys().sort()
 	except getopt.GetoptError, err:
 		print err
 		usage()
@@ -182,10 +196,17 @@ def parseOpts(opts, args, optMap):
 		if shortIndex.has_key(opt):
 			opt = shortIndex[opt]
 		if optMap.has_key(opt):
+			if optMap[opt][INFO_TAG]:
+				sysInfoOpts[optMap[opt][INFO_TAG]] = arg
 			if optMap[opt][SETTER]:
 				optMap[opt][SETTER](opt, arg)
 			else:
 				defSetter(optMap, opt, arg)
+	if len(args) == 1:
+		set("filename", args[0])
+		sysInfoOpts["archive/filename"] = args[0]
+	elif len(args) > 1:
+		usage()
 	return
 
 
