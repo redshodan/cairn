@@ -34,45 +34,35 @@ def warn(str):
 
 
 def debug(str = None):
-	if str and Options.get("verbose"):
-		print str
-		return True
-	elif Options.get("verbose"):
+	if Options.get("verbose"):
+		if str: print str
 		return True
 	return False
 
 
 def verbose(str = None):
-	if str and Options.get("verbose"):
-		print str
-		return True
-	elif Options.get("verbose"):
+	if Options.get("verbose"):
+		if str: print str
 		return True
 	return False
 
 
 def vverbose(str = None):
-	if str and (Options.get("verbose") >= 2):
-		print str
-		return True
-	elif Options.get("verbose"):
+	if Options.get("verbose") >= 2:
+		if str: print str
 		return True
 	return False
 
 
 def vvverbose(str = None):
-	if str and (Options.get("verbose") >= 3):
-		print str
-		return True
-	elif Options.get("verbose"):
+	if Options.get("verbose") >= 3:
+		if str: print str
 		return True
 	return False
 
 
 def log(str = None):
-	if str and Options.get("verbose"):
-		print str
-		return True
-	elif Options.get("verbose"):
+	if Options.get("verbose"):
+		if str: print str
 		return True
 	return False

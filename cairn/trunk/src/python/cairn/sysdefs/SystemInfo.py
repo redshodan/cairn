@@ -70,7 +70,9 @@ Archive
 	 <size/>
 	 <offset/>
 	 <metafilename/>
-     <excludes/>
+     <excludes>
+	   <exclude ignored_fs='T/F:' user='T/F'/>
+	 </excludes>
 	 <archive-tool/>
 	 <archive-tool-cmd/>
      <zip-tool/>
@@ -106,8 +108,8 @@ class SystemInfo(object):
 		return None
 
 
-	def getNamed(self, name, instName):
-		elems = self.getElems(name)
+	def getNamed(self, name, instName, root = None):
+		elems = self.getElems(name, root)
 		if not elems:
 			return None
 		for elem in elems:
@@ -226,7 +228,6 @@ class SystemInfo(object):
 		elem = self.createElem(part, "type")
 		elem = self.createElem(part, "fs-type")
 		elem = self.createElem(part, "mount")
-		elem = self.createElem(part, "part-tool-cfg")
 		return part
 
 
@@ -244,7 +245,8 @@ class SystemInfo(object):
 		elem = self.createPaddedElem(archive, "md5sum", PADDING_MD5)
 		elem = self.createPaddedElem(archive, "size", PADDING_INT)
 		elem = self.createPaddedElem(archive, "offset", PADDING_INT)
-		elem = self.createElem(archive, "estimated-size")
+		elem = self.createElem(archive, "real-size")
+		elem = self.createElem(archive, "adjusted-size")
 		elem = self.createElem(archive, "date")
 		elem = self.createElem(archive, "metafilename")
 		self.setText(elem, "/etc/cairn/cairn-image.xml")
@@ -259,6 +261,14 @@ class SystemInfo(object):
 		elem = self.createElem(archive, "shar")
 		self.setText(elem, "True")
 		return archive
+
+
+	def createArchiveExcludesElem(self, path, type):
+		excludes = self.getElem("archive/excludes")
+		exclude = self.createElem(excludes, "exclude", True)
+		exclude.setAttribute("type", type)
+		self.setText(exclude, path)
+		return exclude
 
 
 	###

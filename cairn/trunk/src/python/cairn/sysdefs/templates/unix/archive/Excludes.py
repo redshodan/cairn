@@ -16,21 +16,21 @@ def getClass():
 
 class Excludes(object):
 
-	def addExcludes(self, iter, excludes):
-		for exclude in iter:
-			exclude = exclude.strip()
-			exclude = exclude.rstrip("/")
-			excludes[exclude] = True
+	def cleanExclude(self, exclude):
+		exclude = exclude.strip()
+		return exclude.rstrip("/")
 
 
-	def createExcludes(self, sysdef, excludes):
+	def createExcludes(self, sysdef):
 		if not Options.get("exclude"):
 			return
-		self.addExcludes(Options.get("exclude").split(";"), excludes)
+		for exclude in Options.get("exclude").split(";"):
+			exclude = self.cleanExclude(exclude)
+			sysdef.info.createArchiveExcludesElem(exclude, "user")
 		return
 
 
-	def loadUserExcludesFile(self, sysdef, excludes):
+	def loadUserExcludesFile(self, sysdef):
 		userFileName = sysdef.info.get("archive/user-excludes-file")
 		if not userFileName:
 			return
@@ -40,28 +40,18 @@ class Excludes(object):
 		except Exception, err:
 			raise cairn.Exception("Unable to open excludes file %s: %s" % (userFileName,
 																		   err))
-		self.addExcludes(userFile, excludes)
+		for exclude in userFile:
+			exclude = self.cleanExclude(exclude)
+			sysdef.info.createArchiveExcludesElem(exclude, "user")
 		userFile.close()
 		return
 
 
-	def loadFSExcludes(self, sysdef, excludes):
+	def loadFSExcludes(self, sysdef):
 		return
 
 
-	def setMetaExcludes(self, sysdef, excludes):
-		line = None
-		for exclude, trash in excludes.iteritems():
-			if line:
-				line = line + ";" + exclude
-			else:
-				line = exclude
-		if line:
-			sysdef.info.set("archive/excludes", line)
-		return
-
-
-	def createExcludesFile(self, sysdef, excludes):
+	def createExcludesFile(self, sysdef):
 		if not sysdef.info.get("archive/excludes"):
 			return
 		excludesFileName = sysdef.info.get("archive/excludes-file")
@@ -72,8 +62,8 @@ class Excludes(object):
 			pass
 		try:
 			excludesFile = file(excludesFileName, "w")
-			for exclude in sysdef.info.get("archive/excludes").split(";"):
-				excludesFile.write(exclude)
+			for exclude in sysdef.info.getElems("archive/excludes/exclude"):
+				excludesFile.write(sysdef.info.getText(exclude))
 				excludesFile.write("\n")
 			excludesFile.close()
 		except Exception, err:
@@ -82,10 +72,8 @@ class Excludes(object):
 
 
 	def run(self, sysdef):
-		excludes = {}
-		self.createExcludes(sysdef, excludes)
-		self.loadUserExcludesFile(sysdef, excludes)
-		self.loadFSExcludes(sysdef, excludes)
-		self.setMetaExcludes(sysdef, excludes)
-		self.createExcludesFile(sysdef, excludes)
+		self.createExcludes(sysdef)
+		self.loadUserExcludesFile(sysdef)
+		self.loadFSExcludes(sysdef)
+		self.createExcludesFile(sysdef)
 		return True

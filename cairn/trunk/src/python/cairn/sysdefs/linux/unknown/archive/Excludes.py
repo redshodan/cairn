@@ -6,6 +6,7 @@ import commands
 import cairn
 from cairn import Options
 import cairn.sysdefs.templates.unix.archive.Excludes as tmpl
+from cairn.sysdefs.linux import Constants
 
 
 
@@ -13,21 +14,10 @@ def getClass():
 	return Excludes()
 
 
-IGNORED_FS = [
-	# Pseudo filesystems
-	"proc", "sysfs", "tmpfs", "usbfs", "devpts",
-
-	# Network filesystems
-	"nfs", "smbfs", "coda",
-
-	# Misc
-	"iso9660"
-]
-
 
 class Excludes(tmpl.Excludes):
 
-	def loadFSExcludes(self, sysdef, excludes):
+	def loadFSExcludes(self, sysdef):
 		ret = commands.getstatusoutput(sysdef.info.get("env/tools/mount"))
 		if ret[0] != 0:
 			raise cairn.Exception("Unable to run mount: %s" % (ret[1]))
@@ -41,7 +31,9 @@ class Excludes(tmpl.Excludes):
 			array[3] = lineArr[5].strip("()")
 			mounts.append(array)
 		for mount in mounts:
-			if ((mount[2] in IGNORED_FS) or (mount[3].find("loop") >= 0) or
+			if ((mount[2] in Constants.IGNORED_FS) or (mount[3].find("loop") >= 0) or
 				(mount[3].find("bind") >= 0)):
-				self.addExcludes(["%s/*" % mount[1]], excludes)
+				exclude = "%s/*" % mount[1]
+				sysdef.info.createArchiveExcludesElem(exclude, "ignored_fs")
+				cairn.verbose("Excluding special fs: %s" % (exclude))
 		return

@@ -29,7 +29,7 @@ class Tools(tmpl.Tools):
 
 	def setTarCmd(self, sysdef):
 		sysdef.info.set("archive/archive-cmd-line",
-						"tar --preserve --numeric-owner -Scpf -")
+						"%s --preserve --numeric-owner -Scpf -" % (sysdef.info.get("env/tools/tar")))
 		return
 
 
@@ -49,10 +49,18 @@ class Tools(tmpl.Tools):
 
 
 	def setBzip2Cmd(self, sysdef):
-		sysdef.info.set("archive/zip-tool-cmd", "bzip2 -c")
+		sysdef.info.set("archive/zip-tool-cmd",
+						"%s -c" % (sysdef.info.get("env/tools/bzip2")))
 		return
 
 
 	def setGzipCmd(self, sysdef):
-		sysdef.info.set("archive/zip-tool-cmd", "gzip -c")
+		sysdef.info.set("archive/zip-tool-cmd",
+						"%s -c" % (sysdef.info.get("env/tools/gzip")))
 		return
+
+
+	def setDiskUsageCmd(self, sysdef):
+		sysdef.info.set("archive/diskusage-tool-cmd",
+						"%s -s" % (sysdef.info.get("env/tools/diskusage")))
+		return True

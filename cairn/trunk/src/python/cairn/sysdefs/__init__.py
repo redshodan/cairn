@@ -79,12 +79,12 @@ def verifyModuleList():
 
 
 def run():
-	cairn.verbose("Final module list: " + getModuleList().toString())
+	cairn.vverbose("Final module list: " + getModuleList().toString())
 	for module in getModuleList().iter():
 		if haveQuit():
-			cairn.verbose("Module requested quit")
+			cairn.vverbose("Module requested quit")
 			break
-		cairn.verbose("Running module: " + module.__name__)
+		cairn.vverbose("Running module: " + module.__name__)
 		try:
 			func = getattr(module, "getClass")
 		except:

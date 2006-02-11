@@ -30,4 +30,6 @@ class Tools(object):
 			return False
 		if not self.setZipCmd(sysdef):
 			return False
+		if not self.setDiskUsageCmd(sysdef):
+			return False
 		return True

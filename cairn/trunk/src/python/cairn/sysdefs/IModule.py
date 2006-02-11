@@ -11,7 +11,7 @@ from cairn.sysdefs import ModuleSpec
 
 def loadList(sysdef, moduleSpec, userModuleSpec, modules, prefix):
 	moduleNames = ModuleSpec.parseModuleSpec(sysdef, moduleSpec, userModuleSpec, prefix)
-	if cairn.verbose():
+	if cairn.vverbose():
 		print "Module list:", moduleNames
 	loadModulesByInst(sysdef, moduleNames, userModuleSpec, modules)
 	return
@@ -51,7 +51,7 @@ def checkSubModule(sysdef, name, module, userModuleSpec, modules):
 		pass
 	moduleNames = getSubModuleString(sysdef)
 	subModules = ModuleList()
-	cairn.verbose("Found sub-module %s: %s" % (name, moduleNames))
+	cairn.vverbose("Found sub-module %s: %s" % (name, moduleNames))
 	loadList(sysdef, moduleNames, userModuleSpec, subModules, name)
 	for subModule in subModules.iter():
 		modules.append(subModule)
@@ -69,14 +69,14 @@ def loadModulesByName(root, moduleNames, modules):
 
 
 def loadAModule(module):
-	cairn.vverbose("  Looking for %s" % module)
+	cairn.vvverbose("  Looking for %s" % module)
 	try:
 		__import__(module)
 		try:
 			getattr(sys.modules[module], "empty")
 			return None
 		except:
-			cairn.verbose("Found %s" % module)
+			cairn.vverbose("Found %s" % module)
 			return sys.modules[module]
 	except ImportError, err:
 		return None
