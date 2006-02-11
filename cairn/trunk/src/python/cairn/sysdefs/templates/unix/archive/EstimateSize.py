@@ -68,6 +68,8 @@ class EstimateSize(object):
 
 
 	def run(self, sysdef):
+		if Options.get("nosize"):
+			return True
 		totalSize = self.findTotalSize(sysdef)
 		goodExcludes = self.collateExcludes(sysdef)
 		excludedSize = self.findExcludedSize(sysdef, goodExcludes)

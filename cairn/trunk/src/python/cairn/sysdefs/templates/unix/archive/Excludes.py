@@ -47,12 +47,18 @@ class Excludes(object):
 		return
 
 
+	def excludeArchive(self, sysdef):
+		sysdef.info.createArchiveExcludesElem(sysdef.info.get("archive/filename"),
+											  "ignored_fs")
+		return
+
+
 	def loadFSExcludes(self, sysdef):
 		return
 
 
 	def createExcludesFile(self, sysdef):
-		if not sysdef.info.get("archive/excludes"):
+		if not sysdef.info.getElem("archive/excludes"):
 			return
 		excludesFileName = sysdef.info.get("archive/excludes-file")
 		try:
@@ -74,6 +80,7 @@ class Excludes(object):
 	def run(self, sysdef):
 		self.createExcludes(sysdef)
 		self.loadUserExcludesFile(sysdef)
+		self.excludeArchive(sysdef)
 		self.loadFSExcludes(sysdef)
 		self.createExcludesFile(sysdef)
 		return True

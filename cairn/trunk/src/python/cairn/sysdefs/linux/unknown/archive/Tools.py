@@ -28,8 +28,10 @@ class Tools(tmpl.Tools):
 
 
 	def setTarCmd(self, sysdef):
-		sysdef.info.set("archive/archive-cmd-line",
-						"%s --preserve --numeric-owner -Scpf -" % (sysdef.info.get("env/tools/tar")))
+		cmd = "%s --preserve --numeric-owner -X %s -PScpf - /" % \
+			  (sysdef.info.get("env/tools/tar"),
+			   sysdef.info.get("archive/excludes-file"))
+		sysdef.info.set("archive/archive-tool-cmd", cmd)
 		return
 
 
@@ -50,7 +52,7 @@ class Tools(tmpl.Tools):
 
 	def setBzip2Cmd(self, sysdef):
 		sysdef.info.set("archive/zip-tool-cmd",
-						"%s -c" % (sysdef.info.get("env/tools/bzip2")))
+						"%s -zc" % (sysdef.info.get("env/tools/bzip2")))
 		return
 
 

@@ -33,6 +33,11 @@ def warn(str):
 	return
 
 
+def error(str):
+	print "Error: " + str
+	return
+
+
 def debug(str = None):
 	if Options.get("verbose"):
 		if str: print str
