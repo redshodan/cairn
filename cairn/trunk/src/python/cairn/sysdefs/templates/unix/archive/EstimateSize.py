@@ -69,6 +69,7 @@ class EstimateSize(object):
 	def run(self, sysdef):
 		if Options.get("nosize"):
 			return True
+		cairn.log("Estimating archive size")
 		totalSize = self.findTotalSize(sysdef)
 		goodExcludes = self.collateExcludes(sysdef)
 		excludedSize = self.findExcludedSize(sysdef, goodExcludes)

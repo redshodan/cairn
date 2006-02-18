@@ -114,7 +114,7 @@ class FinalizeMeta(object):
 	def run(self, sysdef):
 		if not sysdef.info.get("archive/shar"):
 			return True
-		cairn.log("md5summing archive file")
+		cairn.log("MD5 summing archive file")
 		fileName = sysdef.info.get("archive/filename")
 		size = self.sizeArchive(fileName)
 		archive = self.openArchive(fileName)

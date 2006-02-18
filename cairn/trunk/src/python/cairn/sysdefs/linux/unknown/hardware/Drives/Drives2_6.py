@@ -15,7 +15,9 @@ def getClass():
 
 
 class Drives2_6(tmpl.Drives):
+
 	def run(self, sysdef):
+		cairn.log("Checking drives")
 		for device in os.listdir("/sys/block"):
 			if not Drives.matchDevice(device):
 				continue

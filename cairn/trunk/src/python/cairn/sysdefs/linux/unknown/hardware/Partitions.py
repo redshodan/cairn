@@ -13,7 +13,9 @@ def getClass():
 
 
 class Partitions(tmpl.Partitions):
+
 	def run(self, sysdef):
+		cairn.log("Checking partitions")
 		for drive in sysdef.info.getElems("hardware/drive"):
 			self.definePartitions(sysdef, drive)
 		return True

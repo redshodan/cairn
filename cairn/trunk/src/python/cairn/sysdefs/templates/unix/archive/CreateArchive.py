@@ -9,6 +9,7 @@
 import os
 import select
 import shutil
+import sys
 
 import cairn
 from cairn import Options
@@ -92,8 +93,8 @@ class CreateArchive(object):
 								percent = int((float(readSize) / float(size)) *
 											  100)
 							if percent != lastPercent:
-								print "total read/size=per", readTotal, \
-									  readSize, size, percent
+								#print "total read/size=per", readTotal, \
+								#	  readSize, size, percent
 								lastPercent = percent
 								self.displayPercent(percent)
 				if sel == archiveTool.stderr:   ### Archive err
@@ -108,6 +109,7 @@ class CreateArchive(object):
 						zipTool.err = zipTool.err + buff
 					else:
 						readfds.remove(zipTool.stderr)
+		print
 		archiveTool.wait()
 		zipTool.wait()
 		err = ""
@@ -121,10 +123,13 @@ class CreateArchive(object):
 
 
 	def displayPercent(self, percent):
-		print "%d%%" % percent
+		print "\r%d%%  " % percent,
+		sys.stdout.flush()
+		return
 
 
 	def run(self, sysdef):
+		cairn.log("Creating archive")
 		if sysdef.info.get("archive/shar"):
 			archive = self.prepShar(sysdef)
 		else:

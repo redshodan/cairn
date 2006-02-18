@@ -11,7 +11,7 @@ import cairn.Options as Options
 
 class Copy(object):
 	def __init__(self):
-		pass
+		return
 
 
 	def run(self):
@@ -20,6 +20,9 @@ class Copy(object):
 		Options.parseCmdLineOpts()
 		sysdefs.load()
 		sysdefs.run()
+		cairn.log("Archive finished")
+		return
+
 
 def run():
 	try:
@@ -29,3 +32,4 @@ def run():
 		err.printSelf()
 		sys.exit(err.code)
 	sys.exit(0)
+	return
