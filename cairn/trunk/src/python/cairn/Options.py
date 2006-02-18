@@ -13,6 +13,7 @@ import cairn
 # module globals
 ourOpts = {}
 ourOptMap = {}
+ourFileRequired = True
 
 # Option value indicies
 DEFAULT = 0
@@ -49,6 +50,18 @@ def setExclude(opt, arg):
 	return
 
 
+def clearFileReqBool(opt, arg):
+	set(opt, True)
+	cairn.Options.ourFileRequired = False
+	return
+
+
+def clearFileReqStr(opt, arg):
+	set(opt, arg)
+	cairn.Options.ourFileRequired = False
+	return
+
+
 def setInfoOpt(opt, arg):
 	if (arg.find("=") < 0):
 		raise cairn.Exception("Invalid parameter to --set. Must be in the form: key=val")
@@ -71,7 +84,7 @@ def setHelpOpt(opt, arg):
 # is all that is needed to add in more options.
 cliCommonOpts = {
  "configfile" : [None, "c", STR, None, None, "Config file to load."],
- "dumpmeta" : [None, None, STR, "archive/metafilename", None,
+ "dumpmeta" : [None, None, STR, "archive/metafilename", clearFileReqStr,
 			   "Dump the metafile and exit"],
  "exclude" : [None, "x", STR, None, setExclude,
 			  "Exclude a file or directory, can specify multiple times"],
@@ -82,8 +95,12 @@ cliCommonOpts = {
  "modules" : [None, "m", STR, None, None, "List of modules to load."],
  "path" : ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, "env/path", None,
 		   "Path to find programs to run."],
- "printmeta" : [False, None, BOOL, None, None, "Print the generated info out."],
- "summary" : [False, None, BOOL, None, None, "Print a summary of generated info."],
+ "printmeta" : [False, None, BOOL, None, clearFileReqBool,
+				"Print the generated info out and exit."],
+ "printopts" : [False, None, BOOL, None, clearFileReqBool,
+				"Print the command line option values out and exit."],
+ "summary" : [False, None, BOOL, None, clearFileReqBool,
+			  "Print a summary of generated info and exit"],
  "set" : [None, "s", STR, None, setInfoOpt,
 		  "Set a system info option, overriding discovered value"],
  "sysdef" : [None, None, STR, None, None,
@@ -161,6 +178,13 @@ def printOptMap():
 	return
 
 
+def printAll():
+	print "Option values:"
+	for key, val in ourOpts.iteritems():
+		print "  %s -> %s" % (key, val)
+	return
+
+
 def parseCmdLineOpts():
 	try:
 		shortOpts, longOpts = buildOptions(ourOptMap)
@@ -208,7 +232,9 @@ def parseOpts(opts, args, optMap):
 	if len(args) == 1:
 		set("filename", args[0])
 		sysInfoOpts["archive/filename"] = args[0]
-	elif len(args) > 1 or len(args) == 0:
+	elif len(args) > 1:
+		usage()
+	elif (len(args) == 0) and ourFileRequired:
 		usage()
 	return
 

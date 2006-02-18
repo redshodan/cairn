@@ -1,1 +1,1 @@
-"""Generic UNIX Restore Modules"""
+"""templates.unix.restore"""

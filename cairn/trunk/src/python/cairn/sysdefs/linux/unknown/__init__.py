@@ -2,7 +2,7 @@
 	Unknown Linux system definitions"""
 
 
-from cairn.sysdefs.templates.unix import *
+import cairn.sysdefs.templates.unix as tmpl
 
 
 
@@ -11,7 +11,7 @@ def getClass():
 
 
 
-class Unknown(UNIX):
+class Unknown(tmpl.UNIX):
 	def __init__(self):
 		super(Unknown, self).__init__()
 		return

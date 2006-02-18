@@ -67,7 +67,5 @@ def vvverbose(str = None):
 
 
 def log(str = None):
-	if Options.get("verbose"):
-		if str: print str
-		return True
-	return False
+	if str: print str
+	return True
