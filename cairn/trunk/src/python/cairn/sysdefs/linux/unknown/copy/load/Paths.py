@@ -16,8 +16,7 @@ def getClass():
 class Paths(tmpl.Paths):
 	def __init__(self):
 		super(Paths, self).__init__()
-		bins = { "env/tools/diskfree" : [sysdefs.PATH_REQUIRED, "df"],
-				 "env/tools/diskusage" : [sysdefs.PATH_REQUIRED, "du"] }
+		bins = { "env/tools/diskusage" : [sysdefs.PATH_REQUIRED, "du"] }
 		self.__BINS.update(bins)
 
 

@@ -64,5 +64,5 @@ class Tools(tmpl.Tools):
 
 	def setDiskUsageCmd(self, sysdef):
 		sysdef.info.set("archive/diskusage-tool-cmd",
-						"%s -s" % (sysdef.info.get("env/tools/diskusage")))
+						"%s -sm" % (sysdef.info.get("env/tools/diskusage")))
 		return True

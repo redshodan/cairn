@@ -17,7 +17,7 @@ class FileName(object):
 		hostname = sysdef.info.get("machine/name")
 		if not hostname:
 			hostname = "cairn-image"
-		date = time.strftime("%Y-%m-%d")
+		date = time.strftime("%Y-%m-%d.cimg")
 		return "%s-%s" % (hostname, date)
 
 

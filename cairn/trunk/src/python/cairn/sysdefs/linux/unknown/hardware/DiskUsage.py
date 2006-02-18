@@ -2,8 +2,7 @@
 
 
 import os
-import commands
-import re
+from statvfs import *
 
 import cairn
 import cairn.sysdefs.templates.unix.hardware.DiskUsage as tmpl
@@ -17,6 +16,7 @@ def getClass():
 
 class DiskUsage(tmpl.DiskUsage):
 	def run(self, sysdef):
+		cairn.verbose("Sizing partitions")
 		for drive in sysdef.info.getElems("hardware/drive"):
 			for partition in sysdef.info.getElems("partition", drive):
 				self.findPartitionDiskUsage(sysdef, partition)
@@ -27,22 +27,15 @@ class DiskUsage(tmpl.DiskUsage):
 		if (not sysdef.info.get("mount", partition) or
 			(sysdef.info.get("mount", partition) == "none")):
 			return
-		cmd = "%s -k %s" % (sysdef.info.get("env/tools/diskfree"),
-							sysdef.info.get("mount", partition))
-		ret = commands.getstatusoutput(cmd)
-		if ret[0] != 0:
-			msg = "Failed to run %s to find disk usage information:\n" % sysdef.info.get("env/tools/diskfree")
-			raise cairn.Exception(msg + ret[1])
+		info = os.statvfs(sysdef.info.get("mount", partition))
+		total = "%d" % ((info[F_BLOCKS] * 4) / 1024)
+		used = "%d" % (((info[F_BLOCKS] - info[F_BAVAIL]) * 4) / 1024)
+		free = "%d" % ((info[F_BAVAIL] * 4) / 1024)
 		device = sysdef.info.get("device", partition)
-		space = None
-		for line in ret[1].split("\n"):
-			if line.startswith(device):
-				arr = line.split()
-				space = sysdef.info.createPartitionSpaceElem(partition)
-				sysdef.info.setChild(space, "total", arr[1])
-				sysdef.info.setChild(space, "used", arr[2])
-				sysdef.info.setChild(space, "free", arr[3])
-				break
-		if not space:
-			raise cairn.Exception("'df' returned a different device for mount '%s'. Perhaps this not mounted." % sysdef.info.get("mount", partition))
+		space = sysdef.info.createPartitionSpaceElem(partition)
+		sysdef.info.setChild(space, "total", total)
+		sysdef.info.setChild(space, "used", used)
+		sysdef.info.setChild(space, "free", free)
+		cairn.verbose("  %s: space: total=%sM used=%sM free=%sM" % \
+					  (device, total, used, free))
 		return

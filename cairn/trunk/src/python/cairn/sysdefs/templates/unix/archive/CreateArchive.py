@@ -21,6 +21,48 @@ def getClass():
 
 
 
+class ProcessInfo(object):
+	def __init__(self):
+		self.name = None
+		self.pid = None
+		self.stdin = None
+		self.stdout = None
+		self.stderr = None
+		self.err = ""
+		self.exitCode = 0
+		return
+
+
+	def wait(self):
+		cairn.verbose("Waiting on: %s" % (self.name))
+		self.close()
+		try:
+			self.exitCode = os.waitpid(self.pid, 0)[1]
+		except Exception, err:
+			raise cairn.Exception("Failed to wait for process %s: %s" % (self.name, err))
+		return
+
+
+	def close(self):
+		try:
+			os.close(self.stdin)
+		except:
+			pass
+		try:
+			os.close(self.stdout)
+		except:
+			pass
+		try:
+			os.close(self.stderr)
+		except:
+			pass
+
+
+	def exit(self):
+		return os.WEXITSTATUS(self.exitCode)
+
+
+
 class CreateArchive(object):
 
 	def prepArchive(self, sysdef):
@@ -49,21 +91,10 @@ class CreateArchive(object):
 
 	def runTools(self, sysdef, archive):
 		archiveTool = self.startTool(sysdef, "archive/archive-tool-cmd", None, None,
-											None)
+									 None)
 		zipTool = self.startTool(sysdef, "archive/zip-tool-cmd", None, archive, None)
 		self.runPipe(sysdef, archiveTool, zipTool)
 		return
-
-
-	def startArchiveTool(self, sysdef):
-		cmd = sysdef.info.get("archive/archive-tool-cmd")
-		cairn.verbose("Running: %s" % (cmd))
-		try:
-			os.chdir("/")
-			pipes = popen2.popen3(cmd.split())
-		except Exception, err:
-			raise cairn.Exception("Failed to run command '%s': %s" % (cmd, err))
-		return [pipes[0], pipes[2]]
 
 
 	def startTool(self, sysdef, tool, stdin, stdout, stderr):
@@ -99,21 +130,23 @@ class CreateArchive(object):
 			os.execv(arr[0], arr)
 			raise cairn.Exception("Failed to exec command: %s" % (cmd))
 		else:
-			ret = []
+			ret = ProcessInfo()
+			ret.name = tool
+			ret.pid = pid
 			if stdin:
-				ret.append(stdin)
+				ret.stdin = stdin
 			else:
-				ret.append(pstdin[1])
+				ret.stdin = pstdin[1]
 				os.close(pstdin[0])
 			if stdout:
-				ret.append(stdout)
+				ret.stdout = stdout
 			else:
-				ret.append(pstdout[0])
+				ret.stdout = pstdout[0]
 				os.close(pstdout[1])
 			if stderr:
-				ret.append(stderr)
+				ret.stderr = stderr
 			else:
-				ret.append(pstderr[0])
+				ret.stderr = pstderr[0]
 				os.close(pstderr[1])
 			return ret
 		return
@@ -123,42 +156,60 @@ class CreateArchive(object):
 		size = 0
 		if sysdef.info.get("archive/adjusted-size"):
 			size = int(sysdef.info.get("archive/adjusted-size"))
+		readTotal = 0
 		readSize = 0
+		readMeg = 0
 		lastPercent = 0
-		archiveErr = ""
-		zipErr = ""
-		readfds = [archiveTool[2], zipTool[2], archiveTool[1]]
+		readfds = [ archiveTool.stdout, archiveTool.stderr, zipTool.stderr]
 		running = True
+		self.displayPercent(0)
 		while running:
 			(selrfds, trash1, trash2) = select.select(readfds, [], [], 0)
 			for sel in selrfds:
-				if sel == archiveTool[1]:   ### Archive output
-					buff = os.read(archiveTool[1], int(1024))  ### 1M
+				if sel == archiveTool.stdout:   ### Archive output
+					buff = os.read(archiveTool.stdout, 524288)   ### 512K
 					if not buff:
 						running = False
 						break
-					os.write(zipTool[0], buff)
-				if sel == archiveTool[2]:   ### Archive err
-					buff = os.read(archiveTool[2], int(1024))  ### 1M
-					print "read archive error:", len(buff), buff
-					archiveErr = archiveErr + buff
-				if sel == zipTool[2]:   ### Zip err
-					buff = os.read(zipTool[2], int(1024))  ### 1M
-					print "read zip error:", len(buff), buff
-					archiveErr = zipErr + buff
-		os.close(archiveTool[0])
-		os.close(archiveTool[1])
-		os.close(archiveTool[2])
-		os.close(zipTool[0])
-		os.close(zipTool[1])
-		os.close(zipTool[2])
-		if archiveErr:
-			cairn.error("Error running archive tool: %s" % archiveErr)
-		if zipErr:
-			cairn.error("Error running zip tool: %s" % zipErr)
-		if archiveErr or zipErr:
-			raise cairn.Exception("Error running a tool")
+					os.write(zipTool.stdin, buff)
+					if size:
+						readTotal = readTotal + len(buff)
+						readMeg = readMeg + len(buff)
+						if readMeg > 1048576:
+							readMeg = readMeg - 1048576
+							readSize = readSize + 1
+							if readSize:
+								percent = int((float(readSize) / float(size)) * 100)
+							if percent != lastPercent:
+								print "total read/size=per", readTotal, readSize, size, percent
+								lastPercent = percent
+								self.displayPercent(percent)
+				if sel == archiveTool.stderr:   ### Archive err
+					buff = os.read(archiveTool.stderr, 1024)
+					if buff:
+						archiveTool.err = archiveTool.err + buff
+					else:
+						readfds.remove(archiveTool.stderr)
+				if sel == zipTool.stderr:   ### Zip err
+					buff = os.read(zipTool.stderr, 1024)
+					if buff:
+						zipTool.err = zipTool.err + buff
+					else:
+						readfds.remove(zipTool.stderr)
+		archiveTool.wait()
+		zipTool.wait()
+		err = ""
+		if archiveTool.err:
+			err = "Error running archive tool: %s" % archiveTool.err
+		if zipTool.err:
+			err = err + "Error running zip tool: %s" % zipTool.err
+		if (archiveTool.exit() != 0) or (zipTool.exit() != 0):
+			raise cairn.Exception("Error running a tool: %s" % err)
 		return
+
+
+	def displayPercent(self, percent):
+		print "%d%%" % percent
 
 
 	def run(self, sysdef):
