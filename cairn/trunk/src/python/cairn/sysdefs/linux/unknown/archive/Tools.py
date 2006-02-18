@@ -6,18 +6,16 @@ import cairn
 import cairn.sysdefs.templates.unix.archive.Tools as tmpl
 
 
+
 def getClass():
 	return Tools()
 
-
-ARCHIVE = ["tar", "star"]
-ZIP = ["bzip2", "gzip"]
 
 
 class Tools(tmpl.Tools):
 
 	def setArchiveCmd(self, sysdef):
-		method = sysdef.info.get("archive/archive-tool")
+		method = sysdef.info.get("env/archive-tool-user")
 		if method == "env/tools/tar":
 			self.setTarCmd(sysdef)
 		elif method == "env/tools/star":
@@ -40,7 +38,7 @@ class Tools(tmpl.Tools):
 
 
 	def setZipCmd(self, sysdef):
-		method = sysdef.info.get("archive/zip-tool")
+		method = sysdef.info.get("env/zip-tool-user")
 		if method == "env/tools/bzip2":
 			self.setBzip2Cmd(sysdef)
 		elif method == "env/tools/gzip":

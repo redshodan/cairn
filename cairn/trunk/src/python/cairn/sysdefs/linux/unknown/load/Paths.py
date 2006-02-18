@@ -3,7 +3,7 @@
 
 import cairn.sysdefs as sysdefs
 import cairn.sysdefs.templates.unix.load.Paths as tmpl
-
+from cairn.sysdefs.Tools import Tool, ToolGroup
 
 
 def getClass():
@@ -14,14 +14,16 @@ def getClass():
 class Paths(tmpl.Paths):
 	def __init__(self):
 		self.__PATH = "/sbin:/usr/sbin:/bin:/usr/bin"
-		self.__BINS = { "env/tools/part" : [sysdefs.PATH_REQUIRED, "sfdisk"],
-						"env/tools/mount" : [sysdefs.PATH_REQUIRED, "mount"],
-						"env/archive-tool" : [sysdefs.PATH_GROUP,
-											  {"env/tools/tar" : "tar",
-											   "env/tools/star" : "star"}],
-						"env/zip-tool" : [sysdefs.PATH_GROUP,
-										  {"env/tools/bzip2" : "bzip2",
-										   "env/tools/gzip" : "gzip",
-										   "env/tools/compress" : "compress"}]
-					  }
-
+		self.__BINS = [ Tool("sfdisk", "env/tools/part", True),
+		                Tool("mount", "env/tools/mount", True),
+						ToolGroup("env/archive-tool", "env/archive-tool-user",
+								  "archive", True,
+								  [ Tool("tar", "env/tools/tar", False),
+									Tool("star", "env/tools/star", False) ]),
+						ToolGroup("env/zip-tool", "env/zip-tool-user", "zip",
+								  True,
+								  [ Tool("bzip2", "env/tools/bzip2", False),
+									Tool("gzip", "env/tools/gzip", False),
+									Tool("compress", "env/tools/compress",
+										 False) ])
+					  ]

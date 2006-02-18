@@ -2,6 +2,7 @@
 
 
 import cairn.sysdefs.templates.unix.LoadPaths as tmpl
+from cairn.sysdefs.Tools import Tool, ToolGroup
 
 
 
@@ -13,9 +14,7 @@ def getClass():
 class LoadPaths(tmpl.LoadPaths):
 	def __init__(self):
 		super(Paths, self).__init__()
-		bins = { "env/tools/mkfs.ext2" : [sysdefs.PATH_REQUIRED,
-										  "mkfs.ext2"],
-				 "env/tools/mkfs.ext3" : [sysdefs.PATH_REQUIRED,
-										  "mkfs.ext3"]
-			   }
-		self.__BINS.update(bins)
+		bins = [ Tool("mkfs.ext2", "env/tools/mkfs.ext2", True),
+				 Tool("mkfs.ext3", "env/tools/mkfs.ext3", True)
+			   ]
+		self.__BINS = self.__BINS + bins

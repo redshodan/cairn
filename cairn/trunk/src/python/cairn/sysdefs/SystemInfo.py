@@ -359,7 +359,7 @@ class SystemInfo(object):
 
 
 	def saveToFile(self, file):
-		self.doc.writexml(file)
+		self.doc.writexml(file, "", "  ", "\n")
 		return
 
 

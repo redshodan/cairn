@@ -15,11 +15,6 @@ __sysdef = object()
 __quit = False
 
 
-PATH_GROUP = 0
-PATH_OPTIONAL = 1
-PATH_REQUIRED = 2
-
-
 def getDef():
 	return __sysdef
 
@@ -183,28 +178,3 @@ def verifySysDef(partialMatches, exactMatches, module):
 	if func():
 		exactMatches.append(module)
 	return
-
-
-def findPaths(path, bins):
-	"""Finds the binaries in the bins map using the path supplied"""
-	getInfo().set("env/path", path)
-	for key, arr in bins.iteritems():
-		if (arr[0] == PATH_REQUIRED) or (arr[0] == PATH_OPTIONAL):
-			getInfo().set(key, IModule.findFileInPath(path, arr[1]))
-		elif arr[0] == PATH_GROUP:
-			first = None
-			for subkey, name in arr[1].iteritems():
-				bin = IModule.findFileInPath(path, name)
-				if bin:
-					getInfo().set(subkey, bin)
-					if not first:
-						first = subkey
-				else:
-					getInfo().set(subkey, "")
-			if first:
-				getInfo().set(key, first)
-		# Verify it was found
-		if not getInfo().get(key):
-			raise cairn.Exception("Failed to find required binary: %s" % val,
-								  cairn.ERR_BINARY)
-	return True
