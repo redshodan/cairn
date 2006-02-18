@@ -208,7 +208,7 @@ def parseOpts(opts, args, optMap):
 	if len(args) == 1:
 		set("filename", args[0])
 		sysInfoOpts["archive/filename"] = args[0]
-	elif len(args) > 1:
+	elif len(args) > 1 or len(args) == 0:
 		usage()
 	return
 

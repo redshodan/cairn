@@ -1,6 +1,8 @@
 """cairn.sysdefs.Tools"""
 
 
+import os
+
 import cairn
 from cairn import Options
 from cairn.sysdefs import IModule

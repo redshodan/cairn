@@ -244,7 +244,7 @@ class SystemInfo(object):
 		elem = self.createElem(archive, "filename")
 		elem = self.createPaddedElem(archive, "md5sum", PADDING_MD5)
 		elem = self.createPaddedElem(archive, "size", PADDING_INT)
-		elem = self.createPaddedElem(archive, "offset", PADDING_INT)
+		elem = self.createPaddedElem(archive, "shar-offset", PADDING_INT)
 		elem = self.createElem(archive, "real-size")
 		elem = self.createElem(archive, "adjusted-size")
 		elem = self.createElem(archive, "date")
