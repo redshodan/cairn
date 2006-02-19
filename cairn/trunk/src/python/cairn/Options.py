@@ -113,9 +113,13 @@ cliCopyOpts = {
  "archive" : ["tar", None, STR, None, None,
 			  "Archive type to use: tar, star"],
  "nosize" : [None, None, BOOL, None, None,
-			 "Do not try to find a size estimate. This disables progress reporting"],
+			 "Do not try to find a size estimate. This disables progress" + \
+			 " reporting"],
  "noshar" : [None, None, BOOL, "archive/shar", None,
 			 "Create a plain archive without the metadata prepended."],
+ "quick" : [False, "q", BOOL, None, None,
+			"Skip time consuming steps that are not absolutly needed, eg:" + \
+			" precise progress meter"],
  "zip" : ["bzip2", None, STR, None, None, "Zip type to use: bzip2, gzip"]
 }
 

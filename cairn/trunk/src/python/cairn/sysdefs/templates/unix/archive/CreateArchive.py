@@ -22,6 +22,16 @@ def getClass():
 
 
 
+class Percent(object):
+	def __init__(self, size):
+		self.size = size
+		self.readTotal = 0
+		self.readSize = 0
+		self.readMeg = 0
+		self.last = 0
+
+
+
 class CreateArchive(object):
 
 	def prepArchive(self, sysdef):
@@ -64,13 +74,9 @@ class CreateArchive(object):
 
 
 	def runPipe(self, sysdef, archiveTool, zipTool):
-		size = 0
+		percent = None
 		if sysdef.info.get("archive/adjusted-size"):
-			size = int(sysdef.info.get("archive/adjusted-size"))
-		readTotal = 0
-		readSize = 0
-		readMeg = 0
-		lastPercent = 0
+			percent = Percent(int(sysdef.info.get("archive/adjusted-size")))
 		readfds = [ archiveTool.stdout, archiveTool.stderr, zipTool.stderr]
 		running = True
 		self.displayPercent(0)
@@ -83,20 +89,7 @@ class CreateArchive(object):
 						running = False
 						break
 					os.write(zipTool.stdin, buff)
-					if size:
-						readTotal = readTotal + len(buff)
-						readMeg = readMeg + len(buff)
-						if readMeg > 1048576:
-							readMeg = readMeg - 1048576
-							readSize = readSize + 1
-							if readSize:
-								percent = int((float(readSize) / float(size)) *
-											  100)
-							if percent != lastPercent:
-								#print "total read/size=per", readTotal, \
-								#	  readSize, size, percent
-								lastPercent = percent
-								self.displayPercent(percent)
+					self.processPercent(percent, len(buff))
 				if sel == archiveTool.stderr:   ### Archive err
 					buff = os.read(archiveTool.stderr, 1024)
 					if buff:
@@ -109,7 +102,7 @@ class CreateArchive(object):
 						zipTool.err = zipTool.err + buff
 					else:
 						readfds.remove(zipTool.stderr)
-		print
+		self.finishDisplayPercent()
 		archiveTool.wait()
 		zipTool.wait()
 		err = ""
@@ -122,9 +115,33 @@ class CreateArchive(object):
 		return
 
 
+	def processPercent(self, percent, buffSize):
+		if not percent:
+			return
+		percent.readTotal = percent.readTotal + buffSize
+		percent.readMeg = percent.readMeg + buffSize
+		if percent.readMeg > 1048576:
+			percent.readMeg = percent.readMeg - 1048576
+			percent.readSize = percent.readSize + 1
+			if percent.readSize:
+				cur = int((float(percent.readSize) / float(percent.size)) *
+							  100)
+			if cur != percent.last:
+				print "total read/size=cur", percent.readTotal, \
+					  percent.readSize, percent.size, cur
+				percent.lastPercent = cur
+				self.displayPercent(cur)
+		return
+
+
 	def displayPercent(self, percent):
 		print "\r%d%%  " % percent,
 		sys.stdout.flush()
+		return
+
+
+	def finishDisplayPercent(self):
+		print
 		return
 
 

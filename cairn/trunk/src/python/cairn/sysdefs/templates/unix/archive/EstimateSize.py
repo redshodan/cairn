@@ -74,7 +74,8 @@ class EstimateSize(object):
 		goodExcludes = self.collateExcludes(sysdef)
 		excludedSize = self.findExcludedSize(sysdef, goodExcludes)
 		sysdef.info.set("archive/real-size", "%d" % (totalSize))
-		sysdef.info.set("archive/adjusted-size", "%d" % (totalSize - excludedSize))
+		sysdef.info.set("archive/adjusted-size", "%d" % (totalSize -
+														 excludedSize))
 		cairn.verbose("Total size: %dM" % (totalSize))
 		cairn.verbose("Total excluded size: %dM" % (excludedSize))
 		cairn.verbose("Adjusted size: %dM" % (totalSize - excludedSize))
