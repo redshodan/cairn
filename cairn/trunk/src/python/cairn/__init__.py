@@ -1,6 +1,9 @@
 """CAIRN top level definitions"""
 
 
+import sys
+
+
 from types import *
 from cairn import Options
 
@@ -66,6 +69,11 @@ def vvverbose(str = None):
 	return False
 
 
-def log(str = None):
-	if str: print str
+def log(str = None, newline = True):
+	if str:
+		if newline:
+			print str
+		else:
+			print str,
+			sys.stdout.flush()
 	return True

@@ -38,8 +38,8 @@ class Excludes(object):
 		try:
 			userFile = file(userFileName, "r")
 		except Exception, err:
-			raise cairn.Exception("Unable to open excludes file %s: %s" % (userFileName,
-																		   err))
+			raise cairn.Exception("Unable to open excludes file %s: %s" % \
+								  (userFileName, err))
 		for exclude in userFile:
 			exclude = self.cleanExclude(exclude)
 			sysdef.info.createArchiveExcludesElem(exclude, "user")

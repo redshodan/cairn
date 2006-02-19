@@ -23,12 +23,10 @@ def getClass():
 
 
 class Percent(object):
-	def __init__(self, size):
-		self.size = size
-		self.readTotal = 0
-		self.readSize = 0
-		self.readMeg = 0
-		self.last = 0
+	def __init__(self, estimated):
+		self.estimated = estimated
+		self.read = 0l
+		self.lastPercent = 0
 
 
 
@@ -74,9 +72,7 @@ class CreateArchive(object):
 
 
 	def runPipe(self, sysdef, archiveTool, zipTool):
-		percent = None
-		if sysdef.info.get("archive/adjusted-size"):
-			percent = Percent(int(sysdef.info.get("archive/adjusted-size")))
+		percent = Percent(long(sysdef.info.get("archive/estimated-size")))
 		readfds = [ archiveTool.stdout, archiveTool.stderr, zipTool.stderr]
 		running = True
 		self.displayPercent(0)
@@ -116,21 +112,12 @@ class CreateArchive(object):
 
 
 	def processPercent(self, percent, buffSize):
-		if not percent:
-			return
-		percent.readTotal = percent.readTotal + buffSize
-		percent.readMeg = percent.readMeg + buffSize
-		if percent.readMeg > 1048576:
-			percent.readMeg = percent.readMeg - 1048576
-			percent.readSize = percent.readSize + 1
-			if percent.readSize:
-				cur = int((float(percent.readSize) / float(percent.size)) *
-							  100)
-			if cur != percent.last:
-				print "total read/size=cur", percent.readTotal, \
-					  percent.readSize, percent.size, cur
-				percent.lastPercent = cur
-				self.displayPercent(cur)
+		percent.read = percent.read + buffSize
+		cur = int((float(percent.read) / float(percent.estimated)) *
+				  100)
+		if cur != percent.lastPercent:
+			percent.lastPercent = cur
+			self.displayPercent(cur)
 		return
 
 
@@ -141,6 +128,7 @@ class CreateArchive(object):
 
 
 	def finishDisplayPercent(self):
+		self.displayPercent(100)
 		print
 		return
 

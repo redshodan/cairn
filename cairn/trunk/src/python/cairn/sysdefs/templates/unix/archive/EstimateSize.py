@@ -1,9 +1,11 @@
 """templates.unix.copy.EstimateSize Module"""
 
 
-import commands
-import re
-import fnmatch
+
+import os
+import os.path
+import stat
+
 
 import cairn
 from cairn import Options
@@ -17,66 +19,69 @@ def getClass():
 
 class EstimateSize(object):
 
-	def findTotalSize(self, sysdef):
-		totalSize = long(0)
-		for drive in sysdef.info.getElems("hardware/drive"):
-			for partition in sysdef.info.getElems("partition", drive):
-				space = sysdef.info.getElem("space", partition)
-				if space:
-					used = sysdef.info.get("used", space)
-					totalSize = totalSize + long(used)
-		return totalSize
-
-
 	def collateExcludes(self, sysdef):
-		excludes = sysdef.info.getElems("archive/excludes/exclude")
-		if not excludes:
-			return 0
-		user = []
+		excludeElems = sysdef.info.getElems("archive/excludes/exclude")
+		if not excludeElems:
+			return []
 		all = []
-		for exclude in excludes:
-			all.append(sysdef.info.getText(exclude))
-			if exclude.getAttribute("type") == "user":
-				user.append(sysdef.info.getText(exclude))
-		good = []
-		for userX in user:
-			add = True
-			userX = userX.rstrip("*")
-			for fs in all:
-				fs = fs.rstrip("*")
-				if (userX != fs) and userX.startswith(fs):
-					add = False
-					break
-			if add:
-				good.append(userX)
-				cairn.verbose("User requested exclude of: %s" % (userX))
-		return good
+		for excludeElem in excludeElems:
+			exclude = sysdef.info.getText(excludeElem)
+			exclude = exclude.strip().rstrip("*").rstrip("/")
+			allRemoves = []
+			if len(all):
+				excludePath = exclude + "/"
+				add = True
+				for iter in all:
+					if iter.startswith(excludePath):
+						allRemoves.append(iter)
+						break
+					elif exclude.startswith(iter):
+						add = False
+						break
+				if add:
+					all.append(exclude)
+				for r in allRemoves:
+					all.remove(r)
+			elif not exclude in all:
+				all.append(exclude)
+		return all
 
 
-	def findExcludedSize(self, sysdef, goodExcludes):
-		cmd = sysdef.info.get("archive/diskusage-tool-cmd")
-		excludeSize = 0
-		for exclude in goodExcludes:
-			ret = commands.getstatusoutput("%s %s" % (cmd, exclude))
-			if ret[0] != 0:
-				raise cairn.Exception("Unable to run du: %s" % (ret[1]))
-			arr = ret[1].split()
-			excludeSize = excludeSize + int(arr[0])
-			cairn.verbose("Exclude %s contains %dM" % (exclude, int(arr[0])))
-		return excludeSize
+	# This is a measure of the space usage of tar (also star) file format
+	def findTotalSize(self, sysdef, excludes):
+		total = 0L
+		removes = []
+		for root, dirs, files in os.walk("/"):
+			for dir in dirs:
+				full = os.path.join(root, dir)
+				if full in excludes:
+					excludes.remove(full)
+					removes.append(dir)
+			if len(removes):
+				for iter in removes:
+					dirs.remove(iter)
+				removes = []
+			total = total + 512
+			for file in files:
+				fileName = os.path.join(root, file)
+				info = os.lstat(fileName)
+				if stat.S_ISREG(info[stat.ST_MODE]) or \
+					   stat.S_ISLNK(info[stat.ST_MODE]):
+					remain = info[stat.ST_SIZE] % 512
+					if remain > 0:
+						total = total + (512 + info[stat.ST_SIZE] +
+										 512 - remain)
+					else:
+						total = total + (512 + info[stat.ST_SIZE])
+				else:
+					total = total + 512
+		return total
 
 
 	def run(self, sysdef):
-		if Options.get("nosize"):
-			return True
-		cairn.log("Estimating archive size")
-		totalSize = self.findTotalSize(sysdef)
-		goodExcludes = self.collateExcludes(sysdef)
-		excludedSize = self.findExcludedSize(sysdef, goodExcludes)
-		sysdef.info.set("archive/real-size", "%d" % (totalSize))
-		sysdef.info.set("archive/adjusted-size", "%d" % (totalSize -
-														 excludedSize))
-		cairn.verbose("Total size: %dM" % (totalSize))
-		cairn.verbose("Total excluded size: %dM" % (excludedSize))
-		cairn.verbose("Adjusted size: %dM" % (totalSize - excludedSize))
+		excludes = self.collateExcludes(sysdef)
+		cairn.log("Estimating archive size... ", False)
+		totalSize = self.findTotalSize(sysdef, excludes)
+		cairn.log("%.3fG" % (totalSize / 1073741824.0))
+		sysdef.info.set("archive/estimated-size", "%ld" % (totalSize))
 		return True

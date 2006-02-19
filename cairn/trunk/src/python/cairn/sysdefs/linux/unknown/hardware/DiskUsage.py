@@ -2,6 +2,7 @@
 
 
 import os
+import os.path
 from statvfs import *
 
 import cairn
@@ -27,7 +28,10 @@ class DiskUsage(tmpl.DiskUsage):
 		if (not sysdef.info.get("mount", partition) or
 			(sysdef.info.get("mount", partition) == "none")):
 			return
-		info = os.statvfs(sysdef.info.get("mount", partition))
+		mount = sysdef.info.get("mount", partition)
+		if not os.path.ismount(mount):
+			raise cairn.Exception("Mount '%s' is not mounted." % mount)
+		info = os.statvfs(mount)
 		total = "%d" % ((info[F_BLOCKS] * 4) / 1024)
 		used = "%d" % (((info[F_BLOCKS] - info[F_BAVAIL]) * 4) / 1024)
 		free = "%d" % ((info[F_BAVAIL] * 4) / 1024)

@@ -3,9 +3,10 @@
 
 
 import getopt
-import sys
+import os
 import re
 import string
+import sys
 
 import cairn
 
@@ -112,9 +113,6 @@ cliCommonOpts = {
 cliCopyOpts = {
  "archive" : ["tar", None, STR, None, None,
 			  "Archive type to use: tar, star"],
- "nosize" : [None, None, BOOL, None, None,
-			 "Do not try to find a size estimate. This disables progress" + \
-			 " reporting"],
  "noshar" : [None, None, BOOL, "archive/shar", None,
 			 "Create a plain archive without the metadata prepended."],
  "quick" : [False, "q", BOOL, None, None,
@@ -234,8 +232,9 @@ def parseOpts(opts, args, optMap):
 			else:
 				defSetter(optMap, opt, arg)
 	if len(args) == 1:
-		set("filename", args[0])
-		sysInfoOpts["archive/filename"] = args[0]
+		str = os.path.abspath(args[0])
+		set("filename", str)
+		sysInfoOpts["archive/filename"] = str
 	elif len(args) > 1:
 		usage()
 	elif (len(args) == 0) and ourFileRequired:
