@@ -35,10 +35,26 @@ cliRestoreHelpHeader = "usage: crestore [args] file"
 
 # Custom opt setters. Have to be here before the opts array.
 def setVerboseOpt(opt, arg):
-	if get(opt):
-		set(opt, get(opt) + 1)
+	if not arg and get("log"):
+		set("log", get("log") + 1)
 	else:
-		set(opt, 1)
+		set("log", cairn.VERBOSE)
+	return
+
+
+def setLogOpt(opt, arg):
+	if arg == "error":
+		set(opt, cairn.ERROR)
+	elif arg == "warn":
+		set(opt, cairn.WARN)
+	elif arg == "log":
+		set(opt, cairn.LOG)
+	elif arg == "verbose":
+		set(opt, cairn.VERBOSE)
+	elif arg == "debug":
+		set(opt, cairn.DEBUG)
+	else:
+		usage()
 	return
 
 
@@ -93,6 +109,8 @@ cliCommonOpts = {
 				   "File containing exclude directives"],
  "force" : [False, "f", BOOL, None, None, "Force operation, ignoring errors."],
  "help" : [False, "h", BOOL, None, setHelpOpt, None],
+ "log" : [cairn.LOG, "l", STR, None, setLogOpt,
+		  "Or specify log level: none, error, warn, log (default), verbose, debug"],
  "modules" : [None, "m", STR, None, None, "List of modules to load."],
  "path" : ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, "env/path", None,
 		   "Path to find programs to run."],
@@ -207,10 +225,12 @@ def buildOptions(optMap):
 			if row[SHORT]:
 				shortOpts[i] = row[SHORT] + ":"
 			longOpts[i] = name + "="
-		else:
+		elif row[TYPE] == BOOL:
 			if row[SHORT]:
 				shortOpts[i] = row[SHORT]
 			longOpts[i] = name
+		else:
+			raise cairn.Exception("Programming error: Bad type in cmdline arg table")
 		i = i + 1
 	return string.joinfields(shortOpts, ""), longOpts
 

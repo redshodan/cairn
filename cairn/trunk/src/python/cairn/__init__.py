@@ -5,7 +5,6 @@ import sys
 
 
 from types import *
-from cairn import Options
 
 
 # Error codes
@@ -13,6 +12,18 @@ ERR_UNKNOWN = 1
 ERR_MODULE = 2
 ERR_SYSDEF = 3
 ERR_BINARY = 4
+
+# Log levels
+NONE = 0
+ERROR = 1
+WARN = 2
+LOG = 3
+VERBOSE = 4
+DEBUG = 5
+
+
+# Have to import Options AFTER log levels are defined
+from cairn import Options
 
 
 
@@ -31,49 +42,50 @@ class Exception(Exception):
 		return
 
 
-def warn(str):
-	print "Warning: " + str
-	return
-
-
 def error(str):
-	print "Error: " + str
-	return
-
-
-def debug(str = None):
-	if Options.get("verbose"):
-		if str: print str
+	if Options.get("log") >= ERROR:
+		if str:
+			print "Error: " + str
 		return True
-	return False
+	else:
+		return False
 
 
-def verbose(str = None):
-	if Options.get("verbose"):
-		if str: print str
+def warn(str):
+	if Options.get("log") >= WARN:
+		if str:
+			print "Warning: " + str
 		return True
-	return False
-
-
-def vverbose(str = None):
-	if Options.get("verbose") >= 2:
-		if str: print str
-		return True
-	return False
-
-
-def vvverbose(str = None):
-	if Options.get("verbose") >= 3:
-		if str: print str
-		return True
-	return False
+	else:
+		return False
 
 
 def log(str = None, newline = True):
-	if str:
-		if newline:
+	if Options.get("log") >= LOG:
+		if str:
+			if newline:
+				print str
+			else:
+				print str,
+				sys.stdout.flush()
+		return True
+	else:
+		return False
+
+
+def verbose(str = None):
+	if Options.get("log") >= VERBOSE:
+		if str:
 			print str
-		else:
-			print str,
-			sys.stdout.flush()
-	return True
+		return True
+	else:
+		return False
+
+
+def debug(str = None):
+	if Options.get("log") >= DEBUG:
+		if str:
+			print str
+		return True
+	else:
+		return False
