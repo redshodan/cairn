@@ -2,6 +2,7 @@
 
 
 import sys
+import inspect
 
 
 from types import *
@@ -20,6 +21,9 @@ WARN = 2
 LOG = 3
 VERBOSE = 4
 DEBUG = 5
+
+#global __moduleLogMap
+__moduleLogMap = {}
 
 
 # Have to import Options AFTER log levels are defined
@@ -42,8 +46,32 @@ class Exception(Exception):
 		return
 
 
+def setModuleLogLevel(module, level):
+	__moduleLogMap[module] = level
+	return
+
+
+def getModuleLogLevel(module):
+	return __moduleLogMap[module]
+
+
+def strToLogLevel(str):
+	if str == "error":
+		return ERROR
+	elif str == "warn":
+		return WARN
+	elif str == "log":
+		return LOG
+	elif str == "verbose":
+		return VERBOSE
+	elif str == "debug":
+		return DEBUG
+	else:
+		return None
+
+
 def error(str):
-	if Options.get("log") >= ERROR:
+	if __getCallers2LogLevel() >= ERROR:
 		if str:
 			print "Error: " + str
 		return True
@@ -52,7 +80,7 @@ def error(str):
 
 
 def warn(str):
-	if Options.get("log") >= WARN:
+	if __getCallers2LogLevel() >= WARN:
 		if str:
 			print "Warning: " + str
 		return True
@@ -61,7 +89,7 @@ def warn(str):
 
 
 def log(str = None, newline = True):
-	if Options.get("log") >= LOG:
+	if __getCallers2LogLevel() >= LOG:
 		if str:
 			if newline:
 				print str
@@ -74,7 +102,7 @@ def log(str = None, newline = True):
 
 
 def verbose(str = None):
-	if Options.get("log") >= VERBOSE:
+	if __getCallers2LogLevel() >= VERBOSE:
 		if str:
 			print str
 		return True
@@ -83,9 +111,20 @@ def verbose(str = None):
 
 
 def debug(str = None):
-	if Options.get("log") >= DEBUG:
+	if __getCallers2LogLevel() >= DEBUG:
 		if str:
 			print str
 		return True
 	else:
 		return False
+
+
+# Only call from a function in this module. It assumes the desired frame to look
+# at is 2 above its own frame.
+def __getCallers2LogLevel():
+	srcFile = inspect.getouterframes(inspect.currentframe())[2][1]
+	srcFile = srcFile.replace("/", ".").rstrip(".py")
+	for key, val in __moduleLogMap.iteritems():
+		if srcFile.endswith(key):
+			return val
+	return Options.get("log")

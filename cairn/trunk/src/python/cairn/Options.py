@@ -43,18 +43,19 @@ def setVerboseOpt(opt, arg):
 
 
 def setLogOpt(opt, arg):
-	if arg == "error":
-		set(opt, cairn.ERROR)
-	elif arg == "warn":
-		set(opt, cairn.WARN)
-	elif arg == "log":
-		set(opt, cairn.LOG)
-	elif arg == "verbose":
-		set(opt, cairn.VERBOSE)
-	elif arg == "debug":
-		set(opt, cairn.DEBUG)
+	if cairn.strToLogLevel(arg):
+		set(opt, cairn.strToLogLevel(arg))
 	else:
 		usage()
+	return
+
+
+def setLogModuleOpt(opt, arg):
+	if arg.find("=") <= 0:
+		usage()
+	else:
+		arr = arg.split("=")
+		cairn.setModuleLogLevel(arr[0], cairn.strToLogLevel(arr[1]))
 	return
 
 
@@ -110,7 +111,9 @@ cliCommonOpts = {
  "force" : [False, "f", BOOL, None, None, "Force operation, ignoring errors."],
  "help" : [False, "h", BOOL, None, setHelpOpt, None],
  "log" : [cairn.LOG, "l", STR, None, setLogOpt,
-		  "Or specify log level: none, error, warn, log (default), verbose, debug"],
+	"Or specify log level: none, error, warn, log (default), verbose, debug"],
+ "logmodule" : [None, None, STR, None, setLogModuleOpt,
+	"Set loglevel for a particular module eg: cairn.sysdefs=debug"],
  "modules" : [None, "m", STR, None, None, "List of modules to load."],
  "path" : ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, "env/path", None,
 		   "Path to find programs to run."],
