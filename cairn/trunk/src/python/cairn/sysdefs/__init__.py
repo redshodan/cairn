@@ -74,7 +74,8 @@ def verifyModuleList():
 
 
 def run():
-	cairn.debug("Final module list: " + getModuleList().toString())
+	cairn.debug("Final static module list: ")
+	cairn.debug(getModuleList().toString("  ", "\n"))
 	for module in getModuleList().iter():
 		if haveQuit():
 			cairn.debug("Module requested quit")

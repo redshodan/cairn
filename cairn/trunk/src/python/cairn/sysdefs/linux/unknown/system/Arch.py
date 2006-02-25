@@ -1,10 +1,10 @@
-"""linux.unknown.load.Arch Module"""
+"""linux.unknown.system.Arch Module"""
 
 
 import re
 import string
 
-import cairn.sysdefs.templates.unix.load.Arch as tmpl
+import cairn.sysdefs.templates.unix.system.Arch as tmpl
 
 
 

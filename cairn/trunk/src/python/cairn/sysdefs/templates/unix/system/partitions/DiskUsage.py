@@ -1,4 +1,4 @@
-"""templates.unix.hardware.DiskUsage Module"""
+"""templates.unix.system.partitions.DiskUsage Module"""
 
 
 

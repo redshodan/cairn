@@ -40,7 +40,7 @@ class SystemDefinition(object):
 
 
 	def getInitModuleString(self):
-		return "load; hardware;"
+		return "system;"
 
 
 	def getCopyModuleString(self):

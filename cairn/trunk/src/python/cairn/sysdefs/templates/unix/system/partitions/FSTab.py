@@ -1,4 +1,4 @@
-"""templates.unix.hardware.FSTab Module"""
+"""templates.unix.system.partitions.FSTab Module"""
 
 
 import os

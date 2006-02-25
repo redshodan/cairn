@@ -158,11 +158,8 @@ class ModuleList(object):
 		return True
 
 
-	def toString(self):
-		str = None
+	def toString(self, padding = ", ", eol = ""):
+		str = ""
 		for module in self.__list:
-			if not str:
-				str = module.__name__
-			else:
-				str = "%s, %s" % (str, module.__name__)
+			str = "%s%s%s%s" % (str, padding, module.__name__, eol)
 		return str

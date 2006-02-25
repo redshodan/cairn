@@ -1,8 +1,8 @@
-"""linux.unknown.load.Paths Module"""
+"""linux.unknown.system.Paths Module"""
 
 
 import cairn.sysdefs as sysdefs
-import cairn.sysdefs.templates.unix.load.Paths as tmpl
+import cairn.sysdefs.templates.unix.system.Paths as tmpl
 from cairn.sysdefs.Tools import Tool, ToolGroup
 
 

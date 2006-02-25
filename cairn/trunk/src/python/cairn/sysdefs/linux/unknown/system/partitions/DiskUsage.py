@@ -1,4 +1,4 @@
-"""templates.unix.hardware.DiskUsage Module"""
+"""linux.unknown.system.partitions.DiskUsage Module"""
 
 
 import os
@@ -6,7 +6,7 @@ import os.path
 from statvfs import *
 
 import cairn
-import cairn.sysdefs.templates.unix.hardware.DiskUsage as tmpl
+import cairn.sysdefs.templates.unix.system.partitions.DiskUsage as tmpl
 
 
 
