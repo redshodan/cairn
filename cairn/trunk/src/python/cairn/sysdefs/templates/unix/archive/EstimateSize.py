@@ -11,6 +11,9 @@ import cairn
 from cairn import Options
 
 
+TAR_BLKSIZE = 512
+
+
 
 def getClass():
 	return EstimateSize()
@@ -61,20 +64,26 @@ class EstimateSize(object):
 				for iter in removes:
 					dirs.remove(iter)
 				removes = []
-			total = total + 512
+			# Header block for current dir
+			print "dir: %s, 512" % root
+			total = total + TAR_BLKSIZE
 			for file in files:
+				# Header block
+				total = total + TAR_BLKSIZE
 				fileName = os.path.join(root, file)
+				print "file:  %s" % fileName
 				info = os.lstat(fileName)
 				if stat.S_ISREG(info[stat.ST_MODE]) or \
 					   stat.S_ISLNK(info[stat.ST_MODE]):
-					remain = info[stat.ST_SIZE] % 512
-					if remain > 0:
-						total = total + (512 + info[stat.ST_SIZE] +
-										 512 - remain)
-					else:
-						total = total + (512 + info[stat.ST_SIZE])
-				else:
-					total = total + 512
+					print "       size=%d blocks=%d" % (info[stat.ST_SIZE],
+														(info[stat.ST_SIZE] / TAR_BLKSIZE))
+					# Whole number of blocks used
+					total = total + (TAR_BLKSIZE *
+									 (info[stat.ST_SIZE] / TAR_BLKSIZE))
+					# Remainder (partial) block
+					if (info[stat.ST_SIZE] % TAR_BLKSIZE) > 0:
+						print "       +1 block"
+						total = total + TAR_BLKSIZE
 		return total
 
 

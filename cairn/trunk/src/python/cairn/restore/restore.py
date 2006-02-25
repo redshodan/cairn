@@ -4,7 +4,7 @@
 import sys
 
 import cairn
-from cairn import sysdefs 
+from cairn import sysdefs
 import cairn.Options as Options
 
 
@@ -20,7 +20,7 @@ class Restore(object):
 		Options.parseCmdLineOpts()
 		sysdefs.load()
 		sysdefs.run()
-		sysdefs.printSummary()
+		cairn.log("Archive restore finished")
 		return
 
 def run():
