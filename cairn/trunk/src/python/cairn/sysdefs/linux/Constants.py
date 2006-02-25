@@ -2,6 +2,10 @@
 
 
 
+import re
+
+
+
 IGNORED_FS = [
 	# Pseudo filesystems
 	"proc", "sysfs", "tmpfs", "usbfs", "devpts",
@@ -12,3 +16,6 @@ IGNORED_FS = [
 	# Misc
 	"iso9660"
 ]
+
+DEVICE_RE = [re.compile("hd[a-z]+"), re.compile("sd[a-z]+"),
+			 re.compile("ubd[a-z]+")]

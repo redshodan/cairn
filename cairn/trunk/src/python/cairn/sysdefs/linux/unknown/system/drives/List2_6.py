@@ -1,25 +1,25 @@
-"""linux.unknown.hardware.Drives.Drives2_6 Module"""
+"""linux.unknown.system.drives.List2_6 Module"""
 
 
 import os
 import re
 
 import cairn
-import cairn.sysdefs.templates.unix.hardware.Drives as tmpl
-from cairn.sysdefs.linux.unknown.hardware import Drives
+import cairn.sysdefs.templates.unix.system.drives.List as tmpl
+from cairn.sysdefs.linux import Shared
 
 
 
 def getClass():
-	return Drives2_6()
+	return List2_6()
 
 
-class Drives2_6(tmpl.Drives):
+class List2_6(tmpl.List):
 
 	def run(self, sysdef):
 		cairn.log("Checking drives")
 		for device in os.listdir("/sys/block"):
-			if not Drives.matchDevice(device):
+			if not Shared.matchDevice(device):
 				continue
 			removable = file("/sys/block/%s/removable" % device, "r")
 			for line in removable:
