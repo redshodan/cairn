@@ -1,17 +1,17 @@
-"""Unknown Linux system definitions"""
+"""linux.unknown.restore.system.Paths Module"""
 
 
-import cairn.sysdefs.templates.unix.LoadPaths as tmpl
+import cairn.sysdefs.templates.system.Paths as tmpl
 from cairn.sysdefs.Tools import Tool, ToolGroup
 
 
 
 def getClass():
-	return LoadPaths()
+	return Paths()
 
 
 
-class LoadPaths(tmpl.LoadPaths):
+class Paths(tmpl.Paths):
 	def __init__(self):
 		super(Paths, self).__init__()
 		bins = [ Tool("mkfs.ext2", "env/tools/mkfs.ext2", True),
