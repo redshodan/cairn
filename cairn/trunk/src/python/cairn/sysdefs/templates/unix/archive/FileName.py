@@ -23,5 +23,5 @@ class FileName(object):
 
 	def run(self, sysdef):
 		if not sysdef.info.get("archive/filename"):
-			sysdef.info.set("archive/filename", self.genFileName(sysdef))
+			sysdef.info.setChild("archive/filename", self.genFileName(sysdef))
 		return True

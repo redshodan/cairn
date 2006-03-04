@@ -23,12 +23,12 @@ class List(tmpl.List):
 
 	def definePartitions(self, sysdef, drive):
 		cmd = "%s -l %s" % (sysdef.info.get("env/tools/part"),
-							sysdef.info.get("device", drive))
+							drive.get("device"))
 		ret = commands.getstatusoutput(cmd)
 		if ret[0] != 0:
 			msg = "Failed to run %s to find drive information:\n" % sysdef.info.get("env/tools/part")
 			raise cairn.Exception(msg + ret[1])
-		sysdef.info.setChild(drive, "part-tool-cfg", ret[1])
+		drive.setChild("part-tool-cfg", ret[1])
 		partNum = 1
 		for line in ret[1].split("\n"):
 			if line.startswith("/dev/"):
@@ -40,7 +40,7 @@ class List(tmpl.List):
 				if arr[1] == "*":
 					offset = 1
 				part = sysdef.info.createPartitionElem(drive, "%d" % partNum)
-				sysdef.info.setChild(part, "device", arr[0])
-				sysdef.info.setChild(part, "type", arr[5 + offset])
+				part.setChild("device", arr[0])
+				part.setChild("type", arr[5 + offset])
 				partNum = partNum + 1
 		return

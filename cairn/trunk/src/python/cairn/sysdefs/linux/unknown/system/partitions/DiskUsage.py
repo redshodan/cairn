@@ -19,27 +19,26 @@ class DiskUsage(tmpl.DiskUsage):
 	def run(self, sysdef):
 		cairn.verbose("Sizing partitions")
 		for drive in sysdef.info.getElems("hardware/drive"):
-			for partition in sysdef.info.getElems("partition", drive):
+			for partition in drive.getElems("partition"):
 				self.findPartitionDiskUsage(sysdef, partition)
 		return True
 
 
 	def findPartitionDiskUsage(self, sysdef, partition):
-		if (not sysdef.info.get("mount", partition) or
-			(sysdef.info.get("mount", partition) == "none")):
+		if not partition.get("mount") or (partition.get("mount") == "none"):
 			return
-		mount = sysdef.info.get("mount", partition)
+		mount = partition.get("mount")
 		if not os.path.ismount(mount):
 			raise cairn.Exception("Mount '%s' is not mounted." % mount)
 		info = os.statvfs(mount)
 		total = "%d" % ((info[F_BLOCKS] * 4) / 1024)
 		used = "%d" % (((info[F_BLOCKS] - info[F_BAVAIL]) * 4) / 1024)
 		free = "%d" % ((info[F_BAVAIL] * 4) / 1024)
-		device = sysdef.info.get("device", partition)
+		device = partition.get("device")
 		space = sysdef.info.createPartitionSpaceElem(partition)
-		sysdef.info.setChild(space, "total", total)
-		sysdef.info.setChild(space, "used", used)
-		sysdef.info.setChild(space, "free", free)
+		space.setChild("total", total)
+		space.setChild("used", used)
+		space.setChild("free", free)
 		cairn.verbose("  %s: space: total=%sM used=%sM free=%sM" % \
 					  (device, total, used, free))
 		return

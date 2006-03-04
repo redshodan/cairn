@@ -17,9 +17,9 @@ class EstimateSizeQuick(tmpl.EstimateSize):
 	def findTotalSize(self, sysdef, excludes):
 		totalSize = long(0)
 		for drive in sysdef.info.getElems("hardware/drive"):
-			for partition in sysdef.info.getElems("partition", drive):
-				space = sysdef.info.getElem("space", partition)
+			for partition in drive.getElems("partition"):
+				space = partition.getElem("space")
 				if space:
-					used = sysdef.info.get("used", space)
+					used = space.get("used")
 					totalSize = totalSize + long(used)
 		return totalSize * 1048576

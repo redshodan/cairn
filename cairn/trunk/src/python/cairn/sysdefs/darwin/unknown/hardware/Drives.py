@@ -43,5 +43,5 @@ class Drives(tmpl.Drives):
 				raise cairn.Exception(msg + ret[1])
 			if not re.search("Protocol:(\s)*Disk Image", ret[1]):
 				drive = sysdef.info.createDriveElem(driveName)
-				sysdef.info.setChild(drive, "device", "/dev/" + driveName)
+				drive.setChild("device", "/dev/" + driveName)
 		return

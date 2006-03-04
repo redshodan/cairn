@@ -29,7 +29,7 @@ class Tools(tmpl.Tools):
 		cmd = "%s --preserve --numeric-owner -X %s -PScpf - /" % \
 			  (sysdef.info.get("env/tools/tar"),
 			   sysdef.info.get("archive/excludes-file"))
-		sysdef.info.set("archive/archive-tool-cmd", cmd)
+		sysdef.info.setChild("archive/archive-tool-cmd", cmd)
 		return
 
 
@@ -49,18 +49,18 @@ class Tools(tmpl.Tools):
 
 
 	def setBzip2Cmd(self, sysdef):
-		sysdef.info.set("archive/zip-tool-cmd",
-						"%s -zc" % (sysdef.info.get("env/tools/bzip2")))
+		sysdef.info.setChild("archive/zip-tool-cmd",
+							 "%s -zc" % (sysdef.info.get("env/tools/bzip2")))
 		return
 
 
 	def setGzipCmd(self, sysdef):
-		sysdef.info.set("archive/zip-tool-cmd",
-						"%s -c" % (sysdef.info.get("env/tools/gzip")))
+		sysdef.info.setChild("archive/zip-tool-cmd",
+							 "%s -c" % (sysdef.info.get("env/tools/gzip")))
 		return
 
 
 	def setDiskUsageCmd(self, sysdef):
-		sysdef.info.set("archive/diskusage-tool-cmd",
-						"%s -sm" % (sysdef.info.get("env/tools/diskusage")))
+		sysdef.info.setChild("archive/diskusage-tool-cmd",
+							 "%s -sm" % (sysdef.info.get("env/tools/diskusage")))
 		return True

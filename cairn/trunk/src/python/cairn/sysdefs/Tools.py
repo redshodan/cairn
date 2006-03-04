@@ -29,25 +29,27 @@ class ToolGroup(object):
 
 def findTools(sysdef, path, toolList):
 	"""Finds the binaries in the bins map using the path supplied"""
-	sysdef.info.set("env/path", path)
+	sysdef.info.setChild("env/path", path)
 	for entry in toolList:
 		if isinstance(entry, Tool):
-			sysdef.info.set(entry.tag, IModule.findFileInPath(path, entry.tool))
+			sysdef.info.setChild(entry.tag,
+								 IModule.findFileInPath(path, entry.tool))
 		else:
 			first = None
 			for tool in entry.tools:
 				bin = IModule.findFileInPath(path, tool.tool)
 				if bin:
-					sysdef.info.set(tool.tag, bin)
+					sysdef.info.setChild(tool.tag, bin)
 					if not first:
 						first = tool
 				else:
-					sysdef.info.set(tool.tag, "")
+					sysdef.info.clear(tool.tag)
 			if first:
-				sysdef.info.set(entry.tag, first.tag)
+				sysdef.info.setChild(entry.tag, first.tag)
 			chooseTool(sysdef, entry)
 		# Verify it was found
 		if (not sysdef.info.get(entry.tag) and entry.required):
+			sysdef.info.printSummary()
 			raise cairn.Exception("Failed to find required binary: %s" % \
 								  entry.tool, cairn.ERR_BINARY)
 	return True
@@ -69,7 +71,7 @@ def chooseTool(sysdef, group):
 	else:
 		method = sysdef.info.get(group.tag)
 	if method:
-		sysdef.info.set(group.userChoiceTag, method)
+		sysdef.info.setChild(group.userChoiceTag, method)
 	else:
 		msg = "No %s types were found. Possible types: " % group.userOption
 		for tool in group.tools:

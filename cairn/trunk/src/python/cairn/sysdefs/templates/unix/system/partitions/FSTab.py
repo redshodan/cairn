@@ -26,14 +26,14 @@ class FSTab(object):
 		partitions = []
 		drives = sysdef.info.getElems("hardware/drive")
 		for drive in drives:
-			partitions = partitions + sysdef.info.getElems("partition", drive)
+			partitions = partitions + drive.getElems("partition")
 		fstab = file(self.fstabFile(), "rb")
 		for line in fstab:
 			if (not re.search("^\s*\#", line) and
 				re.search("\s*[/a-zA-Z0-9]+\s+[/a-zA-Z0-9]+\s+[a-zA-Z0-9]+\s+[,\-a-zA-Z0-9]+\s+[0-9]+\s+[0-9]+", line)):
 				arr = line.split()
 				for part in partitions:
-					if sysdef.info.get("device", part) == arr[DEVICE]:
-						sysdef.info.setChild(part, "fs-type", arr[FS])
-						sysdef.info.setChild(part, "mount", arr[MNT])
+					if part.get("device") == arr[DEVICE]:
+						part.setChild("fs-type", arr[FS])
+						part.setChild("mount", arr[MNT])
 		return True

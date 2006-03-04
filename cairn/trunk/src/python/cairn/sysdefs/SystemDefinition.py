@@ -5,7 +5,7 @@ import cairn
 
 
 
-from cairn.sysdefs.SystemInfo import *
+from cairn.sysdefs import SystemInfo
 from cairn import Options
 from cairn import sysdefs
 from cairn.sysdefs import IModule
@@ -14,7 +14,7 @@ from cairn.sysdefs import IModule
 
 class SystemDefinition(object):
 	def __init__(self):
-		self.info = SystemInfo()
+		self.info = SystemInfo.createNew()
 		self.moduleList = None
 		return
 

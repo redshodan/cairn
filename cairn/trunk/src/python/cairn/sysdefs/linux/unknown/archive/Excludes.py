@@ -31,8 +31,8 @@ class Excludes(tmpl.Excludes):
 			array[3] = lineArr[5].strip("()")
 			mounts.append(array)
 		for mount in mounts:
-			if ((mount[2] in Constants.IGNORED_FS) or (mount[3].find("loop") >= 0) or
-				(mount[3].find("bind") >= 0)):
+			if ((mount[2] in Constants.IGNORED_FS) or
+				(mount[3].find("loop") >= 0) or	(mount[3].find("bind") >= 0)):
 				exclude = "%s/*" % mount[1]
 				sysdef.info.createArchiveExcludesElem(exclude, "ignored_fs")
 				cairn.verbose("Excluding special fs: %s" % (exclude))

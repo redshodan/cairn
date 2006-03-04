@@ -27,5 +27,5 @@ class List2_6(tmpl.List):
 			removable.close()
 			if line.startswith("0"):
 				drive = sysdef.info.createDriveElem(device)
-				sysdef.info.setChild(drive, "device", "/dev/" + device)
+				drive.setChild("device", "/dev/" + device)
 		return True

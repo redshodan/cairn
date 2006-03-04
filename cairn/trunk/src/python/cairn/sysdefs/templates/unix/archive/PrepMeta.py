@@ -16,7 +16,8 @@ def getClass():
 class PrepMeta(object):
 
 	def setDate(self, sysdef):
-		sysdef.info.set("archive/date", datetime.datetime.now().isoformat(' '))
+		sysdef.info.setChild("archive/date",
+							 datetime.datetime.now().isoformat(' '))
 		return
 
 	def run(self, sysdef):

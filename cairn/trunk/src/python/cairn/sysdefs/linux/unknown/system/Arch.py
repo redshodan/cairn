@@ -28,6 +28,6 @@ class Arch(tmpl.Arch):
 			if modelNameRE.match(line):
 				line = string.strip(line)
 				arr = line.split(": ")
-				sysdef.info.set("arch/cpu-str", arr[1])
+				sysdef.info.setChild("arch/cpu-str", arr[1])
 		cpuinfo.close()
 		return True

@@ -69,7 +69,7 @@ class Excludes(object):
 		try:
 			excludesFile = file(excludesFileName, "w")
 			for exclude in sysdef.info.getElems("archive/excludes/exclude"):
-				excludesFile.write(sysdef.info.getText(exclude))
+				excludesFile.write(exclude.getText())
 				excludesFile.write("\n")
 			excludesFile.close()
 		except Exception, err:

@@ -28,7 +28,7 @@ class EstimateSize(object):
 			return []
 		all = []
 		for excludeElem in excludeElems:
-			exclude = sysdef.info.getText(excludeElem)
+			exclude = excludeElem.getText()
 			exclude = exclude.strip().rstrip("*").rstrip("/")
 			allRemoves = []
 			if len(all):
@@ -92,5 +92,5 @@ class EstimateSize(object):
 		cairn.log("Estimating archive size... ", False)
 		totalSize = self.findTotalSize(sysdef, excludes)
 		cairn.log("%.3fG" % (totalSize / 1073741824.0))
-		sysdef.info.set("archive/estimated-size", "%ld" % (totalSize))
+		sysdef.info.setChild("archive/estimated-size", "%ld" % (totalSize))
 		return True
