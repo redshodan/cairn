@@ -46,3 +46,9 @@ across scrolling bounderies. Colorization of keywords (eg return) helps a lot.
 viewing the code can set their TAB stops to what ever size they wish and it
 will always work out to be correct visually. It also prevents a mixture of
 tabs and spaces which can confuse the Python interpreter.
+
+A couple of C/C++ requirements:
+- All C functions are prefix with a namespace-like prefix (not a new thing
+really, but now I really mean it). All C++ functions and globals included in
+some kind of namespace or class. Unless they MUST be C linkage, then they must
+be prefixed with the same word as the C++ prefix.
