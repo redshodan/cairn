@@ -68,18 +68,24 @@ class RunArchiver(object):
 
 	def runPipe(self, sysdef, archiveTool, zipTool):
 		percent = Percent(long(sysdef.info.get("archive/estimated-size")))
-		readfds = [ archiveTool.stdout, archiveTool.stderr, zipTool.stderr]
+		if self.direction() == self.IN:
+			input = zipTool.stdout
+			output = archiveTool.stdin
+		else:
+			input = archiveTool.stdout
+			output = zipTool.stdin
+		readfds = [ input, archiveTool.stderr, zipTool.stderr]
 		running = True
 		self.displayPercent(0)
 		while running:
 			(selrfds, trash1, trash2) = select.select(readfds, [], [], 0)
 			for sel in selrfds:
-				if sel == archiveTool.stdout:   ### Archive output
+				if sel == input:   ### Archive output
 					buff = os.read(archiveTool.stdout, 524288)   ### 512K
 					if not buff:
 						running = False
 						break
-					os.write(zipTool.stdin, buff)
+					os.write(output, buff)
 					self.processPercent(percent, len(buff))
 				if sel == archiveTool.stderr:   ### Archive err
 					buff = os.read(archiveTool.stderr, 1024)
