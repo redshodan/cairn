@@ -1,4 +1,4 @@
-"""templates.unix.archive.EstimateSizeQuick Module"""
+"""templates.unix.archive.write.EstimateSizeQuick Module"""
 
 
 import cairn

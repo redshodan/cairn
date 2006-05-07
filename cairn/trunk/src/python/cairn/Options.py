@@ -114,6 +114,8 @@ cliCommonOpts = {
 	"Or specify log level: none, error, warn, log (default), verbose, debug"],
  "logmodule" : [None, None, STR, None, setLogModuleOpt,
 	"Set loglevel for a particular module eg: cairn.sysdefs=debug"],
+ "metafile" : [None, None, STR, "archive/metafilename", None,
+			   "Set the metafile name"],
  "modules" : [None, "m", STR, None, None, "List of modules to load."],
  "path" : ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, "env/path", None,
 		   "Path to find programs to run."],

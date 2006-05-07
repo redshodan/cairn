@@ -1,4 +1,4 @@
-"""templates.unix.copy.WriteMeta Module"""
+"""templates.unix.copy.write.WriteMeta Module"""
 
 
 import os

@@ -14,11 +14,24 @@ class Copy(object):
 		return
 
 
+	def setDefaults(self):
+		Options.getSysInfoOpts()["archive/metafilename"] = \
+			"/etc/cairn/cairn-image.xml"
+		Options.getSysInfoOpts()["archive/excludes-file"] = \
+			"/etc/cairn/excludes"
+		return
+
+
+	def getModuleString(self):
+		return "archive.write;"
+
+
 	def run(self):
 		Options.set("program", "copy")
 		Options.init()
+		self.setDefaults()
 		Options.parseCmdLineOpts()
-		sysdefs.load()
+		sysdefs.load(self.getModuleString())
 		sysdefs.run()
 		cairn.log("Archive finished")
 		return

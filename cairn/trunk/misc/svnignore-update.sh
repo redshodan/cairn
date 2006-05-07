@@ -9,6 +9,7 @@ for DIR in ${DIRS}; do
 	cd $DIR
 	if [ -d .svn ]; then
 		svn propset svn:ignore -F ${TOP}/misc/svnignore .
+		echo "	$DIR"
 	fi
 done
 cd ${TOP}

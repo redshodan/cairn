@@ -14,11 +14,24 @@ class Restore(object):
 		return
 
 
+	def setDefaults():
+		Options.getSysInfoOpts()["archive/metafilename"] = \
+			"/etc/cairn/cairn-image.xml"
+		Options.getSysInfoOpts()["archive/excludes-file"] = \
+			"/tmp/excludes"
+		return
+
+
+	def getModuleString(self):
+		return "archive.copy;"
+
+
 	def run(self):
 		Options.set("program", "restore")
 		Options.init()
+		self.setDefaults()
 		Options.parseCmdLineOpts()
-		sysdefs.load()
+		sysdefs.load(self.getModuleString())
 		sysdefs.run()
 		cairn.log("Archive restore finished")
 		return

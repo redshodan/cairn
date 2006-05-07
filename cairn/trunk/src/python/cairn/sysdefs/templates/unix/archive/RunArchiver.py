@@ -1,4 +1,4 @@
-"""templates.unix.copy.CreateArchive Module"""
+"""templates.unix.copy.RunArchiver Module"""
 
 
 #
@@ -18,7 +18,7 @@ from cairn.sysdefs.templates.unix.misc import Process
 
 
 def getClass():
-	return CreateArchive()
+	return RunArchiver()
 
 
 
@@ -30,39 +30,34 @@ class Percent(object):
 
 
 
-class CreateArchive(object):
+class RunArchiver(object):
+	IN = 1
+	OUT = 2
 
-	def prepArchive(self, sysdef):
-		fileName = sysdef.info.get("archive/filename")
-		try:
-			return os.open(fileName, os.O_WRONLY | os.O_CREAT | os.O_TRUNC)
-		except Exception, err:
-			raise cairn.Exception("Failed to open archive file %s: %s" % \
-								  (fileName, err))
+
+	def prepare(self, sysdef):
+		raise cairn.Exception("Unimplemented function")
 		return
 
 
-	def prepShar(self, sysdef):
-		metaFileName = sysdef.info.get("archive/metafilename")
-		fileName = sysdef.info.get("archive/filename")
-		try:
-			shutil.copyfile(metaFileName, fileName)
-			archive = os.open(fileName, os.O_WRONLY | os.O_APPEND)
-			os.write(archive, "\n__ARCHIVE__\n")
-			os.fsync(archive)
-			return archive
-		except Exception, err:
-			raise cairn.Exception("Failed to open archive file %s: %s" % \
-								  (fileName, err))
+	def direction(self):
+		raise cairn.Exception("Unimplemented function")
+		return
 
 
 	def runTools(self, sysdef, archive):
+		input = None
+		output = None
+		if self.direction() == self.IN:
+			input = archive
+		else:
+			output = archive
 		archiveTool = Process.startCmd("archive/archive-tool",
 									   sysdef.info.get("archive/archive-tool-cmd"),
 									   None, None, None)
 		zipTool = Process.startCmd("archive/zip-tool-cmd",
 								   sysdef.info.get("archive/zip-tool-cmd"),
-								   None, archive, None)
+								   input, output, None)
 		self.runPipe(sysdef, archiveTool, zipTool)
 		try:
 			archive.close()
@@ -134,10 +129,6 @@ class CreateArchive(object):
 
 
 	def run(self, sysdef):
-		cairn.log("Creating archive")
-		if sysdef.info.get("archive/shar"):
-			archive = self.prepShar(sysdef)
-		else:
-			archive = self.prepArchive(sysdef)
+		archive = self.prepare(sysdef)
 		self.runTools(sysdef, archive)
 		return True

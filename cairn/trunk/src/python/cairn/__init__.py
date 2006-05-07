@@ -43,6 +43,8 @@ class Exception(Exception):
 
 	def printSelf(self):
 		print "Error: %s" % self.msg
+		if Options.get("force"):
+			print "Force is set, ignoring the previous error"
 		return
 
 

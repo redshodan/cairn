@@ -1,4 +1,4 @@
-"""templates.unix.copy.PrepMeta Module"""
+"""templates.unix.copy.write.PrepMeta Module"""
 
 
 import datetime

@@ -16,6 +16,7 @@ class SystemDefinition(object):
 	def __init__(self):
 		self.info = SystemInfo.createNew()
 		self.moduleList = None
+		self.programModuleStr = None
 		return
 
 
@@ -32,23 +33,16 @@ class SystemDefinition(object):
 
 
 	def getModuleString(self):
-		if Options.get("program") == "copy":
-			return self.getInitModuleString() + self.getCopyModuleString()
-		elif Options.get("program") == "restore":
-			return self.getInitModuleString() + self.getRestoreModuleString()
+		return self.getInitModuleString() + self.programModuleStr
+
+
+	def setModuleString(self, programModuleStr):
+		self.programModuleStr = programModuleStr
 		return
 
 
 	def getInitModuleString(self):
 		return "system;"
-
-
-	def getCopyModuleString(self):
-		return "archive;"
-
-
-	def getRestoreModuleString(self):
-		return ""
 
 
 	def quit(self):

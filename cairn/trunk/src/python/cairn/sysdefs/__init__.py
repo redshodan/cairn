@@ -27,8 +27,9 @@ def getModuleList():
 	return __sysdef.moduleList
 
 
-def load():
+def load(programModuleStr):
 	loadPlatform()
+	cairn.sysdefs.__sysdef.setModuleString(programModuleStr)
 	loadModuleList()
 	verifyModuleList()
 	return
@@ -86,8 +87,14 @@ def run():
 		except:
 			raise cairn.Exception("Module %s does not have a getClass() function" % module.__name__)
 		obj = func()
-		if not obj.run(cairn.sysdefs.__sysdef):
-			raise cairn.Exception("Failed to run module: " + module.__name__)
+		try:
+			if not obj.run(cairn.sysdefs.__sysdef) and not Options.get("force"):
+				raise cairn.Exception("Failed to run module: " + module.__name__)
+		except cairn.Exception, err:
+			if not Options.get("force"):
+				raise err
+			else:
+				err.printSelf()
 		getModuleList().next()
 	return
 

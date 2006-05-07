@@ -1,4 +1,4 @@
-"""templates.unix.copy.FinalizeMeta Module"""
+"""templates.unix.copy.write.FinalizeMeta Module"""
 
 
 import os
