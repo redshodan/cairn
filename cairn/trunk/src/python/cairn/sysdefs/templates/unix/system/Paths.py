@@ -1,4 +1,4 @@
-"""Generic unix.load.Paths system definitions"""
+"""templates.unix.system.Paths Module"""
 
 
 import cairn

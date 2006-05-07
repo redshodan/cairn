@@ -1,8 +1,8 @@
-"""darwin.unknown.load.Paths system definitions"""
+"""darwin.unknown.system.Paths system definitions"""
 
 
 import cairn.sysdefs as sysdefs
-import cairn.sysdefs.templates.unix.load.Paths as tmpl
+import cairn.sysdefs.templates.unix.system.Paths as tmpl
 from cairn.sysdefs.Tools import Tool, ToolGroup
 
 

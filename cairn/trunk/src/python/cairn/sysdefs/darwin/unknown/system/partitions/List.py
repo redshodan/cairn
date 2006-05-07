@@ -1,4 +1,4 @@
-"""darwin.unknown.hardware.Partitions Module"""
+"""darwin.unknown.system.partitions.List Module"""
 
 
 import os
@@ -6,15 +6,17 @@ import commands
 import re
 
 import cairn
-import cairn.sysdefs.templates.unix.hardware.Partitions as tmpl
+import cairn.sysdefs.templates.unix.system.partitions.List as tmpl
 
 
 def getClass():
-	return Partitions()
+	return List()
 
 
-class Partitions(tmpl.Partitions):
+class List(tmpl.List):
+
 	def run(self, sysdef):
+		cairn.log("Checking partitions")
 		for drive in sysdef.info.getElems("hardware/drive"):
 			self.definePartitions(sysdef, drive)
 		return True

@@ -1,4 +1,4 @@
-"""darwin.unknown.hardware.Drives Module"""
+"""darwin.unknown.system.drives.List Module"""
 
 
 import os
@@ -6,15 +6,17 @@ import commands
 import re
 
 import cairn
-import cairn.sysdefs.templates.unix.hardware.Drives as tmpl
+import cairn.sysdefs.templates.unix.system.drives.List as tmpl
 
 
 def getClass():
-	return Drives()
+	return List()
 
 
-class Drives(tmpl.Drives):
+class List(tmpl.List):
+
 	def run(self, sysdef):
+		cairn.log("Checking drives")
 		drives = self.listDrives(sysdef)
 		self.defineDrives(sysdef, drives)
 		return True

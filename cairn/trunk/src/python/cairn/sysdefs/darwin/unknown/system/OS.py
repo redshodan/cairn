@@ -1,7 +1,7 @@
-"""darwin.unknown.load.OS Module"""
+"""darwin.unknown.system.OS Module"""
 
 
-import cairn.sysdefs.templates.unix.load.OS as tmpl
+import cairn.sysdefs.templates.unix.system.OS as tmpl
 
 
 
