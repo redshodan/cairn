@@ -1,4 +1,4 @@
-"""templates.unix.archive.read.ExtractMeta Module"""
+"""templates.unix.archive.readmeta.ExtractMeta Module"""
 
 
 
@@ -36,8 +36,8 @@ class ExtractMeta(object):
 		archive = self.openfile(sysdef)
 		if self.isShar(sysdef, archive):
 			sysdef.info.set("archive/shar", "True")
-			sysdef.moduleList.insertAfterMe("archive.read.ExtractMetaFromShar")
+			sysdef.moduleList.insertAfterMe("archive.readmeta.ExtractMetaFromShar")
 		else:
-			sysdef.moduleList.insertAfterMe("archive.read.ExtractMetaFromAR")
+			sysdef.moduleList.insertAfterMe("archive.readmeta.ExtractMetaFromAR")
 			sysdef.info.set("archive/shar", "False")
 		return true

@@ -1,4 +1,4 @@
-"""templates.unix.archive.read.ExtractMetaFromShar Module"""
+"""templates.unix.archive.readmeta.ExtractMetaFromShar Module"""
 
 
 import os.path

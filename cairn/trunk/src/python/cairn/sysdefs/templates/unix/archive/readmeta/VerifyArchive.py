@@ -1,4 +1,4 @@
-"""templates.unix.read.VerifyArchive Module"""
+"""templates.unix.readmeta.VerifyArchive Module"""
 
 
 

@@ -23,7 +23,7 @@ class Restore(object):
 
 
 	def getModuleString(self):
-		return "archive.copy;"
+		return "archive.readmeta;"
 
 
 	def run(self):
