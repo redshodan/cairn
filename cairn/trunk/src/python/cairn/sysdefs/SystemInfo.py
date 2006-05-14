@@ -98,6 +98,18 @@ PADDING_MD5 = 32
 def createNew():
 	impl = minidom.getDOMImplementation()
 	doc = impl.createDocument(None, "cairn-image", None)
+	setupNew(doc)
+	return doc
+
+
+def readNew(aFile):
+	impl = minidom.getDOMImplementation()
+	doc = impl.parse(aFile)
+	setupNew(doc)
+	return doc
+
+
+def setupNew(doc):
 	DOMHelper.injectFuncs(doc)
 	injectDocFuncs(doc)
 	doc.create()
@@ -160,6 +172,7 @@ def createEnvElem(self):
 	env = self.createElem("env")
 	elem = env.createElem("path")
 	elem = env.createElem("tools")
+	elem = env.createElem("tmpdir")
 	return env
 
 

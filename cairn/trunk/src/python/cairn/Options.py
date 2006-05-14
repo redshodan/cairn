@@ -88,6 +88,14 @@ def setInfoOpt(opt, arg):
 	return
 
 
+def setOpt(opt, arg):
+	if (arg.find("=") < 0):
+		raise cairn.Exception("Invalid parameter to --set. Must be in the form: key=val")
+	words = arg.split("=")
+	set(words[0], words[1])
+	return
+
+
 def setHelpOpt(opt, arg):
 	usage()
 	return
@@ -117,6 +125,8 @@ cliCommonOpts = {
  "metafile" : [None, None, STR, "archive/metafilename", None,
 			   "Set the metafile name"],
  "modules" : [None, "m", STR, None, None, "List of modules to load."],
+ "no-cleanup" : [False, None, BOOL, None, None,
+	"Do no cleanup temporary files."],
  "path" : ["/sbin:/bin:/usr/sbin:/usr/bin", None, STR, "env/path", None,
 		   "Path to find programs to run."],
  "printmeta" : [False, None, BOOL, None, clearFileReqBool,
@@ -125,8 +135,9 @@ cliCommonOpts = {
 				"Print the command line option values out and exit."],
  "summary" : [False, None, BOOL, None, clearFileReqBool,
 			  "Print a summary of generated info and exit"],
- "set" : [None, "s", STR, None, setInfoOpt,
-		  "Set a system info option, overriding discovered value"],
+ "setmeta" : [None, "s", STR, None, setInfoOpt,
+		  "Set a system metainfo option, overriding discovered value"],
+ "setopt" : [None, "s", STR, None, setOpt, "Set a general option"],
  "sysdef" : [None, None, STR, None, None,
 			 "Manually choose the system definition eg: linux.redhat"],
  "verbose" : [False, "v", BOOL, None, setVerboseOpt,
@@ -144,7 +155,15 @@ cliCopyOpts = {
  "zip" : ["bzip2", None, STR, None, None, "Zip type to use: bzip2, gzip"]
 }
 
-cliRestoreOpts = {}
+cliRestoreOpts = {
+ "archive" : ["tar", None, STR, None, None,
+			  "Archive type to use: tar, star"],
+ "quick" : [False, "q", BOOL, None, None,
+			"Skip time consuming steps that are not absolutly needed, eg:" + \
+			" precise progress meter"],
+ "zip" : ["bzip2", None, STR, None, None, "Zip type to use: bzip2, gzip"]
+ }
+
 sysInfoOpts = {}
 
 

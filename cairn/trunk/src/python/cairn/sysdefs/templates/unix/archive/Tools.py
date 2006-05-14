@@ -1,4 +1,4 @@
-"""templates.unix.archive.write.Tools Module"""
+"""templates.unix.archive.Tools Module"""
 
 
 
@@ -22,6 +22,10 @@ class Tools(object):
 
 
 	def setZipCmd(self, sysdef):
+		return False
+
+
+	def setDiskUsageCmd(self, sysdef):
 		return False
 
 

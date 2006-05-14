@@ -1,4 +1,4 @@
-"""templates.unix.archive Module"""
+"""templates.unix.archive.read Module"""
 
 
 import cairn
@@ -7,9 +7,5 @@ from cairn import Options
 
 
 def getSubModuleString(sysdef):
-	str = "FileName; Tools; Excludes; %s; PrepMeta; WriteMeta; CreateArchive; FinalizeMeta;"
-	if Options.get("quick"):
-		str = str % "EstimateSizeQuick"
-	else:
-		str = str % "EstimateSize"
+	str = "Tools; PrepTemp; ExtractMeta; ReadMeta; VerifyArchive; Excludes; RunArchiver; "
 	return str

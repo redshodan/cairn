@@ -15,6 +15,7 @@ from cairn.sysdefs import IModule
 class SystemDefinition(object):
 	def __init__(self):
 		self.info = SystemInfo.createNew()
+		self.readInfo = None
 		self.moduleList = None
 		self.programModuleStr = None
 		return

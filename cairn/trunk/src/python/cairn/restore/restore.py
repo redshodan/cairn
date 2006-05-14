@@ -42,6 +42,7 @@ def run():
 		crestore.run()
 	except cairn.Exception, err:
 		err.printSelf()
+		cairn.atexit()
 		sys.exit(err.code)
 	sys.exit(0)
 	return

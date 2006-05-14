@@ -150,11 +150,14 @@ class ModuleList(object):
 
 
 	def insertAfterMe(self, newModName):
-		module = loadAModule(newModName)
-		if not module:
+		modules = IModule.ModuleList()
+		IModule.loadList(sysdef, newModName, None, modules, None)
+		if len(modules) <= 0:
 			raise cairn.Exception(cairn.ERR_MODULE,
 								  "Unable to import module %s" % (newModName))
-		self.__list.insert(self.__curModule + 1, module)
+		modules.reverse()
+		for module in modules:
+			self.__list.insert(self.__curModule + 1, module)
 		return True
 
 

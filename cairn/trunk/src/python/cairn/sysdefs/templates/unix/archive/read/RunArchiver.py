@@ -14,7 +14,7 @@ from cairn.sysdefs.templates.unix.misc import Process
 
 
 def getClass():
-	return CreateArchive()
+	return RunArchiver()
 
 
 
