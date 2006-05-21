@@ -1,9 +1,6 @@
 """templates.unix.system.drives.List Module"""
 
 
-import os
-
-
 def getClass():
 	return List()
 

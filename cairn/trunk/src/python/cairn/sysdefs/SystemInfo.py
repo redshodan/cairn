@@ -170,6 +170,7 @@ def createMachineElem(self):
 
 def createEnvElem(self):
 	env = self.createElem("env")
+	elem = env.createElem("mountdir")
 	elem = env.createElem("path")
 	elem = env.createElem("tools")
 	elem = env.createElem("tmpdir")

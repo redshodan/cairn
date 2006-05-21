@@ -158,6 +158,8 @@ cliCopyOpts = {
 cliRestoreOpts = {
  "archive" : ["tar", None, STR, None, None,
 			  "Archive type to use: tar, star"],
+ "mountdir" : ["/mnt/restore", None, BOOL, "env/mountdir", None,
+			   "Directory to mount restore partitions"],
  "quick" : [False, "q", BOOL, None, None,
 			"Skip time consuming steps that are not absolutly needed, eg:" + \
 			" precise progress meter"],

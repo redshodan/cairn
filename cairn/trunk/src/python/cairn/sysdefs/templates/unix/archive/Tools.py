@@ -9,7 +9,7 @@ def getClass():
 
 #
 # Current approach is have the archive command pass the archive to stdout,
-# catch that with ccopy so it can get a percent done based on byte throughput,
+# catch that so it can get a percent done based on byte throughput,
 # then pass along to a zip command which outputs to stdout, which is redirected
 # to disk.
 #
