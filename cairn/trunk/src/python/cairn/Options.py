@@ -29,8 +29,8 @@ STR = 1
 BOOL = 2
 
 # module defines
-cliCopyHelpHeader = "usage: ccopy [args] file"
-cliRestoreHelpHeader = "usage: crestore [args] file"
+cliCopyHelpHeader = "usage: copy [args] file"
+cliRestoreHelpHeader = "usage: restore [args] file"
 
 
 # Custom opt setters. Have to be here before the opts array.
@@ -203,7 +203,7 @@ def usage():
 		printOptMap()
 		sys.exit(0)
 	elif get("program") == "restore":
-		print cliCopyHelpHeader, "\n"
+		print cliRestoreHelpHeader, "\n"
 		printOptMap()
 		sys.exit(0)
 	else:

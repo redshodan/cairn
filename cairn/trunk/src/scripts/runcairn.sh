@@ -33,9 +33,30 @@ lib.close()
 
 sys.path.append(libname)
 
-if cmdname.endswith("copy"):
+action = "unknown"
+if cmdname.endswith("cairn"):
+	if (len(sys.argv) >= 2) and (sys.argv[1] == "copy"):
+		action = "copy"
+		sys.argv = sys.argv[1:]
+	elif (len(sys.argv) >= 2) and (sys.argv[1] == "restore"):
+		action = "restore"
+		sys.argv = sys.argv[1:]
+	else:
+		print "Invalid action"
+		print "Usage: %s <action> [action args] ..."
+		print "    The action can be 'copy' or 'restore'. Place a '--help' after"
+		print "    the action to get that actions help"
+elif cmdname.endswith("copy"):
+	action = "copy"
+elif cmdname.endswith("restore"):
+	action = "restore"
+
+if action == "copy":
 	from cairn.copy import copy
 	copy.run()
+elif action == "restore":
+	from cairn.restore import restore
+	restore.run()
 else:
 	print "Unable to determine program name."
 EOF

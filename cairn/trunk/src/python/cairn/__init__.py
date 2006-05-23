@@ -5,6 +5,7 @@ import os
 import stat
 import sys
 import inspect
+import atexit
 
 
 from types import *
@@ -140,7 +141,7 @@ def addFileForCleanup(file):
 	return
 
 
-def atexit():
+def cairnAtExit():
 	if Options.get("no-cleanup"):
 		return
 	for file in __file_cleanup:
@@ -155,3 +156,5 @@ def atexit():
 		except OSError, err:
 			error("Failed to delete file: " + file)
 	return
+
+atexit.register(cairnAtExit)

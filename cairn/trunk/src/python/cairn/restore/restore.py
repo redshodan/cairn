@@ -14,7 +14,7 @@ class Restore(object):
 		return
 
 
-	def setDefaults():
+	def setDefaults(self):
 		Options.getSysInfoOpts()["archive/metafilename"] = \
 			"/etc/cairn/cairn-image.xml"
 		Options.getSysInfoOpts()["archive/excludes-file"] = \
@@ -42,7 +42,6 @@ def run():
 		crestore.run()
 	except cairn.Exception, err:
 		err.printSelf()
-		cairn.atexit()
 		sys.exit(err.code)
 	sys.exit(0)
 	return
