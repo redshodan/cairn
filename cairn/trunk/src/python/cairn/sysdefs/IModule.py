@@ -50,7 +50,7 @@ def checkSubModule(sysdef, name, module, userModuleSpec, modules):
 	except AttributeError:
 		pass
 	moduleNames = getSubModuleString(sysdef)
-	subModules = ModuleList()
+	subModules = ModuleList(sysdef)
 	cairn.debug("Found sub-module %s: %s" % (name, moduleNames))
 	loadList(sysdef, moduleNames, userModuleSpec, subModules, name)
 	for subModule in subModules.iter():
@@ -100,9 +100,10 @@ class ModuleList(object):
 	"""cairn.sysdefs.IModule.ModuleList - A list of modules to run"""
 
 
-	def __init__(self):
+	def __init__(self, sysdef):
 		self.__list = []
 		self.__curModule = 0
+		self.__sysdef = sysdef
 
 
 	def iter(self):
@@ -150,8 +151,9 @@ class ModuleList(object):
 
 
 	def insertAfterMe(self, newModName):
-		modules = IModule.ModuleList()
-		IModule.loadList(sysdef, newModName, None, modules, None)
+		moduleList = ModuleList(self.__sysdef)
+		loadList(self.__sysdef, newModName, None, moduleList, None)
+		modules = moduleList.iter()
 		if len(modules) <= 0:
 			raise cairn.Exception(cairn.ERR_MODULE,
 								  "Unable to import module %s" % (newModName))

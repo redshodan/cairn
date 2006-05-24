@@ -11,4 +11,6 @@ def getClass():
 
 
 class Tools(tmpl.Tools):
-	None
+	def __init__(self):
+		super(Tools, self).__init__()
+		return

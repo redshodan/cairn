@@ -60,7 +60,7 @@ def loadPlatform():
 
 
 def loadModuleList():
-	modules = IModule.ModuleList()
+	modules = IModule.ModuleList(cairn.sysdefs.__sysdef)
 	userModuleSpec = Options.get("modules")
 	IModule.loadList(cairn.sysdefs.__sysdef, cairn.sysdefs.__sysdef.getModuleString(),
 					 userModuleSpec, modules, None)
@@ -118,7 +118,7 @@ def haveQuit():
 ###
 
 def selectPlatform(root, moduleNames, force = False):
-	defs = IModule.ModuleList()
+	defs = IModule.ModuleList(cairn.sysdefs.__sysdef)
 	IModule.loadModulesByName(root, moduleNames, defs)
 
 	partialMatches = []
@@ -132,7 +132,7 @@ def selectPlatform(root, moduleNames, force = False):
 
 	# Fall back to "Unknown" if None found
 	if len(exactMatches) == 0:
-		modules = IModule.ModuleList()
+		modules = IModule.ModuleList(cairn.sysdefs.__sysdef)
 		IModule.loadModulesByName(root, ["unknown"], modules)
 		if len(modules.iter()) == 1:
 			platform = modules.iter()[0].getClass()
