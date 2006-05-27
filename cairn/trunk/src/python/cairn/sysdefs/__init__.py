@@ -12,6 +12,7 @@ import cairn.sysdefs.IModule
 
 
 __sysdef = object()
+__userCfg = None
 __quit = False
 
 
@@ -28,10 +29,25 @@ def getModuleList():
 
 
 def load(programModuleStr):
+	loadUserConfig()
 	loadPlatform()
 	cairn.sysdefs.__sysdef.setModuleString(programModuleStr)
 	loadModuleList()
 	verifyModuleList()
+	return
+
+
+def loadUserConfig():
+	filename = Options.get("configfile"):
+	if not filename:
+		return
+	try:
+		userCfgFile = file(filename, "rb")
+	except Exception, err:
+		raise cairn.Exception("Unable to user configfile file %s: %s" % \
+							  (filename, err))
+	__userCfg = SystemInfo.readNew(userCfgFile)
+	userCfgFile.close()
 	return
 
 

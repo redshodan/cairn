@@ -32,4 +32,5 @@ class ReadMeta(object):
 	def run(self, sysdef):
 		metafile = self.openfile(sysdef)
 		sysdef.readInfo = SystemInfo.readNew(metafile)
+		metafile.close()
 		return true
