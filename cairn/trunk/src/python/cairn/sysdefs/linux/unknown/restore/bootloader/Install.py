@@ -1,7 +1,8 @@
-"""templates.unix.restore.bootloader.Install Module"""
+"""linux.unknown.restore.bootloader.Install Module"""
 
 
-import cairn.sysdefs.linux.unknown.restore.bootloader.Install as tmpl
+
+import cairn.sysdefs.templates.unix.restore.bootloader.Install as tmpl
 
 
 

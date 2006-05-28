@@ -14,6 +14,7 @@ import cairn.sysdefs.IModule
 __sysdef = object()
 __userCfg = None
 __quit = False
+__programOpts = {}
 
 
 def getDef():
@@ -28,17 +29,22 @@ def getModuleList():
 	return __sysdef.moduleList
 
 
+def getProgramOpts():
+	return __programOpts
+
+
 def load(programModuleStr):
 	loadUserConfig()
 	loadPlatform()
 	cairn.sysdefs.__sysdef.setModuleString(programModuleStr)
+	loadProgramOpts()
 	loadModuleList()
 	verifyModuleList()
 	return
 
 
 def loadUserConfig():
-	filename = Options.get("configfile"):
+	filename = Options.get("configfile")
 	if not filename:
 		return
 	try:
@@ -72,6 +78,12 @@ def loadPlatform():
 		return
 	raise cairn.Exception("Unable to determine the system definition for this machine.",
 						  cairn.ERR_SYSDEF)
+	return
+
+
+def loadProgramOpts():
+	for opt, val in __programOpts.iteritems():
+		cairn.sysdefs.__sysdef.info.setChild(opt, val)
 	return
 
 

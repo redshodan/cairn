@@ -23,6 +23,7 @@ FS_MAP = {
 	"xfs" : "env/tools/mkfs.xfs",
 	"jfs" : "env/tools/mkfs.jfs",
 	"reiserfs" : "env/tools/mkfs.reiserfs",
+	"swap" : "env/tools/mkswap",
 }
 
 DEVICE_RE = [re.compile("hd[a-z]+"), re.compile("sd[a-z]+"),

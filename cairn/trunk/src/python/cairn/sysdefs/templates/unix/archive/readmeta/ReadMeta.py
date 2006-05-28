@@ -24,13 +24,13 @@ class ReadMeta(object):
 		try:
 			archive = file(filename, "rb")
 		except Exception, err:
-			raise cairn.Exception("Unable to open archive file %s: %s" % \
+			raise cairn.Exception("Unable to open meta file %s: %s" % \
 								  (filename, err))
 		return archive
 
 
 	def run(self, sysdef):
-		metafile = self.openfile(sysdef)
+		metafile = self.openFile(sysdef)
 		sysdef.readInfo = SystemInfo.readNew(metafile)
 		metafile.close()
-		return true
+		return True

@@ -74,13 +74,20 @@ class FinalizeMeta(object):
 
 	def findPositions(self, fileName, sum, size, offset):
 		archive = file(fileName, "r")
+		archiveRe = re.compile("<archive>")
 		md5Re = re.compile("<md5sum>")
 		sizeRe = re.compile("<size>")
 		offsetRe = re.compile("<shar-offset>")
+		archFound = False
 		pos = 0
 		found = 0
 		for line in archive:
 			pos = pos + len(line)
+			if not archFound and archiveRe.search(line):
+				archFound = True
+				continue
+			elif not archFound:
+				continue
 			if md5Re.search(line):
 				sum[2] = pos
 				found = found + 1

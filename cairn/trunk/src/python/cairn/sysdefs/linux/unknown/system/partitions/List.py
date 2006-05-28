@@ -12,6 +12,12 @@ def getClass():
 	return List()
 
 
+#
+# For PC's it seems the smallest unit of space is a sector with is 512 bytes in
+# size. Work with that assumption.
+#
+
+
 class List(tmpl.List):
 
 	def run(self, sysdef):
@@ -22,8 +28,8 @@ class List(tmpl.List):
 
 
 	def definePartitions(self, sysdef, drive):
-		cmd = "%s -l %s" % (sysdef.info.get("env/tools/part"),
-							drive.get("device"))
+		cmd = "%s -uS -d %s" % (sysdef.info.get("env/tools/part"),
+								drive.get("device"))
 		ret = commands.getstatusoutput(cmd)
 		if ret[0] != 0:
 			msg = "Failed to run %s to find drive information:\n" % sysdef.info.get("env/tools/part")
@@ -32,15 +38,21 @@ class List(tmpl.List):
 		partNum = 1
 		for line in ret[1].split("\n"):
 			if line.startswith("/dev/"):
-				if line.endswith("Empty"):
+				if line.endswith("Id= 0"):
 					partNum = partNum + 1
 					continue
-				arr = line.split()
-				offset = 0
-				if arr[1] == "*":
-					offset = 1
-				part = sysdef.info.createPartitionElem(drive, "%d" % partNum)
-				part.setChild("device", arr[0])
-				part.setChild("type", arr[5 + offset])
-				partNum = partNum + 1
+				try:
+					part = sysdef.info.createPartitionElem(drive, "%d" % partNum)
+					arr = line.split(":")
+					part.setChild("device", arr[0].strip())
+					arr = arr[1].split(",")
+					word = arr[0].split("=")
+					part.setChild("start", word[1].strip())
+					word = arr[1].split("=")
+					part.setChild("size", word[1].strip())
+					word = arr[2].split("=")
+					part.setChild("type", word[1].strip())
+					partNum = partNum + 1
+				except Exception, err:
+					raise cairn.Exception("Failed to parse sfdisk output: %s" % err)
 		return

@@ -24,7 +24,7 @@ class ExtractMeta(object):
 		return archive
 
 
-	def isShar(sysdef, archive):
+	def isShar(self, sysdef, archive):
 		line = archive.read(5)
 		archive.close()
 		if line.startswith("<?xml"):
@@ -33,11 +33,11 @@ class ExtractMeta(object):
 
 
 	def run(self, sysdef):
-		archive = self.openfile(sysdef)
+		archive = self.openFile(sysdef)
 		if self.isShar(sysdef, archive):
-			sysdef.info.set("archive/shar", "True")
+			sysdef.info.setChild("archive/shar", "True")
 			sysdef.moduleList.insertAfterMe("archive.readmeta.ExtractMetaFromShar")
 		else:
 			sysdef.moduleList.insertAfterMe("archive.readmeta.ExtractMetaFromAR")
-			sysdef.info.set("archive/shar", "False")
-		return true
+			sysdef.info.setChild("archive/shar", "False")
+		return True

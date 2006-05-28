@@ -1,11 +1,6 @@
 """templates.unix.restore.setup.MatchDrives Module"""
 
 
-#
-# To be filled out with some nice heuristical funness later.
-#
-
-
 def getClass():
 	return MatchDrives()
 

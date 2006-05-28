@@ -1,6 +1,7 @@
-"""templates.unix.setup.PartDrives Module"""
+"""linux.unknown.setup.PartDrives Module"""
 
 
+import os
 import commands
 import re
 import tempfile
@@ -17,19 +18,22 @@ class PartDrives(tmpl.PartDrives):
 
 	def partitionDrive(self, sysdef, drive):
 		cfgFile = self.writePartCfg(sysdef, drive)
-		cmd = "%s -l %s" % (sysdef.info.get("env/tools/part"),
-							drive.get("device"))
+		device = drive.get("mapped-device")
+		cmd = "%s --force %s < %s" % (sysdef.info.get("env/tools/part"), device,
+									  cfgFile)
+		ret = commands.getstatusoutput(cmd)
 		if ret[0] != 0:
 			msg = "Failed to run %s to partition drive %s: %s" % \
-				  (sysdef.info.get("env/tools/part"), drive.get("device"),
-				   ret[1])
+				  (sysdef.info.get("env/tools/part"), device, ret[1])
 			raise cairn.Exception(msg)
+		cairn.verbose(ret[1])
 		return
 
 
 	def writePartCfg(self, sysdef, drive):
-		cfgFile = tempfile.mkstemp(None, "cairn-")
-		cairn.addfileForCleanup(cfgFile[1])
-		cfgFile[0].write(drive.get("part-tool-cfg"))
-		cfgFile[0].close()
+		cfgFile = tempfile.mkstemp("", "cairn-")
+		cairn.addFileForCleanup(cfgFile[1])
+		contents = "%s\n" % drive.get("part-tool-cfg")
+		os.write(cfgFile[0], contents)
+		os.close(cfgFile[0])
 		return cfgFile[1]

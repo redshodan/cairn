@@ -15,10 +15,11 @@ def getClass():
 class MakeFS(tmpl.MakeFS):
 
 	def makeFS(self, sysdef, part):
-		fsType = part.getChild("fs-type")
+		fsType = part.get("fs-type")
+		if not len(fsType):
+			return
 		tool = sysdef.info.get(Constants.FS_MAP[fsType])
-		mount = part.getChild("mount")
-		device = part.getChild("device")
+		device = part.get("mapped-device")
 
 		cairn.log("  %s: %s" % (device, fsType))
 		cmd = "%s %s" % (tool, device)
@@ -26,12 +27,13 @@ class MakeFS(tmpl.MakeFS):
 		if ret[0] != 0:
 			raise cairn.Exception("Failed to run %s on %s: %s" %
 								  (tool, device, ret[1]))
-		return fsList
+		cairn.verbose(ret[1])
+		return
 
 
 	def run(self, sysdef):
 		cairn.log("Creating filesystems")
-		for drive in sysdef.info.getElems("hardware/drive"):
+		for drive in sysdef.readInfo.getElems("hardware/drive"):
 			for part in drive.getElems("partition"):
-				self.mkfs(sysdef, part)
+				self.makeFS(sysdef, part)
 		return True

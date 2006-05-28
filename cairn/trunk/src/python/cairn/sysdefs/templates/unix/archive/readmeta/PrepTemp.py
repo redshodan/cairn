@@ -19,7 +19,7 @@ def getClass():
 class PrepTemp(object):
 
 	def run(self, sysdef):
-		tmpDir = tempfile.mkdtemp(None, "cairn-restore-")
+		tmpDir = tempfile.mkdtemp("", "cairn-restore-")
 		cairn.addFileForCleanup(tmpDir)
 		sysdef.info.setChild("env/tmpdir", tmpDir)
-		return true
+		return True

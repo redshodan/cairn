@@ -10,14 +10,11 @@ import cairn.Options as Options
 
 
 class Copy(object):
-	def __init__(self):
-		return
-
 
 	def setDefaults(self):
-		Options.getSysInfoOpts()["archive/metafilename"] = \
+		sysdefs.getProgramOpts()["archive/metafilename"] = \
 			"/etc/cairn/cairn-image.xml"
-		Options.getSysInfoOpts()["archive/excludes-file"] = \
+		sysdefs.getProgramOpts()["archive/excludes-file"] = \
 			"/etc/cairn/excludes"
 		return
 

@@ -4,7 +4,9 @@
 
 import os
 import os.path
+import stat
 import tempfile
+import md5
 
 import cairn
 from cairn import Options
@@ -20,8 +22,11 @@ def getClass():
 class VerifyArchive(object):
 
 	def compareShar(self, sysdef):
-		if (sysdef.info.get("archive/shar-offset") !=
-			sysdef.readInfo.get("archive/shar-offset")):
+		fOffset = int(sysdef.info.get("archive/shar-offset"))
+		rOffset = int(sysdef.readInfo.get("archive/shar-offset"))
+		cairn.verbose("Recorded shar-offset: %d" % rOffset)
+		cairn.verbose("Found shar-offset: %d" % fOffset)
+		if (rOffset != fOffset):
 			raise cairn.Exception("Corrupt archive file %s: shar offset is incorrect" % sysdef.info.get("archive/filename"))
 		return
 
@@ -31,11 +36,14 @@ class VerifyArchive(object):
 		size = 0
 		try:
 			info = os.stat(fileName)
-			size = "%d" % info[stat.ST_SIZE]
+			size = info[stat.ST_SIZE]
 		except Exception, err:
 			raise cairn.Exception("Failed to stat archive file %s: %s" % \
 								  (fileName, err))
-		if size != long(sysdef.info.get("archive/size")):
+		cairn.verbose("Recorded size: %d" %
+					  long(sysdef.readInfo.get("archive/size")))
+		cairn.verbose("Found size: %d" % size)
+		if size != long(sysdef.readInfo.get("archive/size")):
 			raise cairn.Exception("Corrupt archive file %s: incorrect size" % sysdef.info.get("archive/filename"))
 		return
 
@@ -65,17 +73,20 @@ class VerifyArchive(object):
 
 
 	def compareMD5s(self, sysdef, theMD5sum):
+		cairn.verbose("Recorded md5sum: %s" % sysdef.readInfo.get("archive/md5sum"))
+		cairn.verbose("Found md5sum: %s" % theMD5sum)
 		if theMD5sum != sysdef.readInfo.get("archive/md5sum"):
 			raise cairn.Exception("Corrupt archive file %s: incorrect md5sum" % sysdef.info.get("archive/filename"))
 		return
 
 
 	def run(self, sysdef):
+		cairn.log("Verifying archive:" + sysdef.info.get("archive/filename"))
 		if sysdef.info.get("archive/shar"):
 			self.compareShar(sysdef)
 		self.compareSize(sysdef)
-		archive = self.openfile(sysdef)
+		archive = self.openFile(sysdef)
 		theMD5sum = self.md5sum(archive)
 		archive.close()
-		self.compareMD5s(sydef, theMD5sum)
-		return true
+		self.compareMD5s(sysdef, theMD5sum)
+		return True

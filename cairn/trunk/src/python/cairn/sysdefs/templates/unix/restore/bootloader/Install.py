@@ -1,7 +1,6 @@
 """templates.unix.restore.bootloader.Install Module"""
 
 
-
 def getClass():
 	return Install()
 

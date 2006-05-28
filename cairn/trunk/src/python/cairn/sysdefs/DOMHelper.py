@@ -259,7 +259,7 @@ def getText(self, path = None):
 	for child in self.childNodes:
 		if child.nodeType == child.TEXT_NODE:
 			ret = ret + child.data
-	return ret
+	return ret.strip()
 
 
 def setText(self, value):
@@ -298,4 +298,11 @@ def injectFuncs(elem):
 	inject(elem, createPaddedElem)
 	inject(elem, getText)
 	inject(elem, setText)
+	return
+
+
+def injectFuncsAllChildren(root):
+	injectFuncs(root)
+	for child in root.childNodes:
+		injectFuncsAllChildren(child)
 	return

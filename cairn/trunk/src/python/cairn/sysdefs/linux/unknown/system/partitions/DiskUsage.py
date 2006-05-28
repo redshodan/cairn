@@ -35,7 +35,7 @@ class DiskUsage(tmpl.DiskUsage):
 		used = "%d" % (((info[F_BLOCKS] - info[F_BAVAIL]) * 4) / 1024)
 		free = "%d" % ((info[F_BAVAIL] * 4) / 1024)
 		device = partition.get("device")
-		space = sysdef.info.createPartitionSpaceElem(partition)
+		space = sysdef.info.createPartitionFSSpaceElem(partition)
 		space.setChild("total", total)
 		space.setChild("used", used)
 		space.setChild("free", free)

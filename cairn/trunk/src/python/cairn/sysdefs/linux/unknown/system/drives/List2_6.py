@@ -3,6 +3,7 @@
 
 import os
 import re
+import commands
 
 import cairn
 import cairn.sysdefs.templates.unix.system.drives.List as tmpl
@@ -28,4 +29,11 @@ class List2_6(tmpl.List):
 			if line.startswith("0"):
 				drive = sysdef.info.createDriveElem(device)
 				drive.setChild("device", "/dev/" + device)
+				cmd = "%s -s %s" % (sysdef.info.get("env/tools/part"),
+									drive.get("device"))
+				ret = commands.getstatusoutput(cmd)
+				if ret[0] != 0:
+					msg = "Failed to run %s to find drive size:\n" % sysdef.info.get("env/tools/part")
+					raise cairn.Exception(msg + ret[1])
+				drive.setChild("size", ret[1].strip())
 		return True

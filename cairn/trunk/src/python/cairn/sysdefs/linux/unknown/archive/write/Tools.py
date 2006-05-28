@@ -1,8 +1,8 @@
-"""templates.unix.archive.write.Tools Module"""
+"""linux.unknown.archive.write.Tools Module"""
 
 
 
-import cairn.sysdefs.templates.unix.archive.Tools as tmpl
+import cairn.sysdefs.linux.unknown.archive.Tools as tmpl
 
 
 

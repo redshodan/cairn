@@ -27,19 +27,22 @@ class ExtractMetaFromShar(object):
 
 	def findMetaEnd(self, sysdef, archive):
 		pos = 0
+		metaEnd = 0
 		for line in archive:
+			metaEnd = pos
+			pos = pos + len(line)
 			if line.startswith("__ARCHIVE__"):
 				break
-			pos = pos + len(line)
 		archive.seek(0)
-		sysdef.info.set("archive/shar-offset", pos)
-		return pos
+		sysdef.info.setChild("archive/shar-offset", "%d" % (pos))
+		return metaEnd
 
 
 	def writeMeta(self, sysdef, archive, pos):
 		metaFileName = os.path.join(sysdef.info.get("env/tmpdir"),
 									"cairn-image.xml")
-		sysdef.info.set("archive/metafilename", metaFileName)
+		cairn.verbose("Extracted metafile to: " + metaFileName)
+		sysdef.info.setChild("archive/metafilename", metaFileName)
 		try:
 			metaFile = file(metaFileName, "w+b")
 			xml = archive.read(pos)
@@ -56,4 +59,4 @@ class ExtractMetaFromShar(object):
 		archive = self.openFile(sysdef)
 		pos = self.findMetaEnd(sysdef, archive)
 		self.writeMeta(sysdef, archive, pos)
-		return true
+		return True

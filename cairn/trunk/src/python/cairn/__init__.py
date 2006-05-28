@@ -2,6 +2,7 @@
 
 
 import os
+import os.path
 import stat
 import sys
 import inspect
@@ -137,22 +138,26 @@ def __getCallers2LogLevel():
 
 
 def addFileForCleanup(file):
+	verbose("Adding file for cleanup at exit: " + file)
 	__file_cleanup.append(file)
 	return
 
 
 def cairnAtExit():
-	if Options.get("no-cleanup"):
+	if Options.get("nocleanup"):
 		return
 	for file in __file_cleanup:
 		try:
 			info = os.lstat(file)
 			if stat.S_ISDIR(info[stat.ST_MODE]):
 				for subfile in os.listdir(file):
-					print "os.remove(" + subfile + ")"
-				print "os.rmdir(" + file + ")"
+					verbose("Removing: %s" % os.path.join(file, subfile))
+					os.remove(os.path.join(file, subfile))
+				verbose("Removing: %s" % file)
+				os.rmdir(file)
 			else:
-				print "os.remove(" + file + ")"
+				verbose("Removing: %s" % file)
+				os.remove(file)
 		except OSError, err:
 			error("Failed to delete file: " + file)
 	return

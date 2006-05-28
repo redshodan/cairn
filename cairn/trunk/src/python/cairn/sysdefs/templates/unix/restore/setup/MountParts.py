@@ -1,6 +1,9 @@
 """templates.unix.restore.setup.MountParts Module"""
 
 
+import cairn
+
+
 def getClass():
 	return MountParts()
 
@@ -10,10 +13,10 @@ class MountParts(object):
 	def orderedList(self, sysdef):
 		mountList = []
 		fsMap = {}
-		for drive in sysdef.info.getElems("hardware/drive"):
+		for drive in sysdef.readInfo.getElems("hardware/drive"):
 			for part in drive.getElems("partition"):
-				mountList.append(part.getChild("mount"))
-				fsMap[part.getChild("mount")] = part
+				mountList.append(part.get("mount"))
+				fsMap[part.get("mount")] = part
 		mountList.sort()
 		return mountList, fsMap
 

@@ -46,15 +46,19 @@ Hardware
    <hardware>
      <drive name="">
 	   <device/>
+	   <mapped-device/>
+	   <size/>
 	   <os-driver/>
 	   <part-tool-cfg/>
 	   <partition name="">
 	     <device/>
+		 <start/>
+		 <size/>
 	     <label/>
 		 <type/>
 		 <fs-type/>
 		 <mount/>
-		 <space>
+		 <fs-space>
 		   <total/>
 		   <used/>
 		   <free/>
@@ -98,21 +102,17 @@ PADDING_MD5 = 32
 def createNew():
 	impl = minidom.getDOMImplementation()
 	doc = impl.createDocument(None, "cairn-image", None)
-	setupNew(doc)
+	DOMHelper.injectFuncs(doc)
+	injectDocFuncs(doc)
+	doc.create()
 	return doc
 
 
 def readNew(aFile):
-	impl = minidom.getDOMImplementation()
-	doc = impl.parse(aFile)
-	setupNew(doc)
-	return doc
-
-
-def setupNew(doc):
+	doc = minidom.parse(aFile)
 	DOMHelper.injectFuncs(doc)
+	DOMHelper.injectFuncsAllChildren(doc.root())
 	injectDocFuncs(doc)
-	doc.create()
 	return doc
 
 
@@ -185,6 +185,8 @@ def createDriveElem(self, name):
 	hardware = self.getElem("hardware")
 	drive = hardware.createElem("drive=%s" % name)
 	elem = drive.createElem("device")
+	elem = drive.createElem("mapped-device")
+	elem = drive.createElem("size")
 	elem = drive.createElem("os-driver")
 	return drive
 
@@ -192,6 +194,9 @@ def createDriveElem(self, name):
 def createPartitionElem(self, drive, name):
 	part = drive.createElem("partition=%s" % name)
 	elem = part.createElem("device")
+	elem = part.createElem("mapped-device")
+	elem = part.createElem("start")
+	elem = part.createElem("size")
 	elem = part.createElem("label")
 	elem = part.createElem("type")
 	elem = part.createElem("fs-type")
@@ -199,8 +204,8 @@ def createPartitionElem(self, drive, name):
 	return part
 
 
-def createPartitionSpaceElem(self, part):
-	space = part.createElem("space")
+def createPartitionFSSpaceElem(self, part):
+	space = part.createElem("fs-space")
 	elem = space.createElem("total")
 	elem = space.createElem("used")
 	elem = space.createElem("free")
@@ -283,9 +288,9 @@ def printDrives(self):
 							  drive.get("device"))
 		for part in drive.getElems("partition"):
 			print "      part %s: device=%s label=%s type=%s fs-type=%s mount=%s" % (part.instName(), part.get("device"), part.get("label"), part.get("type"), part.get("fs-type"), part.get("mount")),
-			space = part.getElem("space")
+			space = part.getElem("fs-space")
 			if space:
-				print " (space: total=%s used=%s free=%s)" % (space.get("total"), space.get("used"), space.get("free")),
+				print " (fs-space: total=%s used=%s free=%s)" % (space.get("total"), space.get("used"), space.get("free")),
 			print
 	return
 
@@ -301,7 +306,7 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, createHardwareElem)
 	DOMHelper.inject(doc, createDriveElem)
 	DOMHelper.inject(doc, createPartitionElem)
-	DOMHelper.inject(doc, createPartitionSpaceElem)
+	DOMHelper.inject(doc, createPartitionFSSpaceElem)
 	DOMHelper.inject(doc, createArchiveElem)
 	DOMHelper.inject(doc, createArchiveExcludesElem)
 	DOMHelper.inject(doc, printXML)

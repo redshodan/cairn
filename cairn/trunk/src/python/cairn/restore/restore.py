@@ -10,20 +10,17 @@ import cairn.Options as Options
 
 
 class Restore(object):
-	def __init__(self):
-		return
-
 
 	def setDefaults(self):
-		Options.getSysInfoOpts()["archive/metafilename"] = \
+		sysdefs.getProgramOpts()["archive/metafilename"] = \
 			"/etc/cairn/cairn-image.xml"
-		Options.getSysInfoOpts()["archive/excludes-file"] = \
-			"/tmp/excludes"
+		sysdefs.getProgramOpts()["archive/excludes-file"] = "/tmp/excludes"
+		sysdefs.getProgramOpts()["env/mountdir"] = "/mnt/cairn"
 		return
 
 
 	def getModuleString(self):
-		return "archive.readmeta; setup; bootloader"
+		return "archive.readmeta; setup; archive.read; bootloader"
 
 
 	def run(self):
