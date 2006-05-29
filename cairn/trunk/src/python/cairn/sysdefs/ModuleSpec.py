@@ -5,9 +5,9 @@
 # Syntax. Spaces are removed.
 #
 #   string -- Letters, numbers and '_'. ';' seperates words. '()' can combine words.
-#             Nested '()' are not allowed.
+#             Nested '()' are not allowed. Wrapping "/" around the string turns it
+#             into a regular expression.
 #
-#   /pattern/string -- Replace regexp 'pattern' with 'string'
 #   string1=string2 -- Replace 'string1' with 'string2'
 #   string1<string2 -- Insert 'string2' before 'string1'
 #   string1>string2 -- Insert 'string2' after 'string1'
@@ -66,9 +66,7 @@ def applyPrefix(moduleNames, module, prefix):
 
 def applySpec(moduleNames, userModuleNames):
 	for userModule in userModuleNames:
-		if userModule.startswith("/"):
-			applyRE(moduleNames, userModule)
-		elif (userModule.find("=") >= 0):
+		if (userModule.find("=") >= 0):
 			applyReplace(moduleNames, userModule)
 		elif (userModule.find("<") >= 0) or (userModule.find(">") >= 0):
 			applyInsert(moduleNames, userModule)
@@ -80,21 +78,20 @@ def applySpec(moduleNames, userModuleNames):
 			applyAppend(moduleNames, userModule)
 
 
-def applyRE(moduleNames, userModule):
-	userModule = userModule[1:len(userModule)]
-	words = userModule.split("/")
-	pattern = re.compile(words[0])
-	for i, v in enumerate(moduleNames):
-		if pattern.search(v):
-			moduleNames[i] = words[1]
-			break
-	return
+def makeRE(name):
+	if name.startswith("/"):
+		name = name.strip("/")
+	else:
+		name = "^%s$" % name
+	print "RE name:", name
+	return re.compile(name)
 
 
 def applyReplace(moduleNames, userModule):
 	words = userModule.split("=")
+	re = makeRE(words[0])
 	for i, v in enumerate(moduleNames):
-		if v == words[0]:
+		if re.search(v):
 			moduleNames[i] = words[1]
 			break
 	return
@@ -107,9 +104,9 @@ def applyInsert(moduleNames, userModule):
 	else:
 		before = False
 		words = userModule.split(">")
-
+	re = makeRE(words[0])
 	for i, v in enumerate(moduleNames):
-		if v == words[0]:
+		if re.search(v):
 			if before:
 				moduleNames.insert(i, words[1])
 			else:
@@ -119,10 +116,11 @@ def applyInsert(moduleNames, userModule):
 
 
 def applyRemove(moduleNames, userModule):
-	try:
-		moduleNames.remove(userModule[1:])
-	except ValueError:
-		pass
+	re = makeRE(userModule[1:])
+	for i, v in enumerate(moduleNames):
+		if re.search(v):
+			moduleNames.remove(v)
+			break
 	return
 
 
