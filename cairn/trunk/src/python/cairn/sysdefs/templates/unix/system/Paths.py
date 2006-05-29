@@ -2,8 +2,6 @@
 
 
 import cairn
-import cairn.sysdefs as sysdefs
-from cairn import Options
 from cairn.sysdefs import Tools
 
 
@@ -18,6 +16,8 @@ class Paths(object):
 	def __init__(self):
 		self.__PATH = ""
 		self.__BINS = []
+		return
+
 
 	def getPath(self, sysdef):
 		if sysdef.info.get("env/path"):

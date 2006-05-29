@@ -9,6 +9,7 @@ import stat
 
 import cairn
 import cairn.sysdefs.templates.unix.restore.setup.MountParts as tmpl
+from cairn.sysdefs.linux import Shared
 
 
 def getClass():
@@ -26,7 +27,7 @@ class MountParts(tmpl.MountParts):
 				continue
 			fullDir = os.path.join(mdir, mount.lstrip("/"))
 			self.mkdir(sysdef, fullDir)
-			self.mount(sysdef, part, fullDir)
+			Shared.mount(sysdef, part.get("mapped-device"), fullDir)
 		return
 
 
@@ -42,14 +43,4 @@ class MountParts(tmpl.MountParts):
 		if ret[0] != 0:
 			raise cairn.Exception("Failed to create mount dir %s: %s" %
 								  (dir, ret[1]))
-		return
-
-
-	def mount(self, sysdef, part, fullDir):
-		device = part.get("mapped-device")
-		cairn.log("Mounting %s on %s" % (device, fullDir))
-		ret = commands.getstatusoutput("mount %s %s" % (device, fullDir))
-		if ret[0] != 0:
-			raise cairn.Exception("Failed to mount %s on %s: %s" %
-								  (device, fullDir, ret[1]))
 		return

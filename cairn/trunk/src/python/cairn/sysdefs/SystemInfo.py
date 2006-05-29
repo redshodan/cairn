@@ -18,6 +18,7 @@ Operating System
      <distribution-vender/>   - OS distribution vendor name.
      <distribution/>          - OS distribution name.
      <distribution-version/>  - OS distribution version.
+	 <bootloader/>            - What bootloader is installed.
    </os>
 
 Architecture
@@ -152,6 +153,7 @@ def createOSElem(self):
 	elem = os.createElem("distribution-vendor")
 	elem = os.createElem("distribution")
 	elem = os.createElem("distribution-version")
+	elem = os.createElem("bootloader")
 	return os
 
 
