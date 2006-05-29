@@ -68,6 +68,7 @@ class Excludes(object):
 			pass
 		try:
 			excludesFile = file(excludesFileName, "w")
+			cairn.addFileForCleanup(excludesFileName)
 			for exclude in sysdef.info.getElems("archive/excludes/exclude"):
 				excludesFile.write(exclude.getText())
 				excludesFile.write("\n")

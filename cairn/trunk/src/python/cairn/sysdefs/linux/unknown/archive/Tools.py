@@ -26,7 +26,7 @@ class Tools(tmpl.Tools):
 
 
 	def setTarCmd(self, sysdef):
-		cmd = "%s --preserve --numeric-owner -X %s -PScpf - /" % \
+		cmd = "%s --preserve --numeric-owner -X %s -Scpf - /" % \
 			  (sysdef.info.get("env/tools/tar"),
 			   sysdef.info.get("archive/excludes-file"))
 		sysdef.info.setChild("archive/archive-tool-cmd", cmd)

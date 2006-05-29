@@ -81,7 +81,7 @@ class RunArchiver(object):
 			(selrfds, trash1, trash2) = select.select(readfds, [], [], 0)
 			for sel in selrfds:
 				if sel == input:   ### Archive output
-					buff = os.read(archiveTool.stdout, 524288)   ### 512K
+					buff = os.read(input, 524288)   ### 512K
 					if not buff:
 						running = False
 						break
