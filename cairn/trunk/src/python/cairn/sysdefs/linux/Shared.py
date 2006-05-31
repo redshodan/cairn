@@ -4,7 +4,6 @@
 import commands
 
 from cairn.sysdefs.linux.Constants import *
-from cairn.sysdefs.templates.unix.misc Mounts
 
 
 ##

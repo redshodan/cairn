@@ -31,6 +31,7 @@ Machine
    <machine>
      <name/>
 	 <bootloader>           - Installed bootloader info
+	   <type/>              - Type of installed bootloader
 	   <drive/>             - boot drive, bootloader named
 	   <drive-os/>          - boot drive, OS named
 	   <partition/>         - boot partition, bootloader named
@@ -179,6 +180,7 @@ def createMachineElem(self):
 def createBootloaderElem(self):
 	machine = self.getElem("machine")
 	boot = machine.createElem("bootloader")
+	elem = boot.createElem("type")
 	elem = boot.createElem("drive")
 	elem = boot.createElem("drive-os")
 	elem = boot.createElem("partition")

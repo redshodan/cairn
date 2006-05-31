@@ -13,8 +13,8 @@ def getClass():
 class Install(tmpl.Install):
 
 	def run(self, sysdef):
-		if sysdef.readInfo.get("machine/bootloader") == "grub"):
+		if sysdef.readInfo.get("machine/bootloader/type") == "grub":
 			sysdef.moduleList.insertAfterMe("bootloader.grub")
-		elif sysdef.readInfo.get("machine/bootloader") == "lilo"):
+		elif sysdef.readInfo.get("machine/bootloader/type") == "lilo":
 			sysdef.moduleList.insertAfterMe("bootloader.lilo")
 		return False

@@ -2,7 +2,7 @@
 
 
 import cairn
-from cairn.sysdefs.linux.unknown import Shared
+from cairn.sysdefs.linux import Shared
 
 
 def getClass():
