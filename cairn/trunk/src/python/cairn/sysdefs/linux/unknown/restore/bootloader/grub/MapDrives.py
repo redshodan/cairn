@@ -33,18 +33,29 @@ class MapDrives(object):
 	def findBootDevice(self, sysdef):
 		mountList = []
 		fsMap = {}
+		driveID = -1
+		partID = -1
 		for drive in sysdef.readInfo.getElems("hardware/drive"):
+			driveID = driveID + 1
 			for part in drive.getElems("partition"):
+				partID = partID + 1
 				mountList.append(part.get("mount"))
-				fsMap[part.get("mount")] = [drive, part]
+				fsMap[part.get("mount")] = [drive, driveID, part, partID]
 		if "/boot" in mountList:
-			pair = fsMap["/boot"]
+			tuple = fsMap["/boot"]
 		elif "/" in mountList:
-			pair = fsMap["/"]
+			tuple = fsMap["/"]
 		else:
 			raise cairn.Exception("Could not find the boot partition")
+		sysdef.info.setChild("machine/bootloader/drive", "(hd%d)" % tuple[1])
+		sysdef.info.setChild("machine/bootloader/drive-os", tuple[0])
+		sysdef.info.setChild("machine/bootloader/partition",
+							 "(hd%d,%d)" % (tuple[1], tuple[3]))
+		sysdef.info.setChild("machine/bootloader/partition-os", tuple[2])
+		return
 
 
 	def run(self, sysdef):
 		self.createDeviceMap(sysdef)
+		self.findBootDevice(sysdef)
 		return True

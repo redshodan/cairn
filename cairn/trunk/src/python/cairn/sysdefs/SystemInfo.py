@@ -18,7 +18,6 @@ Operating System
      <distribution-vender/>   - OS distribution vendor name.
      <distribution/>          - OS distribution name.
      <distribution-version/>  - OS distribution version.
-	 <bootloader/>            - What bootloader is installed.
    </os>
 
 Architecture
@@ -31,6 +30,12 @@ Architecture
 Machine
    <machine>
      <name/>
+	 <bootloader>           - Installed bootloader info
+	   <drive/>             - boot drive, bootloader named
+	   <drive-os/>          - boot drive, OS named
+	   <partition/>         - boot partition, bootloader named
+	   <partition-os/>      - boot partition, OS named
+	 <bootloader/>
    </machine>
 
 Environment
@@ -153,7 +158,6 @@ def createOSElem(self):
 	elem = os.createElem("distribution-vendor")
 	elem = os.createElem("distribution")
 	elem = os.createElem("distribution-version")
-	elem = os.createElem("bootloader")
 	return os
 
 
@@ -168,6 +172,18 @@ def createArchElem(self):
 def createMachineElem(self):
 	machine = self.createElem("machine")
 	elem = machine.createElem("name")
+	self.createBootloaderElem()
+	return machine
+
+
+def createBootloaderElem(self):
+	machine = self.getElem("machine")
+	boot = machine.createElem("bootloader")
+	elem = boot.createElem("drive")
+	elem = boot.createElem("drive-os")
+	elem = boot.createElem("partition")
+	elem = boot.createElem("partition-os")
+	return boot
 
 
 def createEnvElem(self):
@@ -304,6 +320,7 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, createOSElem)
 	DOMHelper.inject(doc, createArchElem)
 	DOMHelper.inject(doc, createMachineElem)
+	DOMHelper.inject(doc, createBootloaderElem)
 	DOMHelper.inject(doc, createEnvElem)
 	DOMHelper.inject(doc, createHardwareElem)
 	DOMHelper.inject(doc, createDriveElem)

@@ -20,7 +20,7 @@ class Restore(object):
 
 
 	def getModuleString(self):
-		return "archive.readmeta; setup; archive.read; bootloader"
+		return "archive.readmeta; setup; archive.read; bootloader; cleanup;"
 
 
 	def run(self):

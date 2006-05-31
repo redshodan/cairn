@@ -22,8 +22,10 @@ class Install(object):
 		except Exception, err:
 			raise cairn.Exception("Failed to open GRUB command file %s: %s" % (cmdFileName, err))
 		cairn.addFileForCleanup(cmdFileName)
-		cmdFile.write("root=(hd0,0)\n")
-		cmdFile.write("setup (hd0)\n")
+		cmdFile.write("root=%s\n" %
+					  sysdef.info.get("machine/bootloader/partition"))
+		cmdFile.write("setup %s\n" %
+					  sysdef.info.get("machine/bootloader/drive"))
 		cmdFile.write("quit\n")
 		cmdFile.close()
 		return

@@ -29,15 +29,82 @@ located with this distribution.
    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 
 
+About
+-----
 
-Installing
+CAIRN is a highly flexable program that allows for onsite tweaking of its code.
+Custom modules of code can be created on the fly. These can be used to perform
+custom setup that your machine or image needs. The CAIRN framework allows for 
+easily inserting your custom code into the right spot in the order of
+operations.
+
+But having such flexability does not compromise the ease of use of CAIRN. The
+majority of situations can be handled automatically by CAIRN. The most common
+need for intervention is making sure the correct drive is when restoring an
+image to a different machine than where it came from.
+
+
+Status
+------
+CAIRN is in BETA stage right now. Do not be surprised if this release makes
+your computer sprout legs and run off into the forest never to be seen again.
+It is possible. Seriously though this is the first release of CAIRN and is 
+very beta. We are confident it will work with simple setups, but there is NO
+guarentee. This is mainly a testing release for anyone who is inclined to test
+it. If you have a spare machine and would like to test CAIRN please let us
+know. Any help will be greatly appreciated. The nature of a project like CAIRN 
+is such that there simply can not be enough testing.
+
+Vist http://trac.cairn-project.org to file bugs or enhancement requests. Since
+CAIRN is pretty new there is a lot left to be done. If you have a great idea
+get it in quick.
+
+Currently CAIRN does not support software RAID or LVM setups. That is in the
+immediate todo list and will be done soon. It should be possible to restore a 
+software RAID or LVM machine, but it will take a lot of manual intervention.
+
+
+Quick Help
 ----------
+This is about as simple as it gets, and it will get more simple with the next
+releases.
+
+Copying:
+1) On the machine that is to be backed up copy the 'cairn' program file over.
+2) Run it like:
+      cairn copy <filename>
+3) Copy <filename> off to a different machine.
+
+Restoring:
+1) Boot the target machine into a Linux environment that has Python. One of the
+   recent versions of Knoppix works very well.
+2) Copy the 'cairn' program file over.
+3) Copy the image file created in the copying stage onto this machine. Or use
+   a network filesystem so CAIRN has access to it.
+3) Run it like:
+      cairn restore <filename>
 
 
+Documentation
+-------------
+
+Currently there is no large amount of documentation. Running CAIRN with no
+arguments will invoke the help. This is the best documentation right now.
 
 
+To Do
+-----
+A lot of things need to be done and I will touch on the big tasks here. Please
+go to http://trac.cairn-project/roadmap for a more complete list.
 
-Building
---------
 
-
+- A boot environment for the restore program. It will be flexable enough that
+  it will be able to boot off nearly any medium or method out there.
+- Software RAID and LVM support.
+- More platforms. Solaris, Darwin/OSX, and MS Windows are the major platforms
+  being considered. MS Windows is being worked on and Darwin/OSX has had a
+  little work done on it.
+- Documentation. Basically it just needs to be done.
+- A utility to manage unattended network booting of machines and running CAIRN
+  for restoring and/or cloning.
+- Lots and lots more.

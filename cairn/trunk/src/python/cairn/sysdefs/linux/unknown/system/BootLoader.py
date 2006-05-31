@@ -49,11 +49,11 @@ class BootLoader(tmpl.BootLoader):
 			return True
 		if self.checkGRUB(sysdef, mbr):
 			cairn.log("Installed bootloader: GRUB")
-			sysdef.info.setChild("os/bootloader", "grub")
+			sysdef.info.setChild("machine/bootloader", "grub")
 		elif self.checkLILO(sysdef, mbr):
 			cairn.log("Installed bootloader: LILO")
-			sysdef.info.setChild("os/bootloader", "lilo")
+			sysdef.info.setChild("machine/bootloader", "lilo")
 		else:
 			cairn.log("Installed bootloader: unknown")
-			sysdef.info.setChild("os/bootloader", "unknown")
+			sysdef.info.setChild("machine/bootloader", "unknown")
 		return True
