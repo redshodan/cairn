@@ -108,3 +108,17 @@ go to http://trac.cairn-project/roadmap for a more complete list.
 - A utility to manage unattended network booting of machines and running CAIRN
   for restoring and/or cloning.
 - Lots and lots more.
+
+
+Contact
+-------
+Please send us an email with any ideas or questions. Please send any bug reports
+to our Trac system. If you wish to talk with us you can join us in our Jabber
+chat room. If you do not have a Jabber account you can create one on the
+codepunks.org server. A good Jabber client to use is Gajim which can be found
+at http://www.gajim.org.
+
+web site: http://www.cairn-project.org
+email: cairn@cairn-project.org
+jabber chat room: cairn@codepunks.org
+bug reports: http://trac.cairn-project.org

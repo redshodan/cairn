@@ -2,13 +2,7 @@
    Generic UNIX definitions"""
 
 
-import sys
-import os
-import re
-
 import cairn
-import cairn.Options as Options
-from cairn import sysdefs
 from cairn.sysdefs.SystemDefinition import *
 
 
@@ -29,5 +23,5 @@ class UNIX(SystemDefinition):
 
 
 	def __printSummary(self):
-		print "System definition:  Generic UNIX"
+		cairn.log("System definition:  Generic UNIX")
 		return

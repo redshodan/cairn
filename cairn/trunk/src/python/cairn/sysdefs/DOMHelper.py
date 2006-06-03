@@ -115,15 +115,16 @@ class PathEntry(object):
 
 
 	def printMe(self):
-		print "PathEntry: (",
+		msg = "PathEntry: ("
 		if self.elem:
-			print self.elem, self.elem.instName(),
+			msg = msg + self.elem + self.elem.instName()
 		else:
-			print self.elem,
-		print ") %s=%s(%s)" % (self.name, self.instName, self.parent)
+			msg = msg + self.elem
+		msg = msg +  ") %s=%s(%s)" % (self.name, self.instName, self.parent)
+		cairn.display(msg)
 		for sub in self.subPaths:
 			sub.printMe()
-		print "printMe return"
+		cairn.display("printMe return")
 		return
 
 

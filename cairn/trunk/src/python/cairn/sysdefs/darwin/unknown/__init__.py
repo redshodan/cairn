@@ -2,6 +2,7 @@
 	Unknown Darwin system definitions"""
 
 
+import cairn
 from cairn.sysdefs.templates.unix import *
 
 
@@ -22,5 +23,5 @@ class Unknown(UNIX):
 
 
 	def __printSummary(self):
-		print "System definition:  %s Darwin" % (self.name())
+		cairn.log("System definition:  %s Darwin" % (self.name()))
 		return

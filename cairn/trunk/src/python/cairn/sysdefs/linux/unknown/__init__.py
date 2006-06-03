@@ -2,6 +2,7 @@
 	Unknown Linux system definitions"""
 
 
+import cairn
 import cairn.sysdefs.templates.unix as tmpl
 
 
@@ -22,5 +23,5 @@ class Unknown(tmpl.UNIX):
 
 
 	def __printSummary(self):
-		print "System definition:  %s Linux" % (self.name())
+		cairn.log("System definition:  %s Linux" % (self.name()))
 		return

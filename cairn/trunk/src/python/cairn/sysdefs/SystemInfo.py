@@ -266,7 +266,7 @@ def createArchiveExcludesElem(self, path, type):
 ###
 
 def printXML(self):
-	print self.doc().toprettyxml("   ")
+	cairn.display(self.doc().toprettyxml("   "))
 	return
 
 
@@ -281,37 +281,38 @@ def printSummary(self):
 		if not val:
 			return "unknown"
 		return val
-	print "System Information:"
-	print "  OS:       %s, %s, %s" % (getDef(self, "os/name"),
-									  getDef(self, "os/version-short"),
-									  getDef(self, "os/version"))
-	print "  Distro:   %s, %s, %s" % (getDef(self, "os/distribution-vendor"),
-									  getDef(self, "os/distribution"),
-									  getDef(self, "os/distribution-version"))
-	print "  Arch:     %s, %s, %s" % (getDef(self, "arch/name"),
-									  getDef(self, "arch/cpu"),
-									  getDef(self, "arch/cpu-str"))
-	print "  ENV:      path: " + getDef(self, "env/path")
-	print "            archive-tool: " + getDef(self, "env/archive-tool")
-	print "            zip-tool: " + getDef(self, "env/zip-tool")
-	print "            tools: "
+	cairn.display("System Information:")
+	cairn.display("  OS:       %s, %s, %s" % (getDef(self, "os/name"),
+											  getDef(self, "os/version-short"),
+											  getDef(self, "os/version")))
+	cairn.display("  Distro:   %s, %s, %s" %
+				  (getDef(self, "os/distribution-vendor"),
+				   getDef(self, "os/distribution"),
+				   getDef(self, "os/distribution-version")))
+	cairn.display("  Arch:     %s, %s, %s" % (getDef(self, "arch/name"),
+											  getDef(self, "arch/cpu"),
+											  getDef(self, "arch/cpu-str")))
+	cairn.display("  ENV:      path: " + getDef(self, "env/path"))
+	cairn.display("            archive-tool: " +
+				  getDef(self, "env/archive-tool"))
+	cairn.display("            zip-tool: " + getDef(self, "env/zip-tool"))
+	cairn.display("            tools: ")
 	for tool in self.getElem("env/tools").getElems():
-		print "               %s: %s" % (tool.nodeName, tool.getText())
+		cairn.display("               %s: %s" % (tool.nodeName, tool.getText()))
 	self.printDrives()
 	return
 
 
 def printDrives(self):
-	print "  Drives:"
+	cairn.display("  Drives:")
 	for drive in self.getElems("hardware/drive"):
-		print "    %s: %s" % (drive.instName(),
-							  drive.get("device"))
+		cairn.display("    %s: %s" % (drive.instName(), drive.get("device")))
 		for part in drive.getElems("partition"):
-			print "      part %s: device=%s label=%s type=%s fs-type=%s mount=%s" % (part.instName(), part.get("device"), part.get("label"), part.get("type"), part.get("fs-type"), part.get("mount")),
+			msg = "      part %s: device=%s label=%s type=%s fs-type=%s mount=%s" % (part.instName(), part.get("device"), part.get("label"), part.get("type"), part.get("fs-type"), part.get("mount"))
 			space = part.getElem("fs-space")
 			if space:
-				print " (fs-space: total=%s used=%s free=%s)" % (space.get("total"), space.get("used"), space.get("free")),
-			print
+				msg = msg + " (fs-space: total=%s used=%s free=%s)" % (space.get("total"), space.get("used"), space.get("free"))
+			cairn.display(msg)
 	return
 
 

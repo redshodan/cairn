@@ -1,4 +1,4 @@
-"""CAIRN top level definitions"""
+"""cairn - Top level commonly used definitions"""
 
 
 import os
@@ -7,9 +7,11 @@ import stat
 import sys
 import inspect
 import atexit
+import logging
 
 
 from types import *
+import Logging
 
 
 # Error codes
@@ -18,24 +20,12 @@ ERR_MODULE = 2
 ERR_SYSDEF = 3
 ERR_BINARY = 4
 
-# Log levels
-NONE = 0
-ERROR = 1
-WARN = 2
-LOG = 3
-VERBOSE = 4
-DEBUG = 5
-
-#global __moduleLogMap
-__moduleLogMap = {}
 __file_cleanup = []
 
 
-# Have to import Options AFTER log levels are defined
-from cairn import Options
 
-
-
+# CAIRN base exception. Should be used instead of Pythons base Exception to
+# differentiate between std lib errors and CAIRN errors.
 class Exception(Exception):
 	def __init__(self, msg, code = None):
 		self.msg = msg
@@ -47,96 +37,54 @@ class Exception(Exception):
 
 
 	def printSelf(self):
-		print "Error: %s" % self.msg
+		error(self.msg)
 		if Options.get("force"):
-			print "Force is set, ignoring the previous error"
+			warn("Force is set, ignoring the previous error")
 		return
 
 
-def setModuleLogLevel(module, level):
-	__moduleLogMap[module] = level
+# Basic initialization function. This really needs to be the first thing done
+# in a CAIRN program.
+def init():
+	Logging.init()
 	return
 
 
-def getModuleLogLevel(module):
-	return __moduleLogMap[module]
+# Log pass through functions
+def critical(msg, *args):
+	return Logging.error.log(Logging.CRITICAL, "Critical: " + msg)
 
 
-def strToLogLevel(str):
-	if str == "error":
-		return ERROR
-	elif str == "warn":
-		return WARN
-	elif str == "log":
-		return LOG
-	elif str == "verbose":
-		return VERBOSE
-	elif str == "debug":
-		return DEBUG
-	else:
-		return None
+def error(msg, *args):
+	return Logging.error.log(Logging.ERROR, "Error: " + msg)
 
 
-def error(str):
-	if __getCallers2LogLevel() >= ERROR:
-		if str:
-			print "Error: " + str
-		return True
-	else:
-		return False
+def warn(msg, *args):
+	return Logging.error.log(Logging.WARNING, "Warning: " + msg)
 
 
-def warn(str):
-	if __getCallers2LogLevel() >= WARN:
-		if str:
-			print "Warning: " + str
-		return True
-	else:
-		return False
+def info(msg, *args):
+	return Logging.display.log(Logging.INFO, msg)
 
 
-def log(str = None, newline = True):
-	if __getCallers2LogLevel() >= LOG:
-		if str:
-			if newline:
-				print str
-			else:
-				print str,
-				sys.stdout.flush()
-		return True
-	else:
-		return False
+def verbose(msg, *args):
+	return Logging.display.log(Logging.VERBOSE, msg)
 
 
-def verbose(str = None):
-	if __getCallers2LogLevel() >= VERBOSE:
-		if str:
-			print str
-		return True
-	else:
-		return False
+def debug(msg, *args):
+	return Logging.display.log(Logging.DEBUG, msg)
 
 
-def debug(str = None):
-	if __getCallers2LogLevel() >= DEBUG:
-		if str:
-			print str
-		return True
-	else:
-		return False
+def log(msg, *args):
+	return Logging.display.log(Logging.INFO, msg)
 
 
-# Only call from a function in this module. It assumes the desired frame to look
-# at is 2 above its own frame.
-def __getCallers2LogLevel():
-	srcFile = inspect.getouterframes(inspect.currentframe())[2][1]
-	srcFile = srcFile.replace("/", ".").rstrip(".py")
-	for key, val in __moduleLogMap.iteritems():
-		if srcFile.endswith(key):
-			return val
-	return Options.get("log")
+def display(msg):
+	return Logging.display.log(Logging.INFO, msg)
 
 
+
+# Exit and cleanup
 def addFileForCleanup(file):
 	verbose("Adding file for cleanup at exit: " + file)
 	__file_cleanup.append(file)
@@ -160,6 +108,7 @@ def cairnAtExit():
 				os.remove(file)
 		except OSError, err:
 			error("Failed to delete file: " + file)
+	logging.shutdown()
 	return
 
 atexit.register(cairnAtExit)

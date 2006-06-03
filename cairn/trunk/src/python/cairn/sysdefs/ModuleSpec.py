@@ -83,7 +83,6 @@ def makeRE(name):
 		name = name.strip("/")
 	else:
 		name = "^%s$" % name
-	print "RE name:", name
 	return re.compile(name)
 
 

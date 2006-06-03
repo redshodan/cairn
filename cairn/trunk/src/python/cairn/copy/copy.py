@@ -24,6 +24,7 @@ class Copy(object):
 
 
 	def run(self):
+		cairn.init()
 		Options.set("program", "copy")
 		Options.init()
 		self.setDefaults()

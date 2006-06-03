@@ -9,6 +9,7 @@ import string
 import sys
 
 import cairn
+from cairn import Logging
 
 
 # module globals
@@ -29,22 +30,26 @@ STR = 1
 BOOL = 2
 
 # module defines
-cliCopyHelpHeader = "usage: copy [args] file"
-cliRestoreHelpHeader = "usage: restore [args] file"
+cliCopyHelpHeader = "usage: cairn copy [args] file"
+cliRestoreHelpHeader = "usage: cairn restore [args] file"
 
 
 # Custom opt setters. Have to be here before the opts array.
 def setVerboseOpt(opt, arg):
-	if not arg and get("log"):
-		set("log", get("log") + 1)
+	level = get("log")
+	if not arg and level and (level > Logging.DEBUG):
+		level = level - 10
+		set("log", level)
+		Logging.setLogLevel(level)
 	else:
-		set("log", cairn.VERBOSE)
+		set("log", Logging.VERBOSE)
 	return
 
 
 def setLogOpt(opt, arg):
-	if cairn.strToLogLevel(arg):
-		set(opt, cairn.strToLogLevel(arg))
+	if Logging.strToLogLevel(arg):
+		Logging.setLogLevel(Logging.strToLogLevel(arg))
+		set(opt, Logging.strToLogLevel(arg))
 	else:
 		usage()
 	return
@@ -118,7 +123,7 @@ cliCommonOpts = {
 				  "File containing exclude directives"],
  "force" : [False, "f", BOOL, None, None, "Force operation, ignoring errors."],
  "help" : [False, "h", BOOL, None, setHelpOpt, None],
- "log" : [cairn.LOG, "l", STR, None, setLogOpt,
+ "log" : [Logging.INFO, "l", STR, None, setLogOpt,
 	"Or specify log level: none, error, warn, log (default), verbose, debug"],
  "logmodule" : [None, None, STR, None, setLogModuleOpt,
 	"Set loglevel for a particular module eg: cairn.sysdefs=debug"],
@@ -198,15 +203,15 @@ def init():
 
 def usage():
 	if get("program") == "copy":
-		print cliCopyHelpHeader, "\n"
+		cairn.display(cliCopyHelpHeader)
 		printOptMap()
 		sys.exit(0)
 	elif get("program") == "restore":
-		print cliRestoreHelpHeader, "\n"
+		cairn.display(cliRestoreHelpHeader)
 		printOptMap()
 		sys.exit(0)
 	else:
-		print "Incorrect mode of operation. Can not figure out the program."
+		cairn.critical("Incorrect mode of operation. Can not figure out the program.")
 		sys.exit(-1)
 	return
 
@@ -216,17 +221,17 @@ def printOptMap():
 	keys.sort()
 	for name in keys:
 		if ourOptMap[name][SHORT]:
-			print "  -%s, --%s - %s" % (ourOptMap[name][SHORT], name,
-										ourOptMap[name][HELP])
+			cairn.display("  -%s, --%s - %s" % (ourOptMap[name][SHORT], name,
+												ourOptMap[name][HELP]))
 		else:
-			print "  --%s - %s" % (name, ourOptMap[name][HELP])
+			cairn.display("  --%s - %s" % (name, ourOptMap[name][HELP]))
 	return
 
 
 def printAll():
-	print "Option values:"
+	cairn.display("Option values:")
 	for key, val in ourOpts.iteritems():
-		print "  %s -> %s" % (key, val)
+		cairn.display("  %s -> %s" % (key, val))
 	return
 
 
@@ -236,7 +241,7 @@ def parseCmdLineOpts():
 		opts, args = getopt.gnu_getopt(sys.argv[1:], shortOpts, longOpts)
 		parseOpts(opts, args, ourOptMap)
 	except getopt.GetoptError, err:
-		print err
+		cairn.display(err)
 		usage()
 	return
 
@@ -280,6 +285,7 @@ def parseOpts(opts, args, optMap):
 		str = os.path.abspath(args[0])
 		set("filename", str)
 		sysInfoOpts["archive/filename"] = str
+		Logging.setAllLogFile(str + ".log")
 	elif len(args) > 1:
 		usage()
 	elif (len(args) == 0) and ourFileRequired:

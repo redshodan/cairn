@@ -65,24 +65,25 @@ class EstimateSize(object):
 					dirs.remove(iter)
 				removes = []
 			# Header block for current dir
-			#print "dir: %s, 512" % root
+			#cairn.debug("dir: %s, 512" % root)
 			total = total + TAR_BLKSIZE
 			for file in files:
 				# Header block
 				total = total + TAR_BLKSIZE
 				fileName = os.path.join(root, file)
-				#print "file:  %s" % fileName
+				#cairn.debug("file:  %s" % fileName)
 				info = os.lstat(fileName)
 				if stat.S_ISREG(info[stat.ST_MODE]) or \
 					   stat.S_ISLNK(info[stat.ST_MODE]):
-					#print "       size=%d blocks=%d" % (info[stat.ST_SIZE],
-					#									(info[stat.ST_SIZE] / TAR_BLKSIZE))
+					#cairn.debug("       size=%d blocks=%d" %
+					#			(info[stat.ST_SIZE],
+					#			 (info[stat.ST_SIZE] / TAR_BLKSIZE)))
 					# Whole number of blocks used
 					total = total + (TAR_BLKSIZE *
 									 (info[stat.ST_SIZE] / TAR_BLKSIZE))
 					# Remainder (partial) block
 					if (info[stat.ST_SIZE] % TAR_BLKSIZE) > 0:
-						#print "       +1 block"
+						#cairn.debug("       +1 block")
 						total = total + TAR_BLKSIZE
 		return total
 

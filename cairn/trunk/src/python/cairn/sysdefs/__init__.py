@@ -175,9 +175,9 @@ def selectPlatform(root, moduleNames, force = False):
 		return exactMatches[0]
 	# Multiple modules think they are right
 	elif len(exactMatches) > 1:
-		print "There are mutiple system definition matchs:"
+		cairn.error("There are mutiple system definition matchs:")
 		for module in exactMatches:
-			print "  ", module.__name__
+			cairn.error("  %s" % module.__name__)
 		raise cairn.Exception("Multiple system definitions found. Please choose the correct one.", cairn.ERR_SYSDEF)
 	elif len(exactMatches) < 0:
 		raise cairn.Exception("No system definitions match this platform.",

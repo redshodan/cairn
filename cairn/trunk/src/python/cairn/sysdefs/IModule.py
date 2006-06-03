@@ -11,8 +11,7 @@ from cairn.sysdefs import ModuleSpec
 
 def loadList(sysdef, moduleSpec, userModuleSpec, modules, prefix):
 	moduleNames = ModuleSpec.parseModuleSpec(sysdef, moduleSpec, userModuleSpec, prefix)
-	if cairn.debug():
-		print "Module list:", moduleNames
+	cairn.debug("Module list:", moduleNames)
 	loadModulesByInst(sysdef, moduleNames, userModuleSpec, modules)
 	return
 
@@ -31,8 +30,8 @@ def loadModulesByInst(sysdef, moduleNames, userModuleSpec, modules):
 			if foundModule:
 				break
 		if not foundModule:
-			raise cairn.Exception(cairn.ERR_MODULE,
-								  "Unable to import module %s" % (name))
+			raise cairn.Exception("Unable to import module %s" % (name),
+								  cairn.ERR_MODULE)
 		if not checkSubModule(sysdef, name, foundModule, userModuleSpec, modules):
 			modules.append(foundModule)
 	return
@@ -62,8 +61,8 @@ def loadModulesByName(root, moduleNames, modules):
 	for name in moduleNames:
 		module = loadAModule("%s.%s" % (root, name))
 		if not module:
-			raise cairn.Exception(cairn.ERR_MODULE,
-								  "Unable to import module %s" % (name))
+			raise cairn.Exception("Unable to import module %s" % (name),
+								  cairn.ERR_MODULE)
 		modules.append(module)
 	return
 
@@ -140,12 +139,12 @@ class ModuleList(object):
 	def replace(self, name, newModName):
 		index = self.find(name)
 		if index < 0:
-			raise cairn.Exception(cairn.ERR_MODULE,
-								  "Unable to import module %s" % (newModName))
+			raise cairn.Exception("Unable to import module %s" % (newModName),
+								  cairn.ERR_MODULE)
 		module = loadAModule(newModName)
 		if not module:
-			raise cairn.Exception(cairn.ERR_MODULE,
-								  "Unable to import module %s" % (newModName))
+			raise cairn.Exception("Unable to import module %s" % (newModName),
+								  cairn.ERR_MODULE)
 		self.__list[index] = module
 		return True
 
@@ -155,8 +154,8 @@ class ModuleList(object):
 		loadList(self.__sysdef, newModName, None, moduleList, None)
 		modules = moduleList.iter()
 		if len(modules) <= 0:
-			raise cairn.Exception(cairn.ERR_MODULE,
-								  "Unable to import module %s" % (newModName))
+			raise cairn.Exception("Unable to import module %s" % (newModName),
+								  cairn.ERR_MODULE)
 		modules.reverse()
 		for module in modules:
 			self.__list.insert(self.__curModule + 1, module)
