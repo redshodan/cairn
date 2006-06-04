@@ -34,6 +34,7 @@ class Restore(object):
 		cairn.log("Archive restore finished")
 		return
 
+
 def run():
 	try:
 		crestore = Restore()

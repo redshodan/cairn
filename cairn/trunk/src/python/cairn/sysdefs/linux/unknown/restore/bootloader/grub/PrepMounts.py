@@ -20,4 +20,4 @@ class PrepMounts(object):
 		Shared.mount(sysdef, "/dev", os.path.join(mdir, "dev"), "--bind")
 		if sysdef.info.get("os/version-short") == "2.6":
 			Shared.mount(sysdef, "/sys", os.path.join(mdir, "sys"), "--bind")
-		return
+		return True

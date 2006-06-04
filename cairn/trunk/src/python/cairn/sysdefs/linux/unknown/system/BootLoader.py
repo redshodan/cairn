@@ -3,6 +3,7 @@
 
 
 import cairn
+from cairn import Options
 import cairn.sysdefs.templates.unix.system.BootLoader as tmpl
 
 
@@ -44,6 +45,10 @@ class BootLoader(tmpl.BootLoader):
 
 
 	def run(self, sysdef):
+		if Options.get("boot"):
+			cairn.log("User choose bootloader: %s" % Options.get("boot"))
+			sysdef.info.setChild("machine/bootloader/type", Options.get("boot"))
+			return True
 		mbr = self.readMBR(sysdef)
 		if not mbr:
 			return True

@@ -4,7 +4,7 @@
 import os.path
 
 import cairn
-from cairn.sysdefs import Tools
+from cairn.sysdefs.Tools import *
 
 
 
@@ -37,5 +37,5 @@ class Tools(object):
 		mpath = ""
 		for word in path.split(":"):
 			mpath = "%s:%s" % (mpath, os.path.join(mdir, word.lstrip("/")))
-		Tools.findTools(sysdef, mpath.strip(":"), self.getBins(sysdef))
+		findTools(sysdef, mpath.strip(":"), self.getBins(sysdef))
 		return True

@@ -114,6 +114,7 @@ def setHelpOpt(opt, arg):
 # will be passed to getopt. Adding a new entry in the correct option list
 # is all that is needed to add in more options.
 cliCommonOpts = {
+ "boot" : [None, "b", STR, None, None, "Force this bootloader to be used"],
  "configfile" : [None, "c", STR, None, None, "Config file to load."],
  "dumpmeta" : [None, None, STR, "archive/metafilename", clearFileReqStr,
 			   "Dump the metafile and exit"],

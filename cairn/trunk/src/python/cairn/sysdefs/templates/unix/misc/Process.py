@@ -31,9 +31,12 @@ class ProcessInfo(object):
 
 	def wait(self):
 		cairn.verbose("Flushing stderr on: %s" % (self.name))
-		(selrfds, trash1, trash2) = select.select([self.stderr], [], [], 0.0001)
-		if self.stderr in selrfds:
-			self.readErr()
+		trying = True
+		while trying:
+			trying = False
+			(selrfds, trash1, trash2) = select.select([self.stderr], [], [], 1.0)
+			if (self.stderr in selrfds) and self.readErr():
+				trying = True
 		cairn.verbose("Waiting on: %s" % (self.name))
 		self.close()
 		try:

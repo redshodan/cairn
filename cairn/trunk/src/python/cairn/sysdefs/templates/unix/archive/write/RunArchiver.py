@@ -1,4 +1,4 @@
-"""templates.unix.copy.write.RunArchiver Module"""
+"""templates.unix.archive.write.RunArchiver Module"""
 
 
 

@@ -94,14 +94,15 @@ class RunArchiver(object):
 		self.finishDisplayPercent()
 		input.wait()
 		output.wait()
-		cairn.debug("Archive tool stderr: %s" % archiveTool.err)
-		cairn.debug("Zip tool stderr: %s" % zipTool.err)
+		cairn.debug("Archive tool exit: %d stderr:\n%s" % (archiveTool.exit(),
+														   archiveTool.err))
+		cairn.debug("Zip tool exit: %d stderr:\n%s" % (zipTool.exit(), zipTool.err))
 		err = ""
 		if archiveTool.err:
 			err = "Error running archive tool: %s" % archiveTool.err
 		if zipTool.err:
-			err = err + "Error running zip tool: %s" % zipTool.err
-		if (archiveTool.exit() != 0) or (zipTool.exit() != 0):
+			err = err + "\nError running zip tool: %s" % zipTool.err
+		if not self.verifyExit(archiveTool, zipTool):
 			raise cairn.Exception("Error running a tool: archiver exited with %d, zipper exited with %d: %s" % (archiveTool.exit(), zipTool.exit(), err))
 		return
 
@@ -128,7 +129,17 @@ class RunArchiver(object):
 		return
 
 
+	def verifyExit(self, archiveTool, zipTool):
+		if (archiveTool.exit() != 0) or (zipTool.exit() != 0):
+			return False
+		else:
+			return True
+
+
 	def run(self, sysdef):
-		archive = self.prepare(sysdef)
-		self.runTools(sysdef, archive)
+		try:
+			archive = self.prepare(sysdef)
+			self.runTools(sysdef, archive)
+		except Exception, err:
+			raise cairn.Exception("Failed while running archive tools: %s" % err)
 		return True

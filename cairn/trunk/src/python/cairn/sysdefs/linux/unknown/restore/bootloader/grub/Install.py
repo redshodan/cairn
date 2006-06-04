@@ -21,7 +21,6 @@ class Install(object):
 			cmdFile = file(cmdFileName, "w+")
 		except Exception, err:
 			raise cairn.Exception("Failed to open GRUB command file %s: %s" % (cmdFileName, err))
-		cairn.addFileForCleanup(cmdFileName)
 		cmdFile.write("root=%s\n" %
 					  sysdef.info.get("machine/bootloader/partition"))
 		cmdFile.write("setup %s\n" %
@@ -34,11 +33,12 @@ class Install(object):
 	def runGrub(self, sysdef, mdir, cmdFileName):
 		chroot = sysdef.info.get("env/tools/chroot")
 		grub = sysdef.info.get("env/tools/grub")
+		grub = grub.replace(sysdef.info.get("env/mountdir"), "")
 		cmd = "%s %s %s --no-floppy --batch < %s" % (chroot, mdir, grub, cmdFileName)
 		ret = commands.getstatusoutput(cmd)
+		cairn.debug("grub exit: %d\n%s"% (ret[0], ret[1]))
 		if ret[0] != 0:
-			raise cairn.Exception("Failed to run %s: %s" % (grub, err))
-		cairn.log(ret[1])
+			raise cairn.Exception("Failed to run %s: %s" % (grub, ret[1]))
 		return
 
 
