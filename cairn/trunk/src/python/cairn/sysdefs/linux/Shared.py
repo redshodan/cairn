@@ -3,6 +3,7 @@
 
 import commands
 
+import cairn
 from cairn.sysdefs.linux.Constants import *
 
 
@@ -35,11 +36,11 @@ def mount(sysdef, device, dir, opts = ""):
 
 
 def unmountAll(sysdef):
-	mountedFS.sort()
+	mountedFS.reverse()
 	for mount in mountedFS:
 		cairn.log("Umounting %s" % mount)
-		cmd = "%s %s" % (sysdef.info.get("env/tools/unmount"), dir)
+		cmd = "%s %s" % (sysdef.info.get("env/tools/unmount"), mount)
 		ret = commands.getstatusoutput(cmd)
 		if ret[0] != 0:
-			raise cairn.Exception("Failed to unmount %s %s" % (dir, ret[1]))
+			raise cairn.Exception("Failed to unmount %s %s" % (mount, ret[1]))
 	return

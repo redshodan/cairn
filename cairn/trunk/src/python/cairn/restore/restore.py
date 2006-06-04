@@ -24,6 +24,7 @@ class Restore(object):
 
 
 	def run(self):
+		cairn.init()
 		Options.set("program", "restore")
 		Options.init()
 		self.setDefaults()

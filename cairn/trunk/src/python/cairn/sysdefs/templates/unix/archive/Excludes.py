@@ -50,6 +50,8 @@ class Excludes(object):
 	def excludeArchive(self, sysdef):
 		sysdef.info.createArchiveExcludesElem(sysdef.info.get("archive/filename"),
 											  "ignored_fs")
+		sysdef.info.createArchiveExcludesElem(sysdef.info.get("archive/log-filename"),
+											  "ignored_fs")
 		return
 
 

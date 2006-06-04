@@ -3,6 +3,7 @@
 
 import cairn
 from cairn.sysdefs.linux import Shared
+from cairn import Options
 
 
 def getClass():
@@ -12,5 +13,6 @@ def getClass():
 class UnMountParts(object):
 
 	def run(self, sysdef):
-		Shared.unmountAll(sysdef)
+		if not Options.get("nocleanup"):
+			Shared.unmountAll(sysdef)
 		return True

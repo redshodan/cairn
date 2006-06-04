@@ -69,46 +69,40 @@ class RunArchiver(object):
 	def runPipe(self, sysdef, archiveTool, zipTool):
 		percent = Percent(long(sysdef.info.get("archive/estimated-size")))
 		if self.direction() == self.IN:
-			input = zipTool.stdout
-			output = archiveTool.stdin
+			input = zipTool
+			output = archiveTool
 		else:
-			input = archiveTool.stdout
-			output = zipTool.stdin
-		readfds = [ input, archiveTool.stderr, zipTool.stderr]
+			input = archiveTool
+			output = zipTool
+		readfds = [ input.stdout, archiveTool.stderr, zipTool.stderr]
 		running = True
 		self.displayPercent(0)
 		while running:
 			(selrfds, trash1, trash2) = select.select(readfds, [], [], 0)
 			for sel in selrfds:
-				if sel == input:   ### Archive output
-					buff = os.read(input, 524288)   ### 512K
+				if sel == input.stdout:   ### Archive output
+					buff = os.read(input.stdout, 524288)   ### 512K
 					if not buff:
 						running = False
 						break
-					os.write(output, buff)
+					os.write(output.stdin, buff)
 					self.processPercent(percent, len(buff))
-				if sel == archiveTool.stderr:   ### Archive err
-					buff = os.read(archiveTool.stderr, 1024)
-					if buff:
-						archiveTool.err = archiveTool.err + buff
-					else:
-						readfds.remove(archiveTool.stderr)
-				if sel == zipTool.stderr:   ### Zip err
-					buff = os.read(zipTool.stderr, 1024)
-					if buff:
-						zipTool.err = zipTool.err + buff
-					else:
-						readfds.remove(zipTool.stderr)
+				if ((sel == archiveTool.stderr) and not archiveTool.readErr()):
+					readfds.remove(archiveTool.stderr)
+				if ((sel == zipTool.stderr) and	not zipTool.readErr()):
+					readfds.remove(zipTool.stderr)
 		self.finishDisplayPercent()
-		archiveTool.wait()
-		zipTool.wait()
+		input.wait()
+		output.wait()
+		cairn.debug("Archive tool stderr: %s" % archiveTool.err)
+		cairn.debug("Zip tool stderr: %s" % zipTool.err)
 		err = ""
 		if archiveTool.err:
 			err = "Error running archive tool: %s" % archiveTool.err
 		if zipTool.err:
 			err = err + "Error running zip tool: %s" % zipTool.err
 		if (archiveTool.exit() != 0) or (zipTool.exit() != 0):
-			raise cairn.Exception("Error running a tool: %s" % err)
+			raise cairn.Exception("Error running a tool: archiver exited with %d, zipper exited with %d: %s" % (archiveTool.exit(), zipTool.exit(), err))
 		return
 
 

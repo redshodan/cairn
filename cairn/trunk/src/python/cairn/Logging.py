@@ -132,9 +132,9 @@ def setAllLogFile(filename):
 
 
 def setLogLevel(level):
-	display.setLevel(level)
-	if level > error.level:
-		error.setLevel(level)
+	cairn.Logging.display.setLevel(level)
+	if level > cairn.Logging.error.level:
+		cairn.Logging.error.setLevel(level)
 	return
 
 

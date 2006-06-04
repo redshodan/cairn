@@ -285,7 +285,10 @@ def parseOpts(opts, args, optMap):
 		str = os.path.abspath(args[0])
 		set("filename", str)
 		sysInfoOpts["archive/filename"] = str
-		Logging.setAllLogFile(str + ".log")
+		log = str + ".log"
+		set("logfilename", log)
+		sysInfoOpts["archive/log-filename"] = log
+		Logging.setAllLogFile(log)
 	elif len(args) > 1:
 		usage()
 	elif (len(args) == 0) and ourFileRequired:
