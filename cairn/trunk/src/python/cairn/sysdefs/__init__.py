@@ -5,6 +5,7 @@
 import os
 import sys
 import re
+import inspect
 
 import cairn
 from cairn import Options
@@ -88,36 +89,41 @@ def loadProgramOpts():
 
 
 def loadModuleList():
-	modules = IModule.ModuleList(cairn.sysdefs.__sysdef)
+	modList = IModule.ModuleList(cairn.sysdefs.__sysdef)
 	userModuleSpec = Options.get("modules")
-	IModule.loadList(cairn.sysdefs.__sysdef, cairn.sysdefs.__sysdef.getModuleString(),
-					 userModuleSpec, modules, None)
-	cairn.sysdefs.__sysdef.moduleList = modules
+	IModule.loadList(cairn.sysdefs.__sysdef,
+					 cairn.sysdefs.__sysdef.getModuleString(), userModuleSpec,
+					 modList, None)
+	cairn.sysdefs.__sysdef.moduleList = modList
 	return
 
 
 def verifyModuleList():
-	for module in getModuleList().iter():
-		verifyModule(module);
+	for modInfo in getModuleList().iter():
+		verifyModule(modInfo.module);
 	return
 
 
 def run():
 	cairn.debug("Final static module list: ")
 	cairn.debug(getModuleList().toString("  ", "\n"))
-	for module in getModuleList().iter():
+	for modInfo in getModuleList().iter():
 		if haveQuit():
 			cairn.debug("Module requested quit")
 			break
-		cairn.debug("Running module: " + module.__name__)
+		cairn.debug("Running module: " + modInfo.module.__name__)
 		try:
-			func = getattr(module, "getClass")
+			func = getattr(modInfo.module, "getClass")
 		except:
-			raise cairn.Exception("Module %s does not have a getClass() function" % module.__name__)
-		obj = func()
+			raise cairn.Exception("Module %s does not have a getClass() function" % modInfo.module.__name__)
+		# Does it require arguments?
+		if inspect.getargspec(func)[2]:
+			obj = func(**modInfo.args)
+		else:
+			obj = func()
 		try:
 			if not obj.run(cairn.sysdefs.__sysdef) and not Options.get("force"):
-				raise cairn.Exception("Failed to run module: " + module.__name__)
+				raise cairn.Exception("Failed to run module: " + modInfo.module.__name__)
 		except cairn.Exception, err:
 			if not Options.get("force"):
 				raise err

@@ -8,6 +8,7 @@ import sys
 import inspect
 import atexit
 import logging
+import traceback
 
 
 from types import *
@@ -37,6 +38,9 @@ class Exception(Exception):
 
 
 	def printSelf(self):
+		Logging.error.log(Logging.ERROR, "Traceback (most recent call last):")
+		for entry in traceback.format_tb(sys.exc_info()[2]):
+			Logging.error.log(Logging.ERROR, entry.rstrip())
 		error(self.msg)
 		if Options.get("force"):
 			warn("Force is set, ignoring the previous error")

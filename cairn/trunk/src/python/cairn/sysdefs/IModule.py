@@ -7,53 +7,75 @@ import sys
 import cairn
 from cairn import Options
 from cairn.sysdefs import ModuleSpec
+from cairn.sysdefs import UserModule
+from cairn.sysdefs import UserShellModule
 
 
-def loadList(sysdef, moduleSpec, userModuleSpec, modules, prefix):
-	moduleNames = ModuleSpec.parseModuleSpec(sysdef, moduleSpec, userModuleSpec, prefix)
-	cairn.debug("Module list:", moduleNames)
-	loadModulesByInst(sysdef, moduleNames, userModuleSpec, modules)
+def loadList(sysdef, moduleSpec, userModuleSpec, moduleList, prefix):
+	modInfos = ModuleSpec.parseModuleSpec(sysdef, moduleSpec, userModuleSpec,
+										  prefix)
+	str = ""
+	for mod in modInfos:
+		str = "%s; %s" % (str, mod.getValue())
+	cairn.debug("Module list: %s" % str.lstrip(";"))
+	loadModulesByInst(sysdef, modInfos, userModuleSpec, moduleList)
 	return
 
 
-def loadModulesByInst(sysdef, moduleNames, userModuleSpec, modules):
+def loadModulesByInst(sysdef, moduleInfos, userModuleSpec, moduleList):
 	"""Find corresponding modules following the module 'hierarchy'. For each try
 	   the program version then the main module."""
-	for name in moduleNames:
-		foundModule = None
-		for curRoot in sysdef.__class__.__mro__:
-			foundModule = loadAModule("%s.%s.%s" % (curRoot.__module__,
-													Options.get("program"), name))
-			if foundModule:
-				break
-			foundModule = loadAModule("%s.%s" % (curRoot.__module__, name))
-			if foundModule:
-				break
-		if not foundModule:
-			raise cairn.Exception("Unable to import module %s" % (name),
-								  cairn.ERR_MODULE)
-		if not checkSubModule(sysdef, name, foundModule, userModuleSpec, modules):
-			modules.append(foundModule)
+	for modInfo in moduleInfos:
+		if modInfo.type == ModuleSpec.USER_MOD_SHELL:
+			createUserShellModule(sysdef, modInfo.getValue(), moduleList)
+		elif modInfo.type == ModuleSpec.USER_MOD_PY:
+			createUserModule(sysdef, modInfo.getValue(), moduleList)
+		else:
+			names = modInfo.getNames()
+			workingInfos = []
+			for name in names:
+				info = ModuleSpec.ModuleInfo()
+				info.copy(modInfo)
+				info.name = name
+				workingInfos.append(info)
+			for info in workingInfos:
+				for curRoot in sysdef.__class__.__mro__:
+					foundModule = loadAModule("%s.%s.%s" %
+											  (curRoot.__module__,
+											   Options.get("program"),
+											   info.name))
+					if foundModule:
+						break
+					foundModule = loadAModule("%s.%s" % (curRoot.__module__,
+														 info.name))
+					if foundModule:
+						break
+				if not foundModule:
+					raise cairn.Exception("Unable to import module %s" %
+										  (name), cairn.ERR_MODULE)
+				info.module = foundModule
+				if not checkSubModule(sysdef, info, userModuleSpec, moduleList):
+					moduleList.append(info)
 	return
 
 
-def checkSubModule(sysdef, name, module, userModuleSpec, modules):
+def checkSubModule(sysdef, info, userModuleSpec, moduleList):
 	getSubModuleString = None
 	try:
-		getSubModuleString = getattr(module, "getSubModuleString")
+		getSubModuleString = getattr(info.module, "getSubModuleString")
 	except AttributeError:
 		return False
 	try:
-		getClass = getattr(module, "getClass")
-		modules.append(module)
+		getClass = getattr(info.module, "getClass")
+		moduleList.append(info)
 	except AttributeError:
 		pass
 	moduleNames = getSubModuleString(sysdef)
 	subModules = ModuleList(sysdef)
-	cairn.debug("Found sub-module %s: %s" % (name, moduleNames))
-	loadList(sysdef, moduleNames, userModuleSpec, subModules, name)
+	cairn.debug("Found sub-module %s: %s" % (info.name, moduleNames))
+	loadList(sysdef, moduleNames, userModuleSpec, subModules, info.name)
 	for subModule in subModules.iter():
-		modules.append(subModule)
+		moduleList.append(subModule)
 	return True
 
 
@@ -93,6 +115,19 @@ def findFileInPath(path, file, seperator = ":"):
 	return None
 
 
+def createUserShellModule(sysdef, str, modules):
+	mod = sys.modules["cairn.sysdefs.UserShellModule"]
+	modules.append(ModuleSpec.ModuleInfo(module=mod, args={"code":str},
+										 type=ModuleSpec.USER_MOD_SHELL))
+	return
+
+
+def createUserModule(sysdef, str, modules):
+	mod = sys.modules["cairn.sysdefs.UserModule"]
+	modules.append(ModuleSpec.ModuleInfo(module=mod, args={"code":str},
+										 type=ModuleSpec.USER_MOD_PY))
+	return
+
 
 
 class ModuleList(object):
@@ -124,13 +159,13 @@ class ModuleList(object):
 
 
 	def name(self, index):
-		return getattr(self.__list[index], "__name__")
+		return getattr(self.__list[index].module, "__name__")
 
 
 	def find(self, name):
 		index = 0
-		for module in self.__list:
-			if getattr(module, "__name__") == name:
+		for modInfo in self.__list:
+			if getattr(modInfo.module, "__name__") == name:
 				return index
 			index = index + 1
 		return -1
@@ -145,25 +180,25 @@ class ModuleList(object):
 		if not module:
 			raise cairn.Exception("Unable to import module %s" % (newModName),
 								  cairn.ERR_MODULE)
-		self.__list[index] = module
+		self.__list[index].module = module
 		return True
 
 
 	def insertAfterMe(self, newModName):
 		moduleList = ModuleList(self.__sysdef)
 		loadList(self.__sysdef, newModName, None, moduleList, None)
-		modules = moduleList.iter()
-		if len(modules) <= 0:
+		modInfos = moduleList.iter()
+		if len(modInfos) <= 0:
 			raise cairn.Exception("Unable to import module %s" % (newModName),
 								  cairn.ERR_MODULE)
-		modules.reverse()
-		for module in modules:
-			self.__list.insert(self.__curModule + 1, module)
+		modInfos.reverse()
+		for modInfo in modInfos:
+			self.__list.insert(self.__curModule + 1, modInfo)
 		return True
 
 
 	def toString(self, padding = ", ", eol = ""):
 		str = ""
-		for module in self.__list:
-			str = "%s%s%s%s" % (str, padding, module.__name__, eol)
+		for modInfo in self.__list:
+			str = "%s%s%s%s" % (str, padding, modInfo.module.__name__, eol)
 		return str

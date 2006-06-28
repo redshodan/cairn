@@ -142,7 +142,6 @@ cliCommonOpts = {
 			  "Print a summary of generated info and exit"],
  "setmeta" : [None, "s", STR, None, setInfoOpt,
 		  "Set a system metainfo option, overriding discovered value"],
- "setopt" : [None, "s", STR, None, setOpt, "Set a general option"],
  "sysdef" : [None, None, STR, None, None,
 			 "Manually choose the system definition eg: linux.redhat"],
  "verbose" : [False, "v", BOOL, None, setVerboseOpt,
@@ -150,25 +149,23 @@ cliCommonOpts = {
 }
 
 cliCopyOpts = {
- "archive" : ["tar", None, STR, None, None,
-			  "Archive type to use: tar, star"],
+ "archive" : ["tar", "a", STR, None, None, "Archive type to use: tar, star"],
  "noshar" : [None, None, BOOL, "archive/shar", None,
 			 "Create a plain archive without the metadata prepended."],
  "quick" : [False, "q", BOOL, None, None,
 			"Skip time consuming steps that are not absolutly needed, eg:" + \
 			" precise progress meter"],
- "zip" : ["bzip2", None, STR, None, None, "Zip type to use: bzip2, gzip"]
+ "zip" : ["bzip2", "z", STR, None, None, "Zip type to use: bzip2, gzip"]
 }
 
 cliRestoreOpts = {
- "archive" : ["tar", None, STR, None, None,
-			  "Archive type to use: tar, star"],
+ "archive" : ["tar", "a", STR, None, None, "Archive type to use: tar, star"],
  "mountdir" : [None, None, STR, "env/mountdir", None,
 			   "Directory to mount restore partitions"],
  "quick" : [False, "q", BOOL, None, None,
 			"Skip time consuming steps that are not absolutly needed, eg:" + \
 			" precise progress meter"],
- "zip" : ["bzip2", None, STR, None, None, "Zip type to use: bzip2, gzip"]
+ "zip" : ["bzip2", "z", STR, None, None, "Zip type to use: bzip2, gzip"]
  }
 
 sysInfoOpts = {}
