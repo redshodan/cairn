@@ -121,6 +121,7 @@ class ModuleInfo(object):
 
 
 def parseModuleSpec(sysdef, moduleSpec, userModuleSpec, prefix):
+	cairn.debug("Parsing module spec='%s' prefix='%s'" % (moduleSpec, prefix))
 	modules = splitModuleSpec(moduleSpec, prefix)
 	cairn.debug("system module spec:")
 	for mod in modules:
@@ -140,6 +141,7 @@ def parseModuleSpec(sysdef, moduleSpec, userModuleSpec, prefix):
 def splitModuleSpec(moduleSpec, prefix):
 	str = moduleSpec.replace(" ", "#")
 	str = str.replace("	", "#")
+	str = str + ";"
 	lexer = shlex.shlex(str, None, True)
 	lexer.wordchars = lexer.wordchars + "."
 	lexer.commenters = ""

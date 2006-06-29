@@ -5,13 +5,14 @@ import re
 
 
 import cairn
+import cairn.sysdefs.templates.unix.system.drives.List as tmpl
 
 
 def getClass():
 	return List()
 
 
-class List(object):
+class List(tmpl.List):
 
 	def run(self, sysdef):
 		ver = sysdef.info.get("os/version-short")

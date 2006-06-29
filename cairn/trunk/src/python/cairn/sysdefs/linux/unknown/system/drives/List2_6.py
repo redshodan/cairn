@@ -6,7 +6,6 @@ import re
 import commands
 
 import cairn
-import cairn.sysdefs.templates.unix.system.drives.List as tmpl
 from cairn.sysdefs.linux import Shared
 
 
@@ -15,7 +14,7 @@ def getClass():
 	return List2_6()
 
 
-class List2_6(tmpl.List):
+class List2_6(object):
 
 	def run(self, sysdef):
 		cairn.log("Checking drives")
