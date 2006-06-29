@@ -9,6 +9,15 @@ used variable names. They are simply strings that need to be passed into
 the getValue() function.
 
 
+Version
+   <version>                  - Version info of the CAIRN that made this image
+     <major/>
+	 <minor/>
+	 <maint/>
+	 <svnrev/>                - SVN revision number for this build
+	 <devel/>                 - Is this a devel release.
+   </version>
+
 Operating System
    <os>
      <name/>                  - Base OS name.
@@ -97,6 +106,7 @@ from xml.dom import minidom
 
 import cairn
 from cairn import Options
+from cairn import Version
 from cairn.sysdefs import DOMHelper
 
 
@@ -141,6 +151,7 @@ def setOpts(self, options):
 
 
 def createElems(self):
+	self.createVersionElem()
 	self.createOSElem()
 	self.createArchElem()
 	self.createMachineElem()
@@ -148,6 +159,16 @@ def createElems(self):
 	self.createHardwareElem()
 	self.createArchiveElem()
 	return
+
+
+def createVersionElem(self):
+	version = self.createElem("version")
+	elem = version.createElem("major", str(Version.MAJOR))
+	elem = version.createElem("minor", str(Version.MINOR))
+	elem = version.createElem("maint", str(Version.MAINT))
+	elem = version.createElem("svnrev", str(Version.SVNREV))
+	elem = version.createElem("devel", str(Version.DEVEL))
+	return elem
 
 
 def createOSElem(self):
@@ -320,6 +341,7 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, create)
 	DOMHelper.inject(doc, setOpts)
 	DOMHelper.inject(doc, createElems)
+	DOMHelper.inject(doc, createVersionElem)
 	DOMHelper.inject(doc, createOSElem)
 	DOMHelper.inject(doc, createArchElem)
 	DOMHelper.inject(doc, createMachineElem)

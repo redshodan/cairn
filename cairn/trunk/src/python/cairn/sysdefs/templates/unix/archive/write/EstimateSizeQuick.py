@@ -3,7 +3,7 @@
 
 import cairn
 from cairn import Options
-from cairn.sysdefs.templates.unix.archive import EstimateSize as tmpl
+from cairn.sysdefs.templates.unix.archive.write import EstimateSize as tmpl
 
 
 

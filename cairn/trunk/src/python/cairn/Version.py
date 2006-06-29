@@ -1,9 +1,6 @@
 """cairn.Version - Version handling"""
 
 
-from cairn import Logging
-
-
 
 MAJOR = 0
 MINOR = 1
@@ -19,8 +16,3 @@ def toString():
 		return str + " DEVEL"
 	else:
 		return str
-
-
-def printVer():
-	Logging.error.log(Logging.CRITICAL, "CAIRN version: %s" % toString())
-	return

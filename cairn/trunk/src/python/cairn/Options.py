@@ -108,7 +108,8 @@ def setHelpOpt(opt, arg):
 
 
 def setVerOpt(opt, arg):
-	Version.printVer()
+	Logging.error.log(Logging.CRITICAL,
+					  "CAIRN version: %s" % Version.toString())
 	sys.exit(0)
 	return
 

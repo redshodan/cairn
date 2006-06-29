@@ -5,6 +5,7 @@ import sys
 import logging
 
 import cairn
+from cairn import Version
 
 
 # Log levels
@@ -121,6 +122,9 @@ def init():
 	cairn.Logging.error = Log("error", WARNING)
 	cairn.Logging.error.setRootHandler(logging.StreamHandler(sys.stderr))
 	cairn.Logging.error.setTargetHandler(all.logger, False)
+
+	cairn.Logging.all.log(CRITICAL,
+						  "Initialized logging for CAIRN version: %s" % Version.toString())
 	return
 
 
