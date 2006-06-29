@@ -8,7 +8,7 @@ include $(TOPDIR)/Makefile.vars
 
 #### Vars
 3RDPARTY=appweb python
-DIRS=build build/appWeb build/python build/lib build/bin
+DIRS=build build/appWeb build/python build/lib build/bin build/src
 SUBDIRS=src
 
 

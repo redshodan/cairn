@@ -10,6 +10,7 @@ import sys
 
 import cairn
 from cairn import Logging
+from cairn import Version
 
 
 # module globals
@@ -106,6 +107,12 @@ def setHelpOpt(opt, arg):
 	return
 
 
+def setVerOpt(opt, arg):
+	Version.printVer()
+	sys.exit(0)
+	return
+
+
 # Options and their cmdline arguements are arranged in an array of arrays. Each
 # sub-array contains the name of the option, its default value and the short
 # cmdline flag for it. The option name will be used for the long form of the
@@ -145,7 +152,9 @@ cliCommonOpts = {
  "sysdef" : [None, None, STR, None, None,
 			 "Manually choose the system definition eg: linux.redhat"],
  "verbose" : [False, "v", BOOL, None, setVerboseOpt,
-			  "Verbose operation. Multiple flags will increase verboseness."]
+			  "Verbose operation. Multiple flags will increase verboseness."],
+ "version" : [False, None, BOOL, None, setVerOpt,
+			  "Prints program version and exits"]
 }
 
 cliCopyOpts = {

@@ -41,6 +41,8 @@ if cmdname.endswith("cairn"):
 	elif (len(sys.argv) >= 2) and (sys.argv[1] == "restore"):
 		action = "restore"
 		sys.argv = sys.argv[1:]
+	elif (len(sys.argv) >= 2) and (sys.argv[1] == "--version"):
+		action = "copy"
 	else:
 		print "Invalid action"
 		print "Usage: %s <action> [action args] ..."
