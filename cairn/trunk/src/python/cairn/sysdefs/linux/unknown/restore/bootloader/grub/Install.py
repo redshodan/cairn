@@ -42,10 +42,19 @@ class Install(object):
 		return
 
 
+	def cleanup(self, cmdFileName):
+		try:
+			os.remove(cmdFileName)
+		except:
+			pass
+		return
+
+
 	def run(self, sysdef):
 		cairn.log("Installing GRUB")
 		mdir = sysdef.info.get("env/mountdir")
 		cmdFileName = os.path.join(mdir, "tmp/cairn-grub.cmd")
 		self.writeCmdFile(sysdef, cmdFileName)
 		self.runGrub(sysdef, mdir, cmdFileName)
+		self.cleanup(cmdFileName)
 		return True
