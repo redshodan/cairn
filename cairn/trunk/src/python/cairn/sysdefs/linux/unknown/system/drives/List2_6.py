@@ -18,7 +18,9 @@ class List2_6(object):
 
 	def run(self, sysdef):
 		cairn.log("Checking drives")
-		for device in os.listdir("/sys/block"):
+		list = os.listdir("/sys/block")
+		list.sort()
+		for device in list:
 			if not Shared.matchDevice(device):
 				continue
 			removable = file("/sys/block/%s/removable" % device, "r")
@@ -26,6 +28,7 @@ class List2_6(object):
 				break
 			removable.close()
 			if line.startswith("0"):
+				cairn.displayRaw("  %s" % device)
 				drive = sysdef.info.createDriveElem(device)
 				drive.setChild("device", "/dev/" + device)
 				cmd = "%s -s %s" % (sysdef.info.get("env/tools/part"),
@@ -35,4 +38,5 @@ class List2_6(object):
 					msg = "Failed to run %s to find drive size:\n" % sysdef.info.get("env/tools/part")
 					raise cairn.Exception(msg + ret[1])
 				drive.setChild("size", ret[1].strip())
+		cairn.displayNL()
 		return True

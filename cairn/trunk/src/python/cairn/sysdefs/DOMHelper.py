@@ -45,8 +45,15 @@ def getElem(self, path = None):
 
 # Get all child elements of this node, or by path from this node
 def getElems(self, path = None):
-	found = self.findPath(self.parsePath(path))
-	return found.getElems()
+	if path:
+		found = self.findPath(self.parsePath(path))
+	else:
+		found = self.findPath(None)
+	elems = found.getElems()
+	if (len(elems) == 1) and (elems[0] == self):
+		return []
+	else:
+		return elems
 
 
 # Set value on this node
@@ -117,9 +124,9 @@ class PathEntry(object):
 	def printMe(self):
 		msg = "PathEntry: ("
 		if self.elem:
-			msg = msg + self.elem + self.elem.instName()
+			msg = "%s%s%s" % (msg, self.elem, self.elem.instName())
 		else:
-			msg = msg + self.elem
+			msg = "%s%s" % (msg, self.elem)
 		msg = msg +  ") %s=%s(%s)" % (self.name, self.instName, self.parent)
 		cairn.display(msg)
 		for sub in self.subPaths:
@@ -163,11 +170,11 @@ def parsePath(self, path):
 def findPath(self, path):
 	# empty path, return all locals
 	if not path:
-		ret = []
+		path = PathEntry(None, None, None, None, None)
 		for child in self.root().childNodes:
-			ret.append(PathEntry(child.name(), child.instName(), child,
-								 self.root(), None))
-		return ret
+			path.subPaths.append(PathEntry(child.name(), child.instName(),
+										   child, self.root(), None))
+		return path
 	# Find local children that match the path
 	newSubPaths = []
 	for subPath in path.subPaths:

@@ -25,7 +25,9 @@ class List(tmpl.List):
 	def run(self, sysdef):
 		cairn.log("Checking partitions")
 		for drive in sysdef.info.getElems("hardware/drive"):
+			cairn.displayRaw("  %s:" % drive.get("device").lstrip("/dev/"))
 			self.definePartitions(sysdef, drive)
+			cairn.displayNL()
 		return True
 
 
@@ -52,7 +54,9 @@ class List(tmpl.List):
 				try:
 					part = sysdef.info.createPartitionElem(drive, "%d" % partNum)
 					arr = line.split(":")
-					part.setChild("device", arr[0].strip())
+					device = arr[0].strip()
+					part.setChild("device", device)
+					cairn.displayRaw(" " + device.lstrip("/dev/"))
 					arr = arr[1].split(",")
 					word = arr[0].split("=")
 					part.setChild("start", word[1].strip())

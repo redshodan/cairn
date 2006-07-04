@@ -6,4 +6,4 @@ import cairn
 
 
 def getSubModuleString(sysdef):
-	return "List; FSTab; DiskUsage; Summary"
+	return "List; FSTab; DiskUsage;"

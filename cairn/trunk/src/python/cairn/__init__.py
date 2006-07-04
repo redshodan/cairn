@@ -87,6 +87,16 @@ def display(msg):
 	return Logging.display.log(Logging.INFO, msg)
 
 
+def displayRaw(msg):
+	Logging.all.log(Logging.INFO, msg)
+	print msg,
+	return
+
+
+def displayNL():
+	print
+	return
+
 
 # Exit and cleanup
 def addFileForCleanup(file):

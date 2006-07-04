@@ -20,7 +20,7 @@ class Copy(object):
 
 
 	def getModuleString(self):
-		return "archive.write;"
+		return "archive.write; DisplayDone;"
 
 
 	def run(self):
@@ -31,7 +31,6 @@ class Copy(object):
 		Options.parseCmdLineOpts()
 		sysdefs.load(self.getModuleString())
 		sysdefs.run()
-		cairn.log("Archive finished")
 		return
 
 

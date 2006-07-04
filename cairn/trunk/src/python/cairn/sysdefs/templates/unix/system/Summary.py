@@ -1,4 +1,4 @@
-"""templates.unix.system.partitions.Summary Module"""
+"""templates.unix.system.Summary Module"""
 
 
 import cairn

@@ -233,6 +233,7 @@ def help(option, opt, value, parser):
 	parser.level = COMMON
 	if parser.rargs and len(parser.rargs):
 		parser.level = matchSection(parser.rargs[0])
+	print
 	parser.print_help()
 	sys.exit(0)
 	return

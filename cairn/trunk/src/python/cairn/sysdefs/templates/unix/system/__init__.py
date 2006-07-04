@@ -6,4 +6,4 @@ import cairn
 
 
 def getSubModuleString(sysdef):
-	return "OS; Arch; Machine; Paths; drives; partitions; BootLoader;"
+	return "OS; Arch; Machine; Paths; drives; partitions; BootLoader; Summary;"

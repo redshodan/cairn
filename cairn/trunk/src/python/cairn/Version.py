@@ -11,7 +11,7 @@ DEVEL = True
 
 
 def toString():
-	str = "%d.%d.%d revision %d" % (MAJOR, MINOR, MAINT, SVNREV)
+	str = "%d.%d.%d SVN %d" % (MAJOR, MINOR, MAINT, SVNREV)
 	if DEVEL:
 		return str + " DEVEL"
 	else:
