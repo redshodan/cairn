@@ -12,7 +12,8 @@ DIRS=build build/appWeb build/python build/lib build/bin build/src
 SUBDIRS=src
 
 
-all: prep $(3RDPARTY) $(SUBDIRS)
+all: prep #$(3RDPARTY) $(SUBDIRS)
+	make -C src/python
 
 prep: $(DIRS)
 
