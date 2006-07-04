@@ -45,7 +45,7 @@ if cmdname.endswith("cairn"):
 		action = "copy"
 	else:
 		print "Invalid action"
-		print "Usage: %s <action> [action args] ..."
+		print "Usage: cairn <action> [action args] ..."
 		print "    The action can be 'copy' or 'restore'. Place a '--help' after"
 		print "    the action to get that actions help"
 elif cmdname.endswith("copy"):
