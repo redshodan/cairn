@@ -427,9 +427,6 @@ def parseCmdLineOpts():
 		parser.error("Missing filename")
 	elif (len(args) == 0) and ourFileRequired:
 		parser.error("Missing filename")
-
-	printAll()
-	sys.exit(0)
 	return
 
 
