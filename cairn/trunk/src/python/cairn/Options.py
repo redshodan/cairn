@@ -32,8 +32,10 @@ ALL = COMMON | ADVANCED | EXPERT | DEBUG
 
 helpLevels = [COMMON, ADVANCED, EXPERT, DEBUG]
 
-copyDesc = "Create a CAIRN image of this machine."
+copyDesc = "Create a CAIRN image of this machine. The image file name is optional. If not specified it will be automatically generated using the machines hostname and todays date."
+copyUsage = "%prog copy [options] [image file]"
 restoreDesc = "Restore a CAIRN image onto this machine."
+restoreUsage = "%prog restore [options] <image file>"
 helpDesc = " See the description of '--help' for more advanced help options."
 
 
@@ -411,9 +413,10 @@ def printAll():
 def parseCmdLineOpts():
 	if get("program") == "copy":
 		desc = copyDesc
+		usage = copyUsage
 	elif get("program") == "restore":
 		desc = restoreDesc
-	usage = "%prog " + "%s [options] file" % get("program")
+		usage = restoreUsage
 	parser = OptParser(usage=usage, option_class=Opt,
 					   prog="cairn", description=desc + helpDesc,
 					   conflict_handler="error", add_help_option=False,
@@ -455,7 +458,10 @@ def handleArgs(parser, args):
 		else:
 			filename = os.path.abspath(filename)
 	elif len(args) == 0:
-		filename = generateImageName()
+		if get("program") == "copy":
+			filename = generateImageName()
+		else:
+			parser.error("Missing image filename")
 	elif len(args) > 1:
 		parser.error("Missing image filename")
 		return
