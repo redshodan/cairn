@@ -1,7 +1,7 @@
 """CAIRN runtime options - result of commandline options and config file"""
 
 
-import optparse
+import cairn.myoptparse as optparse
 import os
 import os.path
 import platform
@@ -317,12 +317,12 @@ cliCommonOpts = [
 	 "help":"Path to find programs to run."},
  	{"long":"printmeta", "action":"store_true", "default":False,
 	 "level":DEBUG,
- 	 "help":"Print the generated info out and exit."},
+ 	 "help":"Print all of the discovered environment information and exit."},
  	{"long":"printopts", "action":"store_true", "default":False, "level":DEBUG,
  	 "help":"Print the command line option values out and exit."},
 	{"long":"summary", "action":"store_true", "default":False,
 	 "level":ADVANCED | DEBUG,
- 	 "help":"Print a summary of generated info and exit."},
+ 	 "help":"Print a summary of the discovered environment information and exit."},
 	{"long":"setmeta", "type":"string", "callback":setInfoOpt,
 	 "level":EXPERT | DEBUG, "metavar":"NAME=VAL",
  	 "help":"Set a system metainfo option, overriding discovered value."},
@@ -354,6 +354,8 @@ cliRestoreOpts = [
  	 "help":"Archive type to use: tar, star", "level":ADVANCED},
  	{"long":"mountdir", "type":"string", "info":"env/mountdir",
  	 "help":"Set the directory to mount restore partitions.", "level":ADVANCED},
+	{"long":"pretend", "short":"p", "action":"store_true", "default":False,
+	 "help":"Do not do restore, print what actions would happen if restore were to happen."},
 	{"long":"quick", "short":"q", "action":"store_true", "default":False,
  	 "help":"Skip time consuming steps that are not absolutly needed, eg:" + \
  	 " precise progress meter"},
@@ -444,6 +446,7 @@ def parseCmdLineOpts():
 			ourOpts[name] = val
 
 	handleArgs(parser, args)
+	printOptions()
 	return
 
 
@@ -485,6 +488,13 @@ def generateImageName():
 		return os.path.join(get("destination"), name)
 	else:
 		return name
+
+
+def printOptions():
+	if get("printopts"):
+		printAll()
+		sys.exit(0)
+	return
 
 
 def matchSection(arg):
