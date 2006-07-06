@@ -12,9 +12,6 @@ import cairn.Options as Options
 class Restore(object):
 
 	def setDefaults(self):
-		sysdefs.getProgramOpts()["archive/metafilename"] = \
-			"/etc/cairn/cairn-image.xml"
-		sysdefs.getProgramOpts()["archive/excludes-file"] = "/tmp/excludes"
 		sysdefs.getProgramOpts()["env/mountdir"] = "/mnt/cairn"
 		return
 

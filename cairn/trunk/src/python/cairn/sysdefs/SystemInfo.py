@@ -13,7 +13,6 @@ Version
    <version>                  - Version info of the CAIRN that made this image
      <major/>
 	 <minor/>
-	 <maint/>
 	 <svnrev/>                - SVN revision number for this build
 	 <devel/>                 - Is this a devel release.
    </version>
@@ -56,7 +55,7 @@ Environment
 	 <tools>
 	                        - sysdef dependent tools
      </tools>
-   </arch>
+   </env>
 
 Hardware
    <hardware>
@@ -85,6 +84,7 @@ Hardware
 
 Archive
    <archive>
+	 <cmdline/>             - command line used to create the image
      <filename/>
      <md5sum/>
 	 <size/>
@@ -214,7 +214,6 @@ def createEnvElem(self):
 	elem = env.createElem("mountdir")
 	elem = env.createElem("path")
 	elem = env.createElem("tools")
-	elem = env.createElem("tmpdir")
 	return env
 
 
@@ -286,6 +285,19 @@ def createArchiveExcludesElem(self, path, type):
 ### SystemInfo Document Functions
 ###
 
+def verify(self):
+	error = False
+	if not self.get("cairn-image"): error = True
+	if not self.get("version"): error = True
+	if not self.get("os"): error = True
+	if not self.get("arch"): error = True
+	if not self.get("machine"): error = True
+	if not self.get("env"): error = True
+	if not self.get("hardware"): error = True
+	if not self.get("archive"): error = True
+	return error
+
+
 def printXML(self):
 	cairn.display(self.doc().toprettyxml("   "))
 	return
@@ -353,6 +365,7 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, createPartitionFSSpaceElem)
 	DOMHelper.inject(doc, createArchiveElem)
 	DOMHelper.inject(doc, createArchiveExcludesElem)
+	DOMHelper.inject(doc, verify)
 	DOMHelper.inject(doc, printXML)
 	DOMHelper.inject(doc, saveToFile)
 	DOMHelper.inject(doc, printSummary)

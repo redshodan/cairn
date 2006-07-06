@@ -16,3 +16,9 @@ def toString():
 		return str + " DEVEL"
 	else:
 		return str
+
+
+def printVer():
+	from cairn import Logging
+	Logging.display.log(Logging.INFO, "CAIRN version: %s" % toString())
+	return

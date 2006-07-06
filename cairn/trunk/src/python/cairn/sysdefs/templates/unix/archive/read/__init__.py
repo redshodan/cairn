@@ -7,5 +7,5 @@ from cairn import Options
 
 
 def getSubModuleString(sysdef):
-	str = "Tools; Excludes; RunArchiver; "
+	str = "Prep; Tools; Excludes; RunArchiver; "
 	return str

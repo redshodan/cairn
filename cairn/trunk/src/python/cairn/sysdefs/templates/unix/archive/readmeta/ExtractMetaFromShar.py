@@ -39,19 +39,17 @@ class ExtractMetaFromShar(object):
 
 
 	def writeMeta(self, sysdef, archive, pos):
-		metaFileName = os.path.join(sysdef.info.get("env/tmpdir"),
-									"cairn-image.xml")
-		cairn.verbose("Extracted metafile to: " + metaFileName)
-		sysdef.info.setChild("archive/metafilename", metaFileName)
+		metaFile = cairn.mktemp("cairn-metafile-")
+		cairn.verbose("Extracting metafile to: " + metaFile[1])
+		sysdef.info.setChild("archive/metafilename", metaFile[1])
 		try:
-			metaFile = file(metaFileName, "w+b")
 			xml = archive.read(pos)
-			metaFile.write(xml)
-			metaFile.close()
+			metaFile[0].write(xml)
+			metaFile[0].close()
 			archive.close()
 		except Exception, err:
 			raise cairn.Exception("Unable to write meta file %s: %s" % \
-								  (metaFileName, err))
+								  (metaFile[1], err))
 		return
 
 

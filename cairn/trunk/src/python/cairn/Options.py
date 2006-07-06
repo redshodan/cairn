@@ -3,9 +3,12 @@
 
 import optparse
 import os
+import os.path
+import platform
 import re
 import string
 import sys
+import time
 from gettext import gettext as _
 
 import cairn
@@ -17,7 +20,6 @@ from cairn import Version
 ourOpts = {}
 ourOptMap = {}
 ourOptGroups = {}
-ourFileRequired = True
 sysInfoOpts = {}
 
 
@@ -116,7 +118,7 @@ class OptParser(optparse.OptionParser):
 		result = []
 		if self.level and (self.level & COMMON) and self.option_list:
 			self.option_list = self.sortOptionList(self.option_list)
-			result.append(formatter.format_heading(_("common options")))
+			result.append(formatter.format_heading(_("Common options")))
 			formatter.indent()
 			result.append(optparse.OptionContainer.
 						  format_option_help(self, formatter))
@@ -206,6 +208,11 @@ def setLogModuleOpt(option, opt, value, parser):
 	return
 
 
+def setLogFileOpt(option, opt, value, parser):
+	set("log-file", os.path.abspath(value))
+	return
+
+
 def setExclude(option, opt, value, parser):
 	opt = opt.lstrip("-")
 	optVal = get("exclude")
@@ -213,11 +220,6 @@ def setExclude(option, opt, value, parser):
 		set("exclude", optVal + ";" + value)
 	else:
 		set("exclude", value)
-	return
-
-
-def clearFileReq(option, opt, value, parser):
-	cairn.Options.ourFileRequired = False
 	return
 
 
@@ -233,7 +235,6 @@ def help(option, opt, value, parser):
 	parser.level = COMMON
 	if parser.rargs and len(parser.rargs):
 		parser.level = matchSection(parser.rargs[0])
-	print
 	parser.print_help()
 	sys.exit(0)
 	return
@@ -247,8 +248,19 @@ def setOpt(option, opt, value, parser):
 	return
 
 
-def setLogFileOpt(option, opt, value, parser):
-	setLogFile(value)
+def setTmpDirOpt(option, opt, value, parser):
+	set("tmpdir", os.path.abspath(value))
+	return
+
+
+def setDestinationOpt(option, opt, value, parser):
+	set("destination", os.path.abspath(value))
+	return
+
+
+def setAllFiles(option, opt, value, parser):
+	setTmpDirOpt(None, None, value, None)
+	setDestinationOpt(None, None, value, None)
 	return
 
 
@@ -257,18 +269,24 @@ def setLogFileOpt(option, opt, value, parser):
 # behavior, a help string and a help section. The long name will be used
 # for access through set() and get() in this module.
 cliCommonOpts = [
+	{"long":"all-files", "type":"string", "level":ADVANCED,
+	 "callback":setAllFiles, "metavar":"DIR",
+	 "help":"Set the location of all outputed files: temp files, the logfile, and the image file. This is equivalent to calling --tmp, --log-file, --destination with the same directory."},
 	{"long":"boot", "short":"b", "type":"string", "level":ADVANCED,
 	 "help":"Force this bootloader to be used."},
 	{"long":"configfile", "short":"c", "type":"string", "level":ADVANCED,
 	 "help":"Config file to load."},
-	{"long":"dumpmeta", "type":"string", "info":"archive/metafilename",
-	 "callback":clearFileReq, "level":EXPERT | DEBUG,
-	 "help":"Dump the metafile and exit."},
+	{"long":"dumpenv", "type":"string", "info":"archive/metafilename",
+	 "level":EXPERT | DEBUG, "metavar":"ENV-FILE",
+	 "help":"Dump the discovered environment information and exit."},
+	{"long":"destination", "type":"string", "level":ADVANCED, "metavar":"DIR",
+	 "action":"callback", "callback":setDestinationOpt,
+	 "help":"Set the destination directory for the image file. If no filename was specified then this directory will be used to auto-generate a filename."},
 	{"long":"exclude", "short":"x", "type":"string", "action":"callback",
 	 "callback":setExclude,
 	 "help":"Exclude a file or directory, can specify multiple times."},
-	{"long":"excludefrom", "short":"X", "type":"string",
-	 "info":"archive/user-excludes-file",
+	{"long":"exclude-from", "short":"X", "type":"string",
+	 "info":"archive/user-excludes-file", "metavar":"FILE",
 	 "help":"File containing exclude directives."},
 	{"long":"force", "short":"f", "action":"store_true", "level":ADVANCED,
 	 "help":"Force operation, ignoring errors."},
@@ -279,15 +297,16 @@ cliCommonOpts = [
 	{"long":"log", "short":"l", "type":"string", "action":"callback",
 	 "default":Logging.INFO, "callback":setLogOpt, "level":ADVANCED | DEBUG,
  	 "help":"Set the logging level: none, error, warn, log (default), " + \
- 	 "verbose, debug."},
-	{"long":"logfile", "type":"string", "callback":setLogFileOpt,
-	 "level":ADVANCED | DEBUG, "help":"Set the file to log to."},
-	{"long":"logmodule", "type":"string", "callback":setLogModuleOpt,
+	 "verbose, debug.", "metavar":"LEVEL"},
+	{"long":"log-file", "type":"string", "level":ADVANCED | DEBUG,
+	 "action":"callback", "callback":setLogFileOpt,
+	 "help":"Set the file to log to."},
+	{"long":"log-module", "type":"string", "callback":setLogModuleOpt,
  	 "help":"Set loglevel for a particular module eg: cairn.sysdefs=debug",
- 	 "level":DEBUG},
+	 "level":DEBUG, "metavar":"MODULE=LOG-LEVEL"},
 	{"long":"metafile", "type":"string", "info":"archive/metafilename",
  	 "help":"Set the metafile name.", "level":EXPERT},
- 	{"long":"modules", "short":"m", "type":"string",
+	{"long":"modules", "short":"m", "type":"string", "metavar":"MODULE-SPEC",
  	 "help":"List of modules to load.", "level":EXPERT | DEBUG},
 	{"long":"nocleanup", "action":"store_true", "default":False,
  	 "help":"Do not cleanup temporary files.", "level":DEBUG},
@@ -295,22 +314,24 @@ cliCommonOpts = [
  	 "info":"env/path", "level":ADVANCED,
 	 "help":"Path to find programs to run."},
  	{"long":"printmeta", "action":"store_true", "default":False,
-	 "callback":clearFileReq, "level":DEBUG,
+	 "level":DEBUG,
  	 "help":"Print the generated info out and exit."},
- 	{"long":"printopts", "action":"store_true", "default":False,
-	 "callback":clearFileReq, "level":DEBUG,
+ 	{"long":"printopts", "action":"store_true", "default":False, "level":DEBUG,
  	 "help":"Print the command line option values out and exit."},
 	{"long":"summary", "action":"store_true", "default":False,
-	 "callback":clearFileReq, "level":ADVANCED | DEBUG,
+	 "level":ADVANCED | DEBUG,
  	 "help":"Print a summary of generated info and exit."},
 	{"long":"setmeta", "type":"string", "callback":setInfoOpt,
-	 "level":EXPERT | DEBUG,
+	 "level":EXPERT | DEBUG, "metavar":"NAME=VAL",
  	 "help":"Set a system metainfo option, overriding discovered value."},
  	{"long":"sysdef", "type":"string", "level":EXPERT,
  	 "help":"Manually choose the system definition eg: linux.redhat"},
 	{"long":"verbose", "short":"v", "action":"callback",
 	 "default":False, "callback":setVerboseOpt,
- 	 "help":"Verbose operation. Multiple flags will increase verboseness."}
+ 	 "help":"Verbose operation. Multiple flags will increase verboseness."},
+	{"long":"tmpdir", "type":"string", "level":ADVANCED,
+	 "action":"callback", "callback":setTmpDirOpt, "metavar":"DIR",
+	 "help":"Set the location for all temporary files."}
 ]
 
 cliCopyOpts = [
@@ -365,6 +386,7 @@ def iterHelpLevels(level):
 
 
 def init():
+	sysInfoOpts["archive/cmdline"] = " ".join(sys.argv)
 	buildOptMap(cliCommonOpts)
 	if get("program") == "copy":
 		buildOptMap(cliCopyOpts)
@@ -398,11 +420,11 @@ def parseCmdLineOpts():
 					   version=Version.toString())
 	ourOptGroups[COMMON] = parser
 	ourOptGroups[ADVANCED] = (parser.
-		add_option_group(OptGroup(parser, "advanced options", ADVANCED)))
+		add_option_group(OptGroup(parser, "Advanced options", ADVANCED)))
 	ourOptGroups[EXPERT] = (parser.
-	    add_option_group(OptGroup(parser, "expert options", EXPERT)))
+	    add_option_group(OptGroup(parser, "Expert options", EXPERT)))
 	ourOptGroups[DEBUG] = (parser.
-	    add_option_group(OptGroup(parser, "debug options", DEBUG)))
+	    add_option_group(OptGroup(parser, "Debug options", DEBUG)))
 
 	for name, opt in ourOptMap.iteritems():
 		opt["cairn"] = None
@@ -418,17 +440,45 @@ def parseCmdLineOpts():
 		if name not in ourOpts:
 			ourOpts[name] = val
 
-	if len(args) == 1:
-		str = os.path.abspath(args[0])
-		set("filename", str)
-		sysInfoOpts["archive/filename"] = str
-		if not get("logfile"):
-			setLogFile(str + ".log")
-	elif len(args) > 1:
-		parser.error("Missing filename")
-	elif (len(args) == 0) and ourFileRequired:
-		parser.error("Missing filename")
+	handleArgs(parser, args)
 	return
+
+
+def handleArgs(parser, args):
+	dest = get("destination")
+	if len(args) == 1:
+		filename = args[0]
+		if (filename.find("/") >= 0) and dest:
+			parser.error("Can not specify --destination and an image file name that is has any directory components in it")
+		elif dest:
+			filename = os.path.join(dest, filename)
+		else:
+			filename = os.path.abspath(filename)
+	elif len(args) == 0:
+		filename = generateImageName()
+	elif len(args) > 1:
+		parser.error("Missing image filename")
+		return
+
+	set("filename", filename)
+	sysInfoOpts["archive/filename"] = filename
+
+	if dest:
+		setLogFile(get("log-file"))
+	else:
+		if not get("log-file") and dest:
+			setLogFile(os.path.join(dest,
+									os.path.basename(filename + ".log")))
+		else:
+			setLogFile(filename + ".log")
+
+
+def generateImageName():
+	name = "%s-%s.cimg" % (platform.node(), time.strftime("%d-%m-%Y"))
+	if get("destination"):
+		return os.path.join(get("destination"), name)
+	else:
+		return name
 
 
 def matchSection(arg):
@@ -462,7 +512,7 @@ def matchName(name, arg):
 
 
 def setLogFile(name):
-	set("logfile", name)
+	set("log-file", name)
 	sysInfoOpts["archive/log-filename"] = name
 	Logging.setAllLogFile(name)
 	return

@@ -35,16 +35,16 @@ class Summary(object):
 
 
 	def dumpMeta(self, sysdef):
-		if Options.get("dumpmeta"):
+		if Options.get("dumpenv"):
 			fileName = sysdef.info.get("archive/metafilename")
 			try:
 				metafile = file(fileName, "w+")
 				sysdef.info.saveToFile(metafile)
 				metafile.close()
 				sysdef.quit()
-				cairn.log("Dumped metafile to: %s" % fileName)
+				cairn.log("Dumped environment metafile to: %s" % fileName)
 			except Exception, err:
-				raise cairn.Exception("Failed to write metadata to %s: %s" % \
+				raise cairn.Exception("Failed to write environment metadata to %s: %s" % \
 									  (fileName, err))
 		return
 

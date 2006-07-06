@@ -4,7 +4,6 @@
 
 import os
 import os.path
-import tempfile
 
 import cairn
 from cairn import Options

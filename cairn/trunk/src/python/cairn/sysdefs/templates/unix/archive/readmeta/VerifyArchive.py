@@ -5,7 +5,6 @@
 import os
 import os.path
 import stat
-import tempfile
 import md5
 
 import cairn

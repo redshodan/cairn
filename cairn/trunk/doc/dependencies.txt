@@ -1,2 +1,2 @@
 CAIRN Copy requirements:
-  python 2.4, sfdisk
+  python 2.3, sfdisk

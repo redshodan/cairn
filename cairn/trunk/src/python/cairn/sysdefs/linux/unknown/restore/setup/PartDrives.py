@@ -4,7 +4,6 @@
 import os
 import commands
 import re
-import tempfile
 
 import cairn
 import cairn.sysdefs.templates.unix.restore.setup.PartDrives as tmpl
@@ -32,8 +31,7 @@ class PartDrives(tmpl.PartDrives):
 
 
 	def writePartCfg(self, sysdef, drive):
-		cfgFile = tempfile.mkstemp("", "cairn-")
-		cairn.addFileForCleanup(cfgFile[1])
+		cfgFile = cairn.mktemp("cairn-partdrives-")
 		dev = drive.get("device")
 		mappedDev = drive.get("mapped-device")
 		contents = "%s\n" % drive.get("part-tool-cfg")

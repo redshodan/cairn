@@ -3,7 +3,6 @@
 
 import commands
 import re
-import tempfile
 import os
 
 import cairn
@@ -15,7 +14,7 @@ def getClass():
 
 
 #
-# For PC's it seems the smallest unit of space is a sector with is 512 bytes in
+# For PC's it seems the smallest unit of space is a sector which is 512 bytes in
 # size. Work with that assumption.
 #
 
@@ -32,8 +31,7 @@ class List(tmpl.List):
 
 
 	def definePartitions(self, sysdef, drive):
-		cfgFile = tempfile.mkstemp("", "cairn-")
-		cairn.addFileForCleanup(cfgFile[1])
+		cfgFile = cairn.mktemp("cairn-part-list-")
 		cmd = "%s -uS -d %s > %s" % (sysdef.info.get("env/tools/part"),
 									 drive.get("device"), cfgFile[1])
 		ret = commands.getstatusoutput(cmd)

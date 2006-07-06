@@ -122,8 +122,6 @@ def init():
 	cairn.Logging.error = Log("error", WARNING)
 	cairn.Logging.error.setRootHandler(logging.StreamHandler(sys.stderr))
 	cairn.Logging.error.setTargetHandler(all.logger, False)
-
-	cairn.Logging.display.log(INFO, "CAIRN version: %s" % Version.toString())
 	return
 
 

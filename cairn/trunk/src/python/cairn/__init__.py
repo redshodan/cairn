@@ -9,10 +9,12 @@ import inspect
 import atexit
 import logging
 import traceback
+import tempfile
 
 
 from types import *
 import Logging
+import Options
 
 
 # Error codes
@@ -96,6 +98,14 @@ def displayRaw(msg):
 def displayNL():
 	print
 	return
+
+
+# Temp files
+def mktemp(filename):
+	dir = Options.get("tmpdir")
+	file = tempfile.mkstemp("", filename, dir)
+	addFileForCleanup(file[1])
+	return file
 
 
 # Exit and cleanup
