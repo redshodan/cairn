@@ -33,19 +33,6 @@ class SystemDefinition(object):
 		return
 
 
-	def getModuleString(self):
-		return self.getInitModuleString() + self.programModuleStr
-
-
-	def setModuleString(self, programModuleStr):
-		self.programModuleStr = programModuleStr
-		return
-
-
-	def getInitModuleString(self):
-		return "system;"
-
-
 	def quit(self):
 		sysdefs.quit()
 		return

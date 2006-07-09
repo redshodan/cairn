@@ -1,10 +1,10 @@
-"""linux.unknown.archive.read.RunArchiver Module"""
+"""linux.unknown.extract.archive.read.RunArchiver Module"""
 
 
 
 import cairn
 from cairn.sysdefs.linux import Shared
-import cairn.sysdefs.templates.unix.archive.read.RunArchiver as tmpl
+import cairn.sysdefs.templates.unix.extract.archive.read.RunArchiver as tmpl
 
 
 

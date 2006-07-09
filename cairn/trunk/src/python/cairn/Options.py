@@ -1,7 +1,7 @@
 """CAIRN runtime options - result of commandline options and config file"""
 
 
-import cairn.myoptparse as optparse
+import thirdparty.myoptparse as optparse
 import os
 import os.path
 import platform
@@ -32,11 +32,12 @@ ALL = COMMON | ADVANCED | EXPERT | DEBUG
 
 helpLevels = [COMMON, ADVANCED, EXPERT, DEBUG]
 
-copyDesc = "Create a CAIRN image of this machine. The image file name is optional. If not specified it will be automatically generated using the machines hostname and todays date."
+copyDesc = "Create a CAIRN image of this machine. The image file name is optional. If not specified it will be automatically generated using the machines hostname and todays date. See the description of '--help' for more advanced help options."
 copyUsage = "%prog copy [options] [image file]"
-restoreDesc = "Restore a CAIRN image onto this machine."
+restoreDesc = "Restore a CAIRN image onto this machine. See the description of '--help' for more advanced help options."
 restoreUsage = "%prog restore [options] <image file>"
-helpDesc = " See the description of '--help' for more advanced help options."
+extractDesc = "Extract portions of this archive file. See the description of '--help' for more advanced help options. This is a frontend to the archive tool used to create the image. Any of the options that are not understood will be passed on to the archive tool. By default this is 'tar'. This can run the archive tool without having to extract the archive from the CAIRN image file while still exposing virtually all of that archive tools funtionality."
+extractUsage = "%prog extract [options] <image file> [-- [archive tool options]]"
 
 
 class Opt(optparse.Option):
@@ -272,25 +273,9 @@ def setAllFiles(option, opt, value, parser):
 # behavior, a help string and a help section. The long name will be used
 # for access through set() and get() in this module.
 cliCommonOpts = [
-	{"long":"all-files", "type":"string", "level":ADVANCED,
-	 "callback":setAllFiles, "metavar":"DIR",
-	 "help":"Set the location of all outputed files: temp files, the logfile, and the image file. This is equivalent to calling --tmp, --log-file, --destination with the same directory."},
-	{"long":"boot", "short":"b", "type":"string", "level":ADVANCED,
-	 "help":"Force this bootloader to be used."},
-	{"long":"configfile", "short":"c", "type":"string", "level":ADVANCED,
-	 "help":"Config file to load."},
 	{"long":"dumpenv", "type":"string", "info":"archive/metafilename",
 	 "level":EXPERT | DEBUG, "metavar":"ENV-FILE",
 	 "help":"Dump the discovered environment information and exit."},
-	{"long":"destination", "type":"string", "level":ADVANCED, "metavar":"DIR",
-	 "action":"callback", "callback":setDestinationOpt,
-	 "help":"Set the destination directory for the image file. If no filename was specified then this directory will be used to auto-generate a filename."},
-	{"long":"exclude", "short":"x", "type":"string", "action":"callback",
-	 "callback":setExclude,
-	 "help":"Exclude a file or directory, can specify multiple times."},
-	{"long":"exclude-from", "short":"X", "type":"string",
-	 "info":"archive/user-excludes-file", "metavar":"FILE",
-	 "help":"File containing exclude directives."},
 	{"long":"force", "short":"f", "action":"store_true", "level":ADVANCED,
 	 "help":"Force operation, ignoring errors."},
 	{"long":"help", "short":"h", "action":"callback", "callback":help,
@@ -307,38 +292,61 @@ cliCommonOpts = [
 	{"long":"log-module", "type":"string", "callback":setLogModuleOpt,
  	 "help":"Set loglevel for a particular module eg: cairn.sysdefs=debug",
 	 "level":DEBUG, "metavar":"MODULE=LOG-LEVEL"},
-	{"long":"metafile", "type":"string", "info":"archive/metafilename",
- 	 "help":"Set the metafile name.", "level":EXPERT},
-	{"long":"modules", "short":"m", "type":"string", "metavar":"MODULE-SPEC",
+	{"long":"modules", "short":"M", "type":"string", "metavar":"MODULE-SPEC",
  	 "help":"List of modules to load.", "level":EXPERT | DEBUG},
 	{"long":"nocleanup", "action":"store_true", "default":False,
  	 "help":"Do not cleanup temporary files.", "level":DEBUG},
+	{"long":"noverify", "action":"store_true", "default":False,
+ 	 "help":"Do not verify metadata or image file.", "level":ADVANCED},
  	{"long":"path", "type":"string", "default":"/sbin:/bin:/usr/sbin:/usr/bin",
  	 "info":"env/path", "level":ADVANCED,
 	 "help":"Path to find programs to run."},
+ 	{"long":"printopts", "action":"store_true", "default":False, "level":DEBUG,
+ 	 "help":"Print the command line option values out and exit."},
  	{"long":"printmeta", "action":"store_true", "default":False,
 	 "level":DEBUG,
  	 "help":"Print all of the discovered environment information and exit."},
- 	{"long":"printopts", "action":"store_true", "default":False, "level":DEBUG,
- 	 "help":"Print the command line option values out and exit."},
 	{"long":"summary", "action":"store_true", "default":False,
 	 "level":ADVANCED | DEBUG,
  	 "help":"Print a summary of the discovered environment information and exit."},
-	{"long":"setmeta", "type":"string", "callback":setInfoOpt,
-	 "level":EXPERT | DEBUG, "metavar":"NAME=VAL",
- 	 "help":"Set a system metainfo option, overriding discovered value."},
  	{"long":"sysdef", "type":"string", "level":EXPERT,
  	 "help":"Manually choose the system definition eg: linux.redhat"},
 	{"long":"verbose", "short":"v", "action":"callback",
 	 "default":False, "callback":setVerboseOpt,
  	 "help":"Verbose operation. Multiple flags will increase verboseness."},
+]
+
+cliCopyRestoreCommonOpts = [
+	{"long":"all-files", "type":"string", "level":ADVANCED,
+	 "callback":setAllFiles, "metavar":"DIR",
+	 "help":"Set the location of all outputed files: temp files, the logfile, and the image file. This is equivalent to calling --tmp, --log-file, --destination with the same directory."},
+	{"long":"batch", "short":"b", "action":"store_true", "level":ADVANCED,
+	 "help":"Batch mode or non-interactive opteration. Supress all questions."},
+	{"long":"boot", "short":"B", "type":"string", "level":ADVANCED,
+	 "help":"Force this bootloader to be used."},
+	{"long":"configfile", "short":"c", "type":"string", "level":ADVANCED,
+	 "help":"Config file to load."},
+	{"long":"destination", "type":"string", "level":ADVANCED, "metavar":"DIR",
+	 "action":"callback", "callback":setDestinationOpt,
+	 "help":"Set the destination directory for the image file. If no filename was specified then this directory will be used to auto-generate a filename."},
+	{"long":"exclude", "short":"x", "type":"string", "action":"callback",
+	 "callback":setExclude,
+	 "help":"Exclude a file or directory, can specify multiple times."},
+	{"long":"exclude-from", "short":"X", "type":"string",
+	 "info":"archive/user-excludes-file", "metavar":"FILE",
+	 "help":"File containing exclude directives."},
+	{"long":"metafile", "type":"string", "info":"archive/metafilename",
+ 	 "help":"Set the metafile name.", "level":EXPERT},
+	{"long":"setmeta", "type":"string", "callback":setInfoOpt,
+	 "level":EXPERT | DEBUG, "metavar":"NAME=VAL",
+ 	 "help":"Set a system metainfo option, overriding discovered value."},
 	{"long":"tmpdir", "type":"string", "level":ADVANCED,
 	 "action":"callback", "callback":setTmpDirOpt, "metavar":"DIR",
 	 "help":"Set the location for all temporary files."}
 ]
 
 cliCopyOpts = [
- 	{"long":"archive", "short":"a", "type":"string", "default":"tar",
+ 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
  	 "help":"Archive type to use: tar, star", "level":ADVANCED},
 	{"long":"noshar", "action":"store_true", "default":False,
 	 "info":"archive/shar", "level":ADVANCED,
@@ -346,12 +354,12 @@ cliCopyOpts = [
 	{"long":"quick", "short":"q", "action":"store_true", "default":False,
  	 "help":"Skip time consuming steps that are not absolutly needed, eg:" + \
  	 " precise progress meter"},
- 	{"long":"zip", "short":"z", "type":"string", "default":"gzip",
+ 	{"long":"zip", "short":"Z", "type":"string", "default":"gzip",
  	 "help":"Zip type to use: bzip2, gzip", "level":ADVANCED}
 ]
 
 cliRestoreOpts = [
- 	{"long":"archive", "short":"a", "type":"string", "default":"tar",
+ 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
  	 "help":"Archive type to use: tar, star", "level":ADVANCED},
  	{"long":"mountdir", "type":"string", "info":"env/mountdir",
  	 "help":"Set the directory to mount restore partitions.", "level":ADVANCED},
@@ -360,8 +368,13 @@ cliRestoreOpts = [
 	{"long":"quick", "short":"q", "action":"store_true", "default":False,
  	 "help":"Skip time consuming steps that are not absolutly needed, eg:" + \
  	 " precise progress meter"},
- 	{"long":"zip", "short":"z", "type":"string", "default":"gzip",
+ 	{"long":"zip", "short":"Z", "type":"string", "default":"gzip",
  	 "help":"Zip type to use: bzip2, gzip", "level":ADVANCED}
+]
+
+cliExtractOpts = [
+ 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
+ 	 "help":"Archive type to use: tar, star", "level":ADVANCED}
 ]
 
 
@@ -391,12 +404,17 @@ def iterHelpLevels(level):
 
 
 def init():
+	cairn.allLog("Starting program %s" % get("program"))
 	sysInfoOpts["archive/cmdline"] = " ".join(sys.argv)
 	buildOptMap(cliCommonOpts)
 	if get("program") == "copy":
+		buildOptMap(cliCopyRestoreCommonOpts)
 		buildOptMap(cliCopyOpts)
 	if get("program") == "restore":
+		buildOptMap(cliCopyRestoreCommonOpts)
 		buildOptMap(cliRestoreOpts)
+	if get("program") == "extract":
+		buildOptMap(cliExtractOpts)
 	return
 
 
@@ -420,10 +438,12 @@ def parseCmdLineOpts():
 	elif get("program") == "restore":
 		desc = restoreDesc
 		usage = restoreUsage
-	parser = OptParser(usage=usage, option_class=Opt,
-					   prog="cairn", description=desc + helpDesc,
-					   conflict_handler="error", add_help_option=False,
-					   version=Version.toString())
+	elif get("program") == "extract":
+		desc = extractDesc
+		usage = extractUsage
+	parser = OptParser(usage=usage, option_class=Opt, prog="cairn",
+					   description=desc, conflict_handler="error",
+					   add_help_option=False, version=Version.toString())
 	ourOptGroups[COMMON] = parser
 	ourOptGroups[ADVANCED] = (parser.
 		add_option_group(OptGroup(parser, "Advanced options", ADVANCED)))

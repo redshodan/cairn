@@ -85,6 +85,10 @@ def log(msg, *args):
 	return Logging.display.log(Logging.INFO, msg)
 
 
+def allLog(msg):
+	return Logging.all.log(Logging.INFO, msg)
+
+
 def display(msg):
 	return Logging.display.log(Logging.INFO, msg)
 

@@ -80,12 +80,16 @@ class VerifyArchive(object):
 
 
 	def run(self, sysdef):
-		cairn.log("Verifying archive:" + sysdef.info.get("archive/filename"))
-		if sysdef.info.get("archive/shar"):
-			self.compareShar(sysdef)
-		self.compareSize(sysdef)
-		archive = self.openFile(sysdef)
-		theMD5sum = self.md5sum(archive)
-		archive.close()
-		self.compareMD5s(sysdef, theMD5sum)
+		if Options.get("noverify"):
+			cairn.log("Skipping archive verification")
+		else:
+			cairn.log("Verifying archive: %s" %
+					  sysdef.info.get("archive/filename"))
+			if sysdef.info.get("archive/shar"):
+				self.compareShar(sysdef)
+			self.compareSize(sysdef)
+			archive = self.openFile(sysdef)
+			theMD5sum = self.md5sum(archive)
+			archive.close()
+			self.compareMD5s(sysdef, theMD5sum)
 		return True

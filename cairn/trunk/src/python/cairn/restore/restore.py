@@ -1,42 +1,28 @@
 """CAIRN Restore Class"""
 
 
-import sys
 
-import cairn
+from cairn import Program
 from cairn import sysdefs
-import cairn.Options as Options
 
 
 
-class Restore(object):
+class Restore(Program.Program):
 
 	def setDefaults(self):
-		sysdefs.getProgramOpts()["env/mountdir"] = "/mnt/cairn"
+		self._defaults["env/mountdir"] = "/mnt/cairn"
 		return
 
 
 	def getModuleString(self):
-		return "archive.readmeta; resolve; setup; archive.read; bootloader; cleanup; DisplayDone;"
+		return "system; restore;"
 
 
-	def run(self):
-		cairn.init()
-		Options.set("program", "restore")
-		Options.init()
-		self.setDefaults()
-		Options.parseCmdLineOpts()
-		sysdefs.load(self.getModuleString())
-		sysdefs.run()
-		return
+	def name(self):
+		return "restore"
+
 
 
 def run():
-	try:
-		crestore = Restore()
-		crestore.run()
-	except cairn.Exception, err:
-		err.printSelf()
-		sys.exit(err.code)
-	sys.exit(0)
+	Program.run(Restore)
 	return

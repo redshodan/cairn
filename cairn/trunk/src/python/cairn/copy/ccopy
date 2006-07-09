@@ -5,8 +5,8 @@
 # if a different std module tries to use the std copy.
 import copy
 
-from cairn.copy import copy
+import cairn.copy.copy
 
 
 if __name__ == '__main__':
-	copy.run()
+	cairn.copy.copy.run()

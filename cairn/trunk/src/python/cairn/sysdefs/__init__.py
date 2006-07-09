@@ -15,8 +15,7 @@ import cairn.sysdefs.IModule
 __sysdef = object()
 __userCfg = None
 __quit = False
-__programOpts = {}
-
+__program = None
 
 def getDef():
 	return __sysdef
@@ -30,15 +29,15 @@ def getModuleList():
 	return __sysdef.moduleList
 
 
-def getProgramOpts():
-	return __programOpts
+def setProgram(program):
+	cairn.sysdefs.__program = program
+	return
 
 
-def load(programModuleStr):
+def load():
 	loadUserConfig()
 	loadPlatform()
-	cairn.sysdefs.__sysdef.setModuleString(programModuleStr)
-	loadProgramOpts()
+	loadProgramDefaults()
 	loadModuleList()
 	verifyModuleList()
 	return
@@ -82,8 +81,8 @@ def loadPlatform():
 	return
 
 
-def loadProgramOpts():
-	for opt, val in __programOpts.iteritems():
+def loadProgramDefaults():
+	for opt, val in __program.getDefaults().iteritems():
 		cairn.sysdefs.__sysdef.info.setChild(opt, val)
 	return
 
@@ -92,7 +91,7 @@ def loadModuleList():
 	modList = IModule.ModuleList(cairn.sysdefs.__sysdef)
 	userModuleSpec = Options.get("modules")
 	IModule.loadList(cairn.sysdefs.__sysdef,
-					 cairn.sysdefs.__sysdef.getModuleString(), userModuleSpec,
+					 cairn.sysdefs.__program.getModuleString(), userModuleSpec,
 					 modList, None)
 	cairn.sysdefs.__sysdef.moduleList = modList
 	return

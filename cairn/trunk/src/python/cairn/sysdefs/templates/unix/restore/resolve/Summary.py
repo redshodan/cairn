@@ -17,7 +17,6 @@ def getClass():
 
 class Summary(object):
 
-
 	def display(self, sysdef):
 		cairn.display("")
 		cairn.display("Summary of actions that will be taken:")
@@ -58,10 +57,24 @@ class Summary(object):
 		return
 
 
+	def ask(self, sysdef):
+		cairn.displayRaw("Do you wish to continue with this restore? [y/N]: ")
+		line = sys.stdin.readline()
+		cairn.displayNL()
+		if re.match("[yY]", line):
+			return True
+		else:
+			cairn.display("Canceling restore")
+			return False
+
+
 	def run(self, sysdef):
 		self.display(sysdef)
 		if Options.get("pretend"):
 			sysdef.quit()
-		else:
+		elif Options.get("batch"):
 			self.warn(sysdef)
+		else:
+			if not self.ask(sysdef):
+				sysdef.quit()
 		return True

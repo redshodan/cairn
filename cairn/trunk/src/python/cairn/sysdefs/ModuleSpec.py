@@ -17,6 +17,7 @@
 #   -string         -- Remove 'string' from the default
 #   ^string         -- Prepend 'string' onto the default
 #   $string         -- Append 'string' onto the default
+#   ..string        -- Make this module look from the top level, not current
 #
 
 
@@ -303,7 +304,10 @@ def splitApplyPrefix(inStr, prefix):
 	outStr = ""
 	for str in strs:
 		str = str.strip()
-		outStr = "%s;%s.%s" % (outStr, prefix, str)
+		if str.startswith(".."):
+			outStr = "%s;%s" % (outStr, str.lstrip(".."))
+		else:
+			outStr = "%s;%s.%s" % (outStr, prefix, str)
 	return outStr.lstrip(";")
 
 

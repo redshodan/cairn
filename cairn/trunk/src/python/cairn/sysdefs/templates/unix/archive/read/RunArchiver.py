@@ -3,14 +3,10 @@
 
 
 import os
-import select
-import shutil
-import sys
 
 import cairn
 from cairn import Options
 import cairn.sysdefs.templates.unix.archive.RunArchiver as tmpl
-from cairn.sysdefs.templates.unix.misc import Process
 
 
 

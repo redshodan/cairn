@@ -1,4 +1,5 @@
-"""CAIRN Copy Class"""
+"""cairn.Program - Base program class"""
+
 
 
 import sys
@@ -9,31 +10,45 @@ import cairn.Options as Options
 
 
 
-class Copy(object):
+class Program(object):
+
+	def __init__(self):
+		self._defaults = {}
+		return
+
+
+	def getDefaults(self):
+		return self._defaults
+
 
 	def setDefaults(self):
 		return
 
 
 	def getModuleString(self):
-		return "archive.write; DisplayDone;"
+		return ""
+
+
+	def name(self):
+		return ""
 
 
 	def run(self):
 		cairn.init()
-		Options.set("program", "copy")
+		Options.set("program", self.name())
 		Options.init()
 		self.setDefaults()
 		Options.parseCmdLineOpts()
-		sysdefs.load(self.getModuleString())
+		sysdefs.setProgram(self)
+		sysdefs.load()
 		sysdefs.run()
 		return
 
 
-def run():
+def run(klass):
 	try:
-		ccopy = Copy()
-		ccopy.run()
+		inst = klass()
+		inst.run()
 	except cairn.Exception, err:
 		err.printSelf()
 		sys.exit(err.code)
