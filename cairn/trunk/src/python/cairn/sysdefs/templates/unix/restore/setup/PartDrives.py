@@ -18,5 +18,6 @@ class PartDrives(object):
 	def run(self, sysdef):
 		cairn.log("Partitioning drives")
 		for drive in sysdef.readInfo.getElems("hardware/drive"):
-			self.partitionDrive(sysdef, drive)
+			if not drive.get("empty"):
+				self.partitionDrive(sysdef, drive)
 		return True

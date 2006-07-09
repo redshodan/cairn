@@ -59,12 +59,15 @@ Environment
 
 Hardware
    <hardware>
+     <drive-match/>         - perfect, devices, partial or none
      <drive name="">
+	   <empty/>
 	   <device/>
 	   <mapped-device/>
 	   <size/>
 	   <os-driver/>
 	   <part-tool-cfg/>
+	   <model/>
 	   <partition name="">
 	     <device/>
 		 <start/>
@@ -218,16 +221,20 @@ def createEnvElem(self):
 
 
 def createHardwareElem(self):
-	return self.createElem("hardware")
+	hardware = self.createElem("hardware")
+	elem = hardware.createElem("drive-match")
+	return hardware
 
 
 def createDriveElem(self, name):
 	hardware = self.getElem("hardware")
 	drive = hardware.createElem("drive=%s" % name)
+	elem = drive.createElem("empty")
 	elem = drive.createElem("device")
 	elem = drive.createElem("mapped-device")
 	elem = drive.createElem("size")
 	elem = drive.createElem("os-driver")
+	elem = drive.createElem("model")
 	return drive
 
 

@@ -92,6 +92,7 @@ def display(msg):
 def displayRaw(msg):
 	Logging.all.log(Logging.INFO, msg)
 	print msg,
+	sys.stdout.flush()
 	return
 
 
@@ -131,7 +132,7 @@ def cairnAtExit():
 				verbose("Removing: %s" % file)
 				os.remove(file)
 		except OSError, err:
-			error("Failed to delete file: " + file)
+			error("Failed to delete file %s: %s" % (file, err))
 	logging.shutdown()
 	return
 

@@ -1,6 +1,7 @@
 """templates.unix.archive.readmeta.ExtractMetaFromShar Module"""
 
 
+import os
 import os.path
 
 import cairn
@@ -44,8 +45,8 @@ class ExtractMetaFromShar(object):
 		sysdef.info.setChild("archive/metafilename", metaFile[1])
 		try:
 			xml = archive.read(pos)
-			metaFile[0].write(xml)
-			metaFile[0].close()
+			os.write(metaFile[0], xml)
+			os.close(metaFile[0])
 			archive.close()
 		except Exception, err:
 			raise cairn.Exception("Unable to write meta file %s: %s" % \

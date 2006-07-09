@@ -64,6 +64,15 @@ class EstimateSize(object):
 				for iter in removes:
 					dirs.remove(iter)
 				removes = []
+			for dir in files:
+				full = os.path.join(root, dir)
+				if full in excludes:
+					excludes.remove(full)
+					removes.append(dir)
+			if len(removes):
+				for iter in removes:
+					files.remove(iter)
+				removes = []
 			# Header block for current dir
 			#cairn.debug("dir: %s, 512" % root)
 			total = total + TAR_BLKSIZE
@@ -90,8 +99,10 @@ class EstimateSize(object):
 
 	def run(self, sysdef):
 		excludes = self.collateExcludes(sysdef)
-		cairn.log("Estimating archive size... ", False)
+		cairn.displayRaw("Estimating archive size... ")
 		totalSize = self.findTotalSize(sysdef, excludes)
-		cairn.log("%.3fG" % (totalSize / 1073741824.0))
+		# /2 to account for normal 2:1 compression of binaries
+		cairn.displayRaw("%.3fG" % (totalSize / 1073741824.0 / 2))
+		cairn.displayNL()
 		sysdef.info.setChild("archive/estimated-size", "%ld" % (totalSize))
 		return True

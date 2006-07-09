@@ -1,4 +1,4 @@
-"""templates.unix.restore.setup.MatchDrives Module"""
+"""templates.unix.restore.resolve.MatchDrives Module"""
 
 
 def getClass():

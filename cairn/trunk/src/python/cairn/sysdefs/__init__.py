@@ -121,14 +121,15 @@ def run():
 			obj = func(**modInfo.args)
 		else:
 			obj = func()
-		try:
+		#try:
+		if True:
 			if not obj.run(cairn.sysdefs.__sysdef) and not Options.get("force"):
 				raise cairn.Exception("Failed to run module: " + modInfo.module.__name__)
-		except cairn.Exception, err:
-			if not Options.get("force"):
-				raise err
-			else:
-				err.printSelf()
+		#except cairn.Exception, err:
+		#	if not Options.get("force"):
+		#		raise err
+		#	else:
+		#		err.printSelf()
 		getModuleList().next()
 	return
 

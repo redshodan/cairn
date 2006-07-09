@@ -27,13 +27,6 @@ class Summary(object):
 		return
 
 
-	def printOptions(self, sysdef):
-		if Options.get("printopts"):
-			Options.printAll()
-			sysdef.quit()
-		return
-
-
 	def dumpMeta(self, sysdef):
 		if Options.get("dumpenv"):
 			fileName = sysdef.info.get("archive/metafilename")
@@ -52,6 +45,5 @@ class Summary(object):
 	def run(self, sysdef):
 		self.summary(sysdef)
 		self.printMeta(sysdef)
-		self.printOptions(sysdef)
 		self.dumpMeta(sysdef)
 		return True

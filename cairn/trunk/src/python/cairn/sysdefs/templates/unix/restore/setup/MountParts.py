@@ -14,9 +14,10 @@ class MountParts(object):
 		mountList = []
 		fsMap = {}
 		for drive in sysdef.readInfo.getElems("hardware/drive"):
-			for part in drive.getElems("partition"):
-				mountList.append(part.get("mount"))
-				fsMap[part.get("mount")] = part
+			if not drive.get("empty"):
+				for part in drive.getElems("partition"):
+					mountList.append(part.get("mount"))
+					fsMap[part.get("mount")] = part
 		mountList.sort()
 		return mountList, fsMap
 

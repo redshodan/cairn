@@ -185,6 +185,7 @@ def setVerboseOpt(option, opt, value, parser):
 	level = get("log")
 	if not level:
 		set("log", Logging.VERBOSE)
+		Logging.setLogLevel(Logging.VERBOSE)
 	elif (level > Logging.DEBUG):
 		level = level - 10
 		set("log", level)
@@ -487,7 +488,7 @@ def generateImageName():
 	if get("destination"):
 		return os.path.join(get("destination"), name)
 	else:
-		return name
+		return os.path.abspath(name)
 
 
 def printOptions():

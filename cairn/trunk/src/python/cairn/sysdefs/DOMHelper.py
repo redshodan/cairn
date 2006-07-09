@@ -213,7 +213,7 @@ def doc(self):
 
 
 def isOverridden(self):
-	if self.hasAttribute("overridden"):
+	if self.root().hasAttribute("overridden"):
 		return True
 	else:
 		return False

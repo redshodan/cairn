@@ -7,5 +7,5 @@ from cairn import Options
 
 
 def getSubModuleString(sysdef):
-	str = "VerifyTools; MatchDrives; PartDrives; MakeFS; MountParts; "
+	str = "VerifyTools; PartDrives; MakeFS; MountParts; "
 	return str

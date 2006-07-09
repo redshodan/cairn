@@ -17,7 +17,7 @@ class Restore(object):
 
 
 	def getModuleString(self):
-		return "archive.readmeta; setup; archive.read; bootloader; cleanup; DisplayDone;"
+		return "archive.readmeta; resolve; setup; archive.read; bootloader; cleanup; DisplayDone;"
 
 
 	def run(self):
@@ -28,7 +28,6 @@ class Restore(object):
 		Options.parseCmdLineOpts()
 		sysdefs.load(self.getModuleString())
 		sysdefs.run()
-		cairn.log("Archive restore finished")
 		return
 
 
