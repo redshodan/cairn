@@ -52,6 +52,7 @@ class Exception(Exception):
 # in a CAIRN program.
 def init():
 	checkPythonVer()
+	initProcessParams()
 	Logging.init()
 	return
 
@@ -61,6 +62,11 @@ def checkPythonVer():
 		((sys.version_info[0] == 2) and (sys.version_info[1] < 3))):
 		print "This version of Python is too old. CAIRN requires version 2.3 or greater to run."
 		sys.exit(-1)
+	return
+
+
+def initProcessParams():
+	os.umask(077)
 	return
 
 
