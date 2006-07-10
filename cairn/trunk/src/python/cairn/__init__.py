@@ -51,7 +51,16 @@ class Exception(Exception):
 # Basic initialization function. This really needs to be the first thing done
 # in a CAIRN program.
 def init():
+	checkPythonVer()
 	Logging.init()
+	return
+
+
+def checkPythonVer():
+	if ((sys.version_info[0] < 2) or
+		((sys.version_info[0] == 2) and (sys.version_info[1] < 3))):
+		print "This version of Python is too old. CAIRN requires version 2.3 or greater to run."
+		sys.exit(-1)
 	return
 
 
