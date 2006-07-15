@@ -3,6 +3,7 @@
 
 import cairn
 from cairn.sysdefs import Tools
+from cairn import Options
 
 
 
@@ -20,7 +21,9 @@ class Paths(object):
 
 
 	def getPath(self, sysdef):
-		if sysdef.info.get("env/path"):
+		if Options.get("path"):
+			return Options.get("path")
+		elif sysdef.info.get("env/path"):
 			return sysdef.info.get("env/path")
 		return self.__PATH
 

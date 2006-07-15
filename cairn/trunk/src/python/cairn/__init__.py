@@ -52,6 +52,7 @@ class Exception(Exception):
 # in a CAIRN program.
 def init():
 	checkPythonVer()
+	initProcessParams()
 	Logging.init()
 	return
 
@@ -61,6 +62,12 @@ def checkPythonVer():
 		((sys.version_info[0] == 2) and (sys.version_info[1] < 3))):
 		print "This version of Python is too old. CAIRN requires version 2.3 or greater to run."
 		sys.exit(-1)
+	return
+
+
+def initProcessParams():
+	# Close the mask for any files created
+	os.umask(077)
 	return
 
 
@@ -113,6 +120,22 @@ def displayNL():
 	return
 
 
+def matchName(name, arg):
+	if not arg or not len(arg):
+		return False
+	nlen = len(name)
+	alen = len(arg)
+	index = 0
+	while ((index < nlen) and (index < alen)):
+		if name[index] != arg[index]:
+			break
+		index = index + 1
+	if ((index == nlen) or (index == alen)):
+		return True
+	else:
+		return False
+
+
 # Temp files
 def mktemp(filename):
 	dir = Options.get("tmpdir")
@@ -129,7 +152,7 @@ def addFileForCleanup(file):
 
 
 def cairnAtExit():
-	if Options.get("nocleanup"):
+	if Options.get("no-cleanup"):
 		return
 	for file in __file_cleanup:
 		try:

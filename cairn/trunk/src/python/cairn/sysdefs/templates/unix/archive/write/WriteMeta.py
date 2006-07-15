@@ -1,4 +1,4 @@
-"""templates.unix.copy.write.WriteMeta Module"""
+"""templates.unix.archive.write.WriteMeta Module"""
 
 
 import os
@@ -33,7 +33,7 @@ class WriteMeta(object):
 
 	def writeFile(self, sysdef, metaFile):
 		try:
-			sysdef.info.saveToFile(metaFile)
+			sysdef.info.saveToFile(metaFile, False)
 			metaFile.close()
 		except Exception, err:
 			raise cairn.Exception("Failed to write metadata file: %s" % err)

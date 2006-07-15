@@ -33,6 +33,17 @@ def getLong(self, path = None):
 	return long(self.getText(path))
 
 
+# Get the named attribute from this node
+def getAttr(self, path, attr):
+	elem = self.root()
+	if path:
+		elem = self.getElem(path)
+	if elem.hasAttribute(attr):
+		return elem.getAttribute(attr)
+	else:
+		return None
+
+
 # Get first child element of this node, or by path from this node
 def getElem(self, path = None):
 	elems = self.root().getElems(path)
@@ -66,12 +77,25 @@ def set(self, value, overridden = False):
 	return
 
 
+# Set the named attribute on this node
+def setAttr(self, attr, value):
+	self.root().setAttribute(attr, value)
+	return
+
+
 # Set value on a child of this node
 def setChild(self, path, value, overridden = False):
 	elem = self.getElem(path)
 	if not elem:
 		elem = self.createElem(path)
 	elem.set(value, overridden)
+	return
+
+
+# Set the named attribute on a child of this node
+def setChildAttr(self, attr, value):
+	elem = self.getElem(path)
+	elem.setAttribute(attr, value)
 	return
 
 
@@ -82,8 +106,8 @@ def clear(self, path = None):
 		elem = self.getElem(path)
 		if not elem:
 			return
-	while self.root().hasChildNodes():
-		child = self.root().removeChild(self.firstChild)
+	while elem.root().hasChildNodes():
+		child = elem.root().removeChild(elem.root().firstChild)
 		child.unlink()
 	return
 
@@ -277,6 +301,23 @@ def setText(self, value):
 	return elem
 
 
+def unIndent(self):
+	unlinks = []
+	for node in self.childNodes:
+		if (node.nodeType == node.TEXT_NODE):
+			str = node.data.strip()
+			if not str or not len(str):
+				unlinks.append(node)
+			else:
+				node.data = str
+		else:
+			node.unIndent()
+	for node in unlinks:
+		self.removeChild(node)
+		node.unlink()
+	return
+
+
 def inject(obj, func):
 	setattr(obj, func.__name__, new.instancemethod(func, obj, obj.__class__))
 	return
@@ -306,6 +347,7 @@ def injectFuncs(elem):
 	inject(elem, createPaddedElem)
 	inject(elem, getText)
 	inject(elem, setText)
+	inject(elem, unIndent)
 	return
 
 

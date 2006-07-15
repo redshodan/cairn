@@ -55,7 +55,7 @@ class RunArchiver(object):
 		archiveTool = Process.startCmd("archive/archive-tool",
 									   sysdef.info.get("archive/archive-tool-cmd"),
 									   None, None, None)
-		zipTool = Process.startCmd("archive/zip-tool-cmd",
+		zipTool = Process.startCmd("archive/zip-tool",
 								   sysdef.info.get("archive/zip-tool-cmd"),
 								   input, output, None)
 		self.runPipe(sysdef, archiveTool, zipTool)
@@ -71,22 +71,49 @@ class RunArchiver(object):
 		if self.direction() == self.IN:
 			input = zipTool
 			output = archiveTool
+			readfds = [input.stdout, archiveTool.stderr, zipTool.stderr,
+					   output.stdout]
 		else:
 			input = archiveTool
 			output = zipTool
-		readfds = [ input.stdout, archiveTool.stderr, zipTool.stderr]
+			readfds = [input.stdout, archiveTool.stderr, zipTool.stderr]
 		running = True
 		self.displayPercent(0)
-		while running:
+		errStr = ""
+		while (running and (len(readfds) > 0)):
 			(selrfds, trash1, trash2) = select.select(readfds, [], [], 0)
 			for sel in selrfds:
 				if sel == input.stdout:   ### Archive output
-					buff = os.read(input.stdout, 524288)   ### 512K
+					try:
+						buff = os.read(input.stdout, 524288)   ### 512K
+					except Exception, err:
+						errStr = str(err)
+						try: os.close(readfds[0])
+						except: pass
+						del readfds[0]
 					if not buff:
 						running = False
 						break
-					os.write(output.stdin, buff)
+					try:
+						os.write(output.stdin, buff)
+					except Exception, err:
+						errStr = str(err)
+						try: os.close(readfds[0])
+						except: pass
+						del readfds[0]
 					self.processPercent(percent, len(buff))
+				# Monitor stdout on the archive when its the output, for extract
+				if ((output == archiveTool) and (sel == output.stdout)):
+					try:
+						buff = os.read(output.stdout, 512)
+					except Exception, err:
+						print "except!"
+						errStr = str(err)
+						try: os.close(readfds[0])
+						except: pass
+						del readfds[0]
+					if buff and len(buff):
+						cairn.displayRaw(buff)
 				if ((sel == archiveTool.stderr) and not archiveTool.readErr()):
 					readfds.remove(archiveTool.stderr)
 				if ((sel == zipTool.stderr) and	not zipTool.readErr()):
@@ -97,9 +124,9 @@ class RunArchiver(object):
 		cairn.debug("Archive tool exit: %d stderr:\n%s" % (archiveTool.exit(),
 														   archiveTool.err))
 		cairn.debug("Zip tool exit: %d stderr:\n%s" % (zipTool.exit(), zipTool.err))
-		err = ""
+		err = "Error running archiver: %s\n" % errStr
 		if archiveTool.err:
-			err = "Error running archive tool: %s" % archiveTool.err
+			err = "\nError running archive tool: %s" % archiveTool.err
 		if zipTool.err:
 			err = err + "\nError running zip tool: %s" % zipTool.err
 		if not self.verifyExit(archiveTool, zipTool):
@@ -137,9 +164,9 @@ class RunArchiver(object):
 
 
 	def run(self, sysdef):
-		try:
-			archive = self.prepare(sysdef)
-			self.runTools(sysdef, archive)
-		except Exception, err:
-			raise cairn.Exception("Failed while running archive tools: %s" % err)
+		#try:
+		archive = self.prepare(sysdef)
+		self.runTools(sysdef, archive)
+		#except Exception, err:
+		#	raise cairn.Exception("Failed while running archive tools: %s" % err)
 		return True

@@ -4,7 +4,7 @@
 
 import cairn
 from cairn import Options
-import cairn.sysdefs.templates.unix.extract.archive.RunArchiver as tmpl
+import cairn.sysdefs.templates.unix.archive.read.RunArchiver as tmpl
 
 
 
@@ -25,4 +25,10 @@ class RunArchiver(tmpl.RunArchiver):
 
 
 	def finishDisplayPercent(self):
+		cairn.displayNL()
 		return
+
+
+	def run(self, sysdef):
+		cairn.displayNL()
+		return tmpl.RunArchiver.run(self, sysdef)

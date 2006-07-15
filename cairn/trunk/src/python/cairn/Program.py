@@ -33,12 +33,16 @@ class Program(object):
 		return ""
 
 
+	def allowBadOpts(self):
+		return False
+
+
 	def run(self):
 		cairn.init()
 		Options.set("program", self.name())
 		Options.init()
 		self.setDefaults()
-		Options.parseCmdLineOpts()
+		Options.parseCmdLineOpts(self.allowBadOpts())
 		sysdefs.setProgram(self)
 		sysdefs.load()
 		sysdefs.run()

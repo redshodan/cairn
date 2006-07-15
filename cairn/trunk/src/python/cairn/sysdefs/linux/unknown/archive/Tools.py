@@ -14,8 +14,12 @@ def getClass():
 
 class Tools(tmpl.Tools):
 
+	def getArchiveMethod(self, sysdef):
+		return sysdef.info.get("env/archive-tool-user")
+
+
 	def setArchiveCmd(self, sysdef):
-		method = sysdef.info.get("env/archive-tool-user")
+		method = self.getArchiveMethod(sysdef)
 		if method == "env/tools/tar":
 			self.setTarCmd(sysdef)
 		elif method == "env/tools/star":
@@ -37,8 +41,12 @@ class Tools(tmpl.Tools):
 		raise cairn.Exception("Complete me!")
 
 
+	def getZipMethod(self, sysdef):
+		return sysdef.info.get("env/zip-tool-user")
+
+
 	def setZipCmd(self, sysdef):
-		method = sysdef.info.get("env/zip-tool-user")
+		method = self.getZipMethod(sysdef)
 		if method == "env/tools/bzip2":
 			self.setBzip2Cmd(sysdef)
 		elif method == "env/tools/gzip":

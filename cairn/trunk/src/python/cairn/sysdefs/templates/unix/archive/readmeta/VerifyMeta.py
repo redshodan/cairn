@@ -36,7 +36,7 @@ class VerifyMeta(object):
 
 
 	def run(self, sysdef):
-		if Options.get("noverify"):
+		if Options.get("no-verify"):
 			cairn.log("Skipping metadata verification")
 		else:
 			self.verifyMeta(sysdef)

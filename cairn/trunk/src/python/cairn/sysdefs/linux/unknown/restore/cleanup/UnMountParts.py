@@ -13,6 +13,6 @@ def getClass():
 class UnMountParts(tmpl.UnMountParts):
 
 	def run(self, sysdef):
-		if not Options.get("nocleanup"):
+		if not Options.get("no-cleanup"):
 			Shared.unmountAll(sysdef)
 		return True

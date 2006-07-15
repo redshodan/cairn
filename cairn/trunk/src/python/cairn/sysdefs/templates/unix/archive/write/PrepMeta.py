@@ -1,7 +1,6 @@
-"""templates.unix.copy.write.PrepMeta Module"""
+"""templates.unix.archive.write.PrepMeta Module"""
 
 
-import datetime
 
 import cairn
 from cairn import Options
@@ -15,10 +14,18 @@ def getClass():
 
 class PrepMeta(object):
 
+	def getDateAction(self):
+		return "created"
+
+
+	def getInfo(self, sysdef):
+		return sysdef.info
+
+
 	def setDate(self, sysdef):
-		sysdef.info.setChild("archive/date",
-							 datetime.datetime.now().isoformat(' '))
+		self.getInfo(sysdef).createDatesDateElem(self.getDateAction())
 		return
+
 
 	def run(self, sysdef):
 		self.setDate(sysdef)

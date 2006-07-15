@@ -17,10 +17,11 @@ from cairn import Version
 
 
 # module globals
-ourOpts = {}
-ourOptMap = {}
-ourOptGroups = {}
-sysInfoOpts = {}
+__opts = {}
+__optMap = {}
+__optGroups = {}
+__sysInfoOpts = {}
+__extraOpts = []
 
 
 # Opt help levels
@@ -36,7 +37,7 @@ copyDesc = "Create a CAIRN image of this machine. The image file name is optiona
 copyUsage = "%prog copy [options] [image file]"
 restoreDesc = "Restore a CAIRN image onto this machine. See the description of '--help' for more advanced help options."
 restoreUsage = "%prog restore [options] <image file>"
-extractDesc = "Extract portions of this archive file. See the description of '--help' for more advanced help options. This is a frontend to the archive tool used to create the image. Any of the options that are not understood will be passed on to the archive tool. By default this is 'tar'. This can run the archive tool without having to extract the archive from the CAIRN image file while still exposing virtually all of that archive tools funtionality."
+extractDesc = "Extract portions of this archive file. See the description of '--help' for more advanced help options. This is a frontend to the archive tool used to create the image. Any of the options after the -- will be passed on to the archive tool. By default this is 'tar'. This can run the archive tool without having to extract the archive from the CAIRN image file while still exposing virtually all of that archive tools funtionality."
 extractUsage = "%prog extract [options] <image file> [-- [archive tool options]]"
 
 
@@ -74,111 +75,6 @@ class Opt(optparse.Option):
 		optparse.Option.__init__(self, *args, **kargs)
 		return
 
-
-	def take_action(self, action, dest, opt, value, values, parser):
-		if self.info:
-			sysInfoOpts[self.info] = value
-		ret = optparse.Option.take_action(self, action, dest, opt, value,
-										  values, parser)
-		if ret and (action != "callback") and self.callback:
-			args = self.callback_args or ()
-			kwargs = self.callback_kwargs or {}
-			self.callback(self, opt, value, parser, *args, **kwargs)
-		return ret
-
-
-	def _check_callback(self):
-		if self.action == "callback":
-			if not callable(self.callback):
-				raise OptionError(
-					"callback not callable: %r" % self.callback, self)
-			if (self.callback_args is not None and
-				type(self.callback_args) is not types.TupleType):
-				raise OptionError(
-					"callback_args, if supplied, must be a tuple: not %r"
-					% self.callback_args, self)
-			if (self.callback_kwargs is not None and
-				type(self.callback_kwargs) is not types.DictType):
-				raise OptionError(
-					"callback_kwargs, if supplied, must be a dict: not %r"
-					% self.callback_kwargs, self)
-
-	CHECK_METHODS = [optparse.Option._check_action,
-                     optparse.Option._check_type,
-                     optparse.Option._check_choice,
-                     optparse.Option._check_dest,
-                     optparse.Option._check_const,
-                     optparse.Option._check_nargs,
-                     _check_callback]
-
-
-
-class OptParser(optparse.OptionParser):
-	def format_option_help(self, formatter=None):
-		if formatter is None:
-			formatter = self.formatter
-		formatter.store_option_strings(self)
-		result = []
-		if self.level and (self.level & COMMON) and self.option_list:
-			self.option_list = self.sortOptionList(self.option_list)
-			result.append(formatter.format_heading(_("Common options")))
-			formatter.indent()
-			result.append(optparse.OptionContainer.
-						  format_option_help(self, formatter))
-			result.append("\n")
-			formatter.dedent()
-		for group in self.option_groups:
-			if self.level and (self.level & group.level):
-				group.option_list = self.sortOptionList(group.option_list)
-				result.append(group.format_help(formatter))
-				result.append("\n")
-		# Drop the last "\n", or the header if no options or option groups:
-		return "".join(result[:-1])
-
-
-	# Allow multiple instances of the same long opt. Useful for showing the
-	# same opt in multiple sections
-	def _check_conflict(self, option):
-		if option._long_opts[0] in self._long_opt:
-			return
-		else:
-			optparse.OptionParser._check_conflict(self, option)
-		return
-
-	def error(self, msg):
-		self.print_usage(sys.stderr)
-		self.exit(2, "%s: error: %s\nTry 'cairn %s --help'.\n" %
-				  (self.get_prog_name(), msg, get("program")))
-
-
-	def sortOptionList(self, list):
-		ret = []
-		map = {}
-		for opt in list:
-			map[opt._long_opts[0].lstrip("-")] = opt
-		keys = map.keys()
-		keys.sort()
-		for name in keys:
-			ret.append(map[name])
-		return ret
-
-
-
-class OptGroup(optparse.OptionGroup):
-	def __init__(self, parser, title, level):
-		self.level = level
-		optparse.OptionGroup.__init__(self, parser, title)
-		return
-
-
-	# Allow multiple instances of the same long opt. Useful for showing the
-	# same opt in multiple sections
-	def _check_conflict(self, option):
-		if option._long_opts[0] in self._long_opt:
-			return
-		else:
-			optparse.OptionGroup._check_conflict(self, option)
-		return
 
 
 # Custom opt setters. Have to be here before the opts array.
@@ -231,14 +127,14 @@ def setInfoOpt(option, opt, value, parser):
 	if (value.find("=") < 0):
 		raise cairn.Exception("Invalid parameter to --set. Must be in the form: key=val")
 	words = value.split("=")
-	sysInfoOpts[words[0]] = words[1]
+	__sysInfoOpts[words[0]] = words[1]
 	return
 
 
 def help(option, opt, value, parser):
-	parser.level = COMMON
+	parser.setHelpLevel(COMMON)
 	if parser.rargs and len(parser.rargs):
-		parser.level = matchSection(parser.rargs[0])
+		parser.setHelpLevel(matchSection(parser.rargs[0]))
 	parser.print_help()
 	sys.exit(0)
 	return
@@ -268,6 +164,15 @@ def setAllFiles(option, opt, value, parser):
 	return
 
 
+def editMetaOpt(option, opt, value, parser):
+	arg = nextArgNotOptNotFile(parser)
+	if arg:
+		set("edit-meta", arg)
+	else:
+		set("edit-meta", True)
+	return
+
+
 # Options contains the long form, the short form, its type, its default value,
 # a system info tag for it to set, a callback function for more complex
 # behavior, a help string and a help section. The long name will be used
@@ -294,16 +199,16 @@ cliCommonOpts = [
 	 "level":DEBUG, "metavar":"MODULE=LOG-LEVEL"},
 	{"long":"modules", "short":"M", "type":"string", "metavar":"MODULE-SPEC",
  	 "help":"List of modules to load.", "level":EXPERT | DEBUG},
-	{"long":"nocleanup", "action":"store_true", "default":False,
+	{"long":"no-cleanup", "action":"store_true", "default":False,
  	 "help":"Do not cleanup temporary files.", "level":DEBUG},
-	{"long":"noverify", "action":"store_true", "default":False,
+	{"long":"no-verify", "action":"store_true", "default":False,
  	 "help":"Do not verify metadata or image file.", "level":ADVANCED},
  	{"long":"path", "type":"string", "default":"/sbin:/bin:/usr/sbin:/usr/bin",
  	 "info":"env/path", "level":ADVANCED,
 	 "help":"Path to find programs to run."},
- 	{"long":"printopts", "action":"store_true", "default":False, "level":DEBUG,
+ 	{"long":"print-opts", "action":"store_true", "default":False, "level":DEBUG,
  	 "help":"Print the command line option values out and exit."},
- 	{"long":"printmeta", "action":"store_true", "default":False,
+ 	{"long":"print-meta", "action":"store_true", "default":False,
 	 "level":DEBUG,
  	 "help":"Print all of the discovered environment information and exit."},
 	{"long":"summary", "action":"store_true", "default":False,
@@ -374,25 +279,36 @@ cliRestoreOpts = [
 
 cliExtractOpts = [
  	{"long":"archive", "short":"A", "type":"string", "default":"tar",
- 	 "help":"Archive type to use: tar, star", "level":ADVANCED}
+ 	 "help":"Archive type to use: tar, star", "level":ADVANCED},
+	{"long":"edit-meta", "short":"e", "action":"callback",
+	 "callback":editMetaOpt, "metavar":"EDITOR",
+	 "help":"Run an editor and edit the meta file. After the editor exits the meta file will be saved back to the image. Default editor is $EDITOR."},
+	{"long":"restore-opts", "short":"r", "action":"store_true", "default":False,
+	 "help":"Use the same options to the archiver that CAIRN restore would use. These are a number of options for preserving files as faithfully as possible."},
+	{"long":"save-meta", "short":"s", "type":"string", "metavar":"FILE",
+	 "help":"Save the meta file to FILE and exit"}
 ]
 
 
 def get(name):
 	try:
-		return ourOpts[name]
+		return __opts[name]
 	except:
 		pass
 	return None
 
 
 def set(name, value):
-	ourOpts[name] = value
+	__opts[name] = value
 	return
 
 
 def getSysInfoOpts():
-	return sysInfoOpts
+	return __sysInfoOpts
+
+
+def getExtraOpts():
+	return __extraOpts
 
 
 def iterHelpLevels(level):
@@ -405,7 +321,7 @@ def iterHelpLevels(level):
 
 def init():
 	cairn.allLog("Starting program %s" % get("program"))
-	sysInfoOpts["archive/cmdline"] = " ".join(sys.argv)
+	__sysInfoOpts["archive/cmdline"] = " ".join(sys.argv)
 	buildOptMap(cliCommonOpts)
 	if get("program") == "copy":
 		buildOptMap(cliCopyRestoreCommonOpts)
@@ -420,18 +336,23 @@ def init():
 
 def buildOptMap(opts):
 	for opt in opts:
-		ourOptMap[opt["long"]] = opt
+		__optMap[opt["long"]] = opt
 	return
 
 
 def printAll():
 	cairn.display("Option values:")
-	for key, val in ourOpts.iteritems():
-		cairn.display("  %s -> %s" % (key, val))
+	keys = __opts.keys()
+	keys.sort()
+	for key in keys:
+		cairn.display("  %s -> %s" % (key, __opts[key]))
+	cairn.display("Unknown options:")
+	for opt in __extraOpts:
+		cairn.display("  %s" % opt)
 	return
 
 
-def parseCmdLineOpts():
+def parseCmdLineOpts(allowBadOpts):
 	if get("program") == "copy":
 		desc = copyDesc
 		usage = copyUsage
@@ -441,66 +362,79 @@ def parseCmdLineOpts():
 	elif get("program") == "extract":
 		desc = extractDesc
 		usage = extractUsage
-	parser = OptParser(usage=usage, option_class=Opt, prog="cairn",
-					   description=desc, conflict_handler="error",
-					   add_help_option=False, version=Version.toString())
-	ourOptGroups[COMMON] = parser
-	ourOptGroups[ADVANCED] = (parser.
-		add_option_group(OptGroup(parser, "Advanced options", ADVANCED)))
-	ourOptGroups[EXPERT] = (parser.
-	    add_option_group(OptGroup(parser, "Expert options", EXPERT)))
-	ourOptGroups[DEBUG] = (parser.
-	    add_option_group(OptGroup(parser, "Debug options", DEBUG)))
+	parser = optparse. \
+			 OptionParser(usage=usage, option_class=Opt, prog="cairn",
+						  description=desc, title="Common options",
+						  conflict_handler="error", add_help_option=False,
+						  version=Version.toString(), level=0,
+						  error_help="Try 'cairn %s --help'.\n" % \
+						  get("program"))
+	__optGroups[COMMON] = parser
+	__optGroups[ADVANCED] = (parser.
+		add_option_group("Advanced options", None, ADVANCED))
+	__optGroups[EXPERT] = (parser.
+	    add_option_group("Expert options", None, EXPERT))
+	__optGroups[DEBUG] = (parser.
+	    add_option_group("Debug options", None, DEBUG))
 
-	for name, opt in ourOptMap.iteritems():
+	for name, opt in __optMap.iteritems():
 		opt["cairn"] = None
 		option = Opt(*(), **opt)
 		if ("level" in opt):
 			for level in iterHelpLevels(opt["level"]):
-				ourOptGroups[level].add_option(option)
+				__optGroups[level].add_option(option)
 		else:
-			ourOptGroups[COMMON].add_option(option)
+			__optGroups[COMMON].add_option(option)
 
 	(opts, args) = parser.parse_args()
 	for name, val in vars(opts).iteritems():
-		if name not in ourOpts:
-			ourOpts[name] = val
+		if name not in __opts:
+			__opts[name] = val
 
-	handleArgs(parser, args)
+	handleArgs(parser, args, allowBadOpts)
 	printOptions()
 	return
 
 
-def handleArgs(parser, args):
+def handleArgs(parser, args, allowBadOpts):
 	dest = get("destination")
 	if len(args) == 1:
-		filename = args[0]
-		if (filename.find("/") >= 0) and dest:
-			parser.error("Can not specify --destination and an image file name that is has any directory components in it")
-		elif dest:
-			filename = os.path.join(dest, filename)
-		else:
-			filename = os.path.abspath(filename)
+		filename = checkFileName(args[0])
 	elif len(args) == 0:
 		if get("program") == "copy":
-			filename = generateImageName()
+			filename = checkFileName(generateImageName())
 		else:
 			parser.error("Missing image filename")
 	elif len(args) > 1:
-		parser.error("Missing image filename")
-		return
+		if allowBadOpts:
+			filename = checkFileName(args[0])
+			del args[0]
+			cairn.Options.__extraOpts = args
+		else:
+			parser.error("Extra unknown arguments found")
 
 	set("filename", filename)
-	sysInfoOpts["archive/filename"] = filename
+	__sysInfoOpts["archive/filename"] = filename
 
-	if dest:
+	if get("log-file"):
 		setLogFile(get("log-file"))
 	else:
-		if not get("log-file") and dest:
+		if dest:
 			setLogFile(os.path.join(dest,
 									os.path.basename(filename + ".log")))
 		else:
 			setLogFile(filename + ".log")
+
+
+def checkFileName(filename):
+	dest = get("destination")
+	if (filename.find("/") >= 0) and dest:
+		parser.error("Can not specify --destination and an image file name that is has any directory components in it")
+	elif dest:
+		filename = os.path.join(dest, filename)
+	else:
+		filename = os.path.abspath(filename)
+	return filename
 
 
 def generateImageName():
@@ -512,44 +446,39 @@ def generateImageName():
 
 
 def printOptions():
-	if get("printopts"):
+	if get("print-opts"):
 		printAll()
 		sys.exit(0)
 	return
 
 
 def matchSection(arg):
-	if matchName("common", arg):
+	if cairn.matchName("common", arg):
 		return COMMON
-	elif matchName("advanced", arg):
+	elif cairn.matchName("advanced", arg):
 		return ADVANCED
-	elif matchName("expert", arg):
+	elif cairn.matchName("expert", arg):
 		return EXPERT
-	elif matchName("debug", arg):
+	elif cairn.matchName("debug", arg):
 		return DEBUG
-	elif matchName("all", arg):
+	elif cairn.matchName("all", arg):
 		return ALL
 	return COMMON
 
 
-def matchName(name, arg):
-	if not arg or not len(arg):
-		return False
-	nlen = len(name)
-	alen = len(arg)
-	index = 0
-	while ((index < nlen) and (index < alen)):
-		if name[index] != arg[index]:
-			break
-		index = index + 1
-	if ((index == nlen) or (index == alen)):
-		return True
-	else:
-		return False
-
-
 def setLogFile(name):
 	set("log-file", name)
-	sysInfoOpts["archive/log-filename"] = name
+	__sysInfoOpts["archive/log-filename"] = name
 	Logging.setAllLogFile(name)
 	return
+
+
+def nextArgNotOptNotFile(parser):
+	if parser.rargs and len(parser.rargs) and (parser.rargs[0][0] != "-"):
+		arg = parser.rargs[0]
+		try:
+			os.stat(arg)
+		except:
+			del parser.rargs[0]
+			return arg
+	return None

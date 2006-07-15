@@ -45,27 +45,3 @@ def unmountAll(sysdef):
 		if ret[0] != 0:
 			raise cairn.Exception("Failed to unmount %s %s" % (mount, ret[1]))
 	return
-
-
-def verifyToolsExit(archiveTool, zipTool):
-	if (archiveTool.exit() == 0) and (zipTool.exit() == 0):
-		return True
-	if zipTool.exit() != 0:
-		return False
-	if len(archiveTool.err) == 0:
-		return False
-	str = archiveTool.err.strip()
-	future = re.compile(".*time stamp.*is.*in the future.*")
-	old = re.compile(".*implausibly old time stamp.*")
-	verify = True
-	for line in str.split("\n"):
-		line = line.strip()
-		if len(line) == 0:
-			continue
-		if future.match(line):
-			continue
-		if old.match(line):
-			continue
-		bad = False
-		break
-	return verify

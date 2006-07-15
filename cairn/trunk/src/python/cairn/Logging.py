@@ -143,17 +143,17 @@ def setLogLevel(level):
 
 
 def strToLogLevel(str):
-	if str == "critical":
+	if cairn.matchName("critical", str):
 		return CRITICAL
-	elif str == "error":
+	elif cairn.matchName("error", str):
 		return ERROR
-	elif str == "warning":
+	elif cairn.matchName("warning", str):
 		return WARNING
-	elif str == "info":
+	elif cairn.matchName("info", str):
 		return INFO
-	elif str == "verbose":
+	elif cairn.matchName("verbose", str):
 		return VERBOSE
-	elif str == "debug":
+	elif cairn.matchName("debug", str):
 		return DEBUG
 	else:
 		return None

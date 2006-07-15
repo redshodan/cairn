@@ -1,10 +1,9 @@
-"""templates.unix.copy.write.FinalizeMeta Module"""
+"""templates.unix.archive.write.FinalizeMeta Module"""
 
 
 import os
 import stat
 import md5
-import re
 
 import cairn
 from cairn import Options
@@ -31,24 +30,37 @@ class FinalizeMeta(object):
 
 	def openArchive(self, fileName):
 		try:
-			return file(fileName, "r")
+			return file(fileName, "r+")
 		except Exception, err:
 			raise cairn.Exception("Failed to open archive file %s: %s" % \
 								  (fileName, err))
 		return
 
 
-	def findOffset(self, archive):
-		pos = 0
-		for line in archive:
-			pos = pos + len(line)
-			if line.startswith("__ARCHIVE__"):
+	def readMeta(self, archive):
+		meta = []
+		while True:
+			buff = archive.read(512)
+			if not buff:
 				break
+			pos = buff.find("__ARCHIVE__")
+			if pos >= 0:
+				meta.append(buff[:pos])
+				break
+			else:
+				meta.append(buff)
+		return "".join(meta)
+
+
+	def findOffset(self, archive, meta):
+		# 12 = len("__ARCHIVE__\n")
+		pos = len(meta) + 12
 		archive.seek(pos)
 		return "%d" % pos
 
 
-	def md5sum(self, archive):
+	def md5sum(self, sysdef, archive):
+		cairn.log("MD5 summing archive file")
 		sum = md5.new()
 		running = True
 		while running:
@@ -58,76 +70,47 @@ class FinalizeMeta(object):
 			else:
 				running = False
 				break
-		archive.close()
 		return sum.hexdigest()
 
 
-	def writeHeaders(self, fileName, sum, size, offset):
-		self.findPositions(fileName, sum, size, offset)
-		archive = os.open(fileName, os.O_RDWR)
+	def writeHeaders(self, archive, meta, sum, size, offset):
+		self.findPositions(meta, sum, size, offset)
 		self.writeValue(archive, sum)
 		self.writeValue(archive, size)
 		self.writeValue(archive, offset)
-		os.close(archive)
 		return
 
 
-	def findPositions(self, fileName, sum, size, offset):
-		archive = file(fileName, "r")
-		archiveRe = re.compile("<archive>")
-		md5Re = re.compile("<md5sum>")
-		sizeRe = re.compile("<size>")
-		offsetRe = re.compile("<shar-offset>")
-		archFound = False
-		pos = 0
-		found = 0
-		for line in archive:
-			pos = pos + len(line)
-			if not archFound and archiveRe.search(line):
-				archFound = True
-				continue
-			elif not archFound:
-				continue
-			if md5Re.search(line):
-				sum[2] = pos
-				found = found + 1
-			elif sizeRe.search(line):
-				size[2] = pos
-				found = found + 1
-			elif offsetRe.search(line):
-				offset[2] = pos
-				found = found + 1
-			if found == 3:
-				break
-		archive.close()
+	def findPositions(self, meta, sum, size, offset):
+		archivePos = meta.find("<archive>")
+		sum[3] = meta.find(sum[0], archivePos) + len(sum[0])
+		size[3] = meta.find(size[0], archivePos) + len(size[0])
+		offset[3] = meta.find(offset[0], archivePos) + len(offset[0])
 		return
 
 
 	def writeValue(self, archive, value):
-		if len(value[0]) != value[1]:
-			buff = "".zfill(value[1] - len(value[0]))
-			value[0] = buff + value[0]
-		os.lseek(archive, value[2], 0)
-		running = True
-		while running:
-			c = os.read(archive, 1)
-			if c == "0":
-				os.lseek(archive, -1, 1)
-				os.write(archive, value[0])
-				break
+		if len(value[1]) != value[2]:
+			buff = "".zfill(value[2] - len(value[1]))
+			value[1] = buff + value[1]
+		archive.seek(value[3])
+		archive.write(value[1])
 		return
 
 
 	def run(self, sysdef):
 		if not sysdef.info.get("archive/shar"):
 			return True
-		cairn.log("MD5 summing archive file")
+		cairn.log("Finalizing archive file")
 		fileName = sysdef.info.get("archive/filename")
 		size = self.sizeArchive(fileName)
 		archive = self.openArchive(fileName)
-		offset = self.findOffset(archive)
-		sum = self.md5sum(archive)
-		self.writeHeaders(fileName, [sum, SystemInfo.PADDING_MD5, 0],
-						  [size, SystemInfo.PADDING_INT, 0],
-						  [offset, SystemInfo.PADDING_INT, 0])
+		meta = self.readMeta(archive)
+		offset = self.findOffset(archive, meta)
+		sum = self.md5sum(sysdef, archive)
+		self.writeHeaders(archive, meta,
+						  ["<md5sum>", sum, SystemInfo.PADDING_MD5, 0],
+						  ["<size>", size, SystemInfo.PADDING_INT, 0],
+						  ["<shar-offset>", offset, SystemInfo.PADDING_INT, 0])
+		archive.close()
 		return True

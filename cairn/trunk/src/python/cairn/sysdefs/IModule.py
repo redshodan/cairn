@@ -65,12 +65,14 @@ def checkSubModule(sysdef, info, userModuleSpec, moduleList):
 		getSubModuleString = getattr(info.module, "getSubModuleString")
 	except AttributeError:
 		return False
+	moduleNames = getSubModuleString(sysdef)
+	if not moduleNames:
+		return True
 	try:
 		getClass = getattr(info.module, "getClass")
 		moduleList.append(info)
 	except AttributeError:
 		pass
-	moduleNames = getSubModuleString(sysdef)
 	subModules = ModuleList(sysdef)
 	cairn.debug("Found sub-module %s: %s" % (info.name, moduleNames))
 	loadList(sysdef, moduleNames, userModuleSpec, subModules, info.name)

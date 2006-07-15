@@ -10,6 +10,10 @@ def getClass():
 
 class Tools(tmpl.Tools):
 
+	def getArchiveMethod(self, sysdef):
+		return sysdef.readInfo.get("env/archive-tool-user")
+
+
 	def setTarCmd(self, sysdef):
 		cmd = "%s --preserve --numeric-owner -X %s  -C %s -Sxpf -" % \
 			  (sysdef.info.get("env/tools/tar"),
@@ -21,6 +25,10 @@ class Tools(tmpl.Tools):
 
 	def setStarCmd(self, sysdef):
 		raise cairn.Exception("Complete me!")
+
+
+	def getZipMethod(self, sysdef):
+		return sysdef.readInfo.get("env/zip-tool-user")
 
 
 	def setBzip2Cmd(self, sysdef):

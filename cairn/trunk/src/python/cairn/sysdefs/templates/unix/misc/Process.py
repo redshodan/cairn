@@ -77,6 +77,8 @@ def startCmd(name, cmd, stdin, stdout, stderr):
 		pstderr = os.pipe()
 	pid = os.fork()
 	if pid == 0:
+		# Open the mask back up for sub processes
+		os.umask(002)
 		if stdin:
 			os.dup2(stdin, 0)
 		else:

@@ -75,16 +75,17 @@ class VerifyArchive(object):
 		cairn.verbose("Recorded md5sum: %s" % sysdef.readInfo.get("archive/md5sum"))
 		cairn.verbose("Found md5sum: %s" % theMD5sum)
 		if theMD5sum != sysdef.readInfo.get("archive/md5sum"):
+			cairn.displayNL()
 			raise cairn.Exception("Corrupt archive file %s: incorrect md5sum" % sysdef.info.get("archive/filename"))
 		return
 
 
 	def run(self, sysdef):
-		if Options.get("noverify"):
+		if Options.get("no-verify"):
 			cairn.log("Skipping archive verification")
 		else:
-			cairn.log("Verifying archive: %s" %
-					  sysdef.info.get("archive/filename"))
+			cairn.displayRaw("Verifying archive: %s ..." %
+							 sysdef.info.get("archive/filename"))
 			if sysdef.info.get("archive/shar"):
 				self.compareShar(sysdef)
 			self.compareSize(sysdef)
@@ -92,4 +93,5 @@ class VerifyArchive(object):
 			theMD5sum = self.md5sum(archive)
 			archive.close()
 			self.compareMD5s(sysdef, theMD5sum)
+			cairn.display(" passed")
 		return True

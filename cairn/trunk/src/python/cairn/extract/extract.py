@@ -9,12 +9,15 @@ from cairn import Program
 class Extract(Program.Program):
 
 	def getModuleString(self):
-		return "system; extract;"
+		return "system.OS; system.Arch; system.Machine; system.Paths; extract;"
 
 
 	def name(self):
 		return "extract"
 
+
+	def allowBadOpts(self):
+		return True
 
 
 def run():

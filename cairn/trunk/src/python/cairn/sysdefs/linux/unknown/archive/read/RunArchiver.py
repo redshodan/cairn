@@ -3,7 +3,7 @@
 
 
 import cairn
-from cairn.sysdefs.linux import Shared
+from cairn.sysdefs.utils import GNUTools
 import cairn.sysdefs.templates.unix.archive.read.RunArchiver as tmpl
 
 
@@ -16,4 +16,4 @@ def getClass():
 class RunArchiver(tmpl.RunArchiver):
 
 	def verifyExit(self, archiveTool, zipTool):
-		return Shared.verifyToolsExit(archiveTool, zipTool)
+		return GNUTools.verifyToolsExit(archiveTool, zipTool)

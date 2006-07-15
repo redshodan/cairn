@@ -17,6 +17,12 @@ Version
 	 <devel/>                 - Is this a devel release.
    </version>
 
+Dates
+   <dates>
+     <create>date</create>
+	 <modify>date</modify>
+   </date>
+
 Operating System
    <os>
      <name/>                  - Base OS name.
@@ -102,9 +108,12 @@ Archive
      <zip-tool-cmd/>
    </archive>
 
+Padding
+   <pad>000000<pad/>        - Padding to fill out the size of the meta to be 10k
 """
 
 
+import datetime
 from xml.dom import minidom
 
 import cairn
@@ -133,6 +142,7 @@ def readNew(aFile):
 	DOMHelper.injectFuncs(doc)
 	DOMHelper.injectFuncsAllChildren(doc.root())
 	injectDocFuncs(doc)
+	doc.unIndent()
 	return doc
 
 
@@ -155,12 +165,14 @@ def setOpts(self, options):
 
 def createElems(self):
 	self.createVersionElem()
+	self.createDatesElem()
 	self.createOSElem()
 	self.createArchElem()
 	self.createMachineElem()
 	self.createEnvElem()
 	self.createHardwareElem()
 	self.createArchiveElem()
+	self.createPadElem()
 	return
 
 
@@ -172,6 +184,17 @@ def createVersionElem(self):
 	elem = version.createElem("svnrev", str(Version.SVNREV))
 	elem = version.createElem("devel", str(Version.DEVEL))
 	return elem
+
+
+def createDatesElem(self):
+	dates = self.createElem("dates")
+	return dates
+
+
+def createDatesDateElem(self, action):
+	dates = self.getElem("dates")
+	dates.createElem(action, datetime.datetime.now().isoformat(' '), True)
+	return
 
 
 def createOSElem(self):
@@ -267,7 +290,6 @@ def createArchiveElem(self):
 	elem = archive.createPaddedElem("shar-offset", PADDING_INT)
 	elem = archive.createElem("real-size")
 	elem = archive.createElem("adjusted-size")
-	elem = archive.createElem("date")
 	elem = archive.createElem("metafilename")
 	elem = archive.createElem("excludes")
 	elem = archive.createElem("excludes-file")
@@ -287,21 +309,40 @@ def createArchiveExcludesElem(self, path, type):
 	return exclude
 
 
+def createPadElem(self):
+	return self.createElem("pad")
+
 
 ###
 ### SystemInfo Document Functions
 ###
 
+def setPad(self):
+	xml = self.doc().toxml()
+	length = len(xml)
+	if length > 10240:
+		cairn.debug("XML is %d long. Not padding." % length)
+		return
+	# size adjust 5 for '<pad>'. '</pad>' is already in xml as an empty
+	# element. Plus a '\n'.
+	padlen = 10240 - length - 6
+	cairn.debug("Padding XML by %d." % padlen)
+	self.setChild("pad", "*".ljust(padlen, "*"))
+	return
+
+
 def verify(self):
 	error = False
 	if not self.get("cairn-image"): error = True
 	if not self.get("version"): error = True
+	if not self.get("dates"): error = True
 	if not self.get("os"): error = True
 	if not self.get("arch"): error = True
 	if not self.get("machine"): error = True
 	if not self.get("env"): error = True
 	if not self.get("hardware"): error = True
 	if not self.get("archive"): error = True
+	if not self.get("pad"): error = True
 	return error
 
 
@@ -310,8 +351,14 @@ def printXML(self):
 	return
 
 
-def saveToFile(self, file):
-	self.doc().writexml(file, "", "  ", "\n")
+def saveToFile(self, file, pretty):
+	if pretty:
+		self.clear("pad")
+		self.doc().writexml(file, "", "  ", "\n")
+	else:
+		self.unIndent()
+		self.setPad()
+		file.write(self.doc().toxml())
 	return
 
 
@@ -361,6 +408,8 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, setOpts)
 	DOMHelper.inject(doc, createElems)
 	DOMHelper.inject(doc, createVersionElem)
+	DOMHelper.inject(doc, createDatesElem)
+	DOMHelper.inject(doc, createDatesDateElem)
 	DOMHelper.inject(doc, createOSElem)
 	DOMHelper.inject(doc, createArchElem)
 	DOMHelper.inject(doc, createMachineElem)
@@ -372,6 +421,8 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, createPartitionFSSpaceElem)
 	DOMHelper.inject(doc, createArchiveElem)
 	DOMHelper.inject(doc, createArchiveExcludesElem)
+	DOMHelper.inject(doc, createPadElem)
+	DOMHelper.inject(doc, setPad)
 	DOMHelper.inject(doc, verify)
 	DOMHelper.inject(doc, printXML)
 	DOMHelper.inject(doc, saveToFile)

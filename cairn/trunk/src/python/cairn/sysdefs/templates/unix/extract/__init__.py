@@ -2,4 +2,4 @@
 
 
 def getSubModuleString(sysdef):
-	return "archive.readmeta; extract.archive.read;"
+	return "..archive.readmeta; meta; ..archive.read;"

@@ -26,26 +26,29 @@ class ExtractMetaFromShar(object):
 		return archive
 
 
-	def findMetaEnd(self, sysdef, archive):
-		pos = 0
-		metaEnd = 0
-		for line in archive:
-			metaEnd = pos
-			pos = pos + len(line)
-			if line.startswith("__ARCHIVE__"):
+	def readMeta(self, sysdef, archive):
+		meta = []
+		while True:
+			buff = archive.read(512)
+			if not buff:
 				break
-		archive.seek(0)
-		sysdef.info.setChild("archive/shar-offset", "%d" % (pos))
-		return metaEnd
+			pos = buff.find("__ARCHIVE__")
+			if pos >= 0:
+				meta.append(buff[:pos])
+				break
+			else:
+				meta.append(buff)
+		return "".join(meta)
 
 
-	def writeMeta(self, sysdef, archive, pos):
+	def writeMeta(self, sysdef, archive, meta):
+		# 12 = len("__ARCHIVE__\n")
+		sysdef.info.setChild("archive/shar-offset", "%d" % (len(meta) + 12))
 		metaFile = cairn.mktemp("cairn-metafile-")
 		cairn.verbose("Extracting metafile to: " + metaFile[1])
 		sysdef.info.setChild("archive/metafilename", metaFile[1])
 		try:
-			xml = archive.read(pos)
-			os.write(metaFile[0], xml)
+			os.write(metaFile[0], meta)
 			os.close(metaFile[0])
 			archive.close()
 		except Exception, err:
@@ -56,6 +59,6 @@ class ExtractMetaFromShar(object):
 
 	def run(self, sysdef):
 		archive = self.openFile(sysdef)
-		pos = self.findMetaEnd(sysdef, archive)
-		self.writeMeta(sysdef, archive, pos)
+		meta = self.readMeta(sysdef, archive)
+		self.writeMeta(sysdef, archive, meta)
 		return True
