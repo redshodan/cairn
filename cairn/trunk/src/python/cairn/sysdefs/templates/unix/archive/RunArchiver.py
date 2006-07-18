@@ -144,7 +144,7 @@ class RunArchiver(object):
 
 
 	def displayPercent(self, percent):
-		cairn.displayRaw("\r%d%%  " % percent)
+		cairn.displayRaw("\r%d%%  " % percent, False)
 		sys.stdout.flush()
 		return
 

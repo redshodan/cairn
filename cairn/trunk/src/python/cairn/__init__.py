@@ -118,8 +118,9 @@ def display(msg):
 	return Logging.display.log(Logging.INFO, "%s" % msg)
 
 
-def displayRaw(msg):
-	Logging.all.log(Logging.INFO, "%s" % msg)
+def displayRaw(msg, dolog = True):
+	if dolog:
+		Logging.all.log(Logging.INFO, "%s" % msg)
 	print msg,
 	sys.stdout.flush()
 	return
