@@ -1,6 +1,6 @@
 """cairn - Top level commonly used definitions"""
 
-
+import exceptions
 import os
 import os.path
 import stat
@@ -28,24 +28,33 @@ __file_cleanup = []
 
 # CAIRN base exception. Should be used instead of Pythons base Exception to
 # differentiate between std lib errors and CAIRN errors.
-class Exception(Exception):
-	def __init__(self, msg, code = None):
-		self.msg = msg
-		if code:
-			self.code = code
+class Exception(exceptions.Exception):
+
+	def __init__(self, msg, err = None):
+		exceptions.Exception.__init__(self, msg)
+		self.traces = []
+		if err:
+			if isinstance(err, Exception):
+				self.msgs = [msg] + err.msgs
+				self.traces = err.traces
+			else:
+				self.msgs = [msg, strErr(err)]
+			self.traces.append("Traceback (most recent call last):")
+			for entry in traceback.format_tb(sys.exc_info()[2]):
+				self.traces.append(entry.rstrip())
+			self.traces.append(strErr(err))
 		else:
-			self.code = ERR_UNKNOWN
+			self.msgs = [msg]
 		return
 
 
-	def printSelf(self):
-		Logging.error.log(Logging.ERROR, "Traceback (most recent call last):")
-		for entry in traceback.format_tb(sys.exc_info()[2]):
-			Logging.error.log(Logging.ERROR, entry.rstrip())
-		error(self.msg)
-		if Options.get("force"):
-			warn("Force is set, ignoring the previous error")
-		return
+	def __str__(self):
+		return " ".join(self.msgs)
+
+
+	def subErrStr(self):
+		return self.traces
+
 
 
 # Basic initialization function. This really needs to be the first thing done
@@ -54,6 +63,7 @@ def init():
 	checkPythonVer()
 	initProcessParams()
 	Logging.init()
+	debug("Python: %s" % sys.version)
 	return
 
 
@@ -73,43 +83,43 @@ def initProcessParams():
 
 # Log pass through functions
 def critical(msg, *args):
-	return Logging.error.log(Logging.CRITICAL, "Critical: " + msg)
+	return Logging.error.log(Logging.CRITICAL, "Critical: %s" % msg)
 
 
 def error(msg, *args):
-	return Logging.error.log(Logging.ERROR, "Error: " + msg)
+	return Logging.error.log(Logging.ERROR, "Error: %s" % msg)
 
 
 def warn(msg, *args):
-	return Logging.error.log(Logging.WARNING, "Warning: " + msg)
+	return Logging.error.log(Logging.WARNING, "Warning: %s" % msg)
 
 
 def info(msg, *args):
-	return Logging.display.log(Logging.INFO, msg)
+	return Logging.display.log(Logging.INFO, "%s" % msg)
 
 
 def verbose(msg, *args):
-	return Logging.display.log(Logging.VERBOSE, msg)
+	return Logging.display.log(Logging.VERBOSE, "%s" % msg)
 
 
 def debug(msg, *args):
-	return Logging.display.log(Logging.DEBUG, msg)
+	return Logging.display.log(Logging.DEBUG, "%s" % msg)
 
 
 def log(msg, *args):
-	return Logging.display.log(Logging.INFO, msg)
+	return Logging.display.log(Logging.INFO, "%s" % msg)
 
 
 def allLog(msg):
-	return Logging.all.log(Logging.INFO, msg)
+	return Logging.all.log(Logging.INFO, "%s" % msg)
 
 
 def display(msg):
-	return Logging.display.log(Logging.INFO, msg)
+	return Logging.display.log(Logging.INFO, "%s" % msg)
 
 
 def displayRaw(msg):
-	Logging.all.log(Logging.INFO, msg)
+	Logging.all.log(Logging.INFO, "%s" % msg)
 	print msg,
 	sys.stdout.flush()
 	return
@@ -118,6 +128,38 @@ def displayRaw(msg):
 def displayNL():
 	print
 	return
+
+
+def logErr(err):
+	msg = ["***EXCEPTION***"]
+	if isinstance(err, Exception):
+		msg = msg + err.subErrStr()
+	msg = msg + traceErr(err)
+	errmsg = strErr(err)
+	msg.append(errmsg)
+	Logging.all.log(Logging.ERROR, "\n".join(msg))
+	error(errmsg)
+	return
+
+
+def traceErr(err):
+	msg = []
+	msg.append("Traceback (most recent call last):")
+	for entry in traceback.format_tb(sys.exc_info()[2]):
+		msg.append(entry.rstrip())
+	return msg
+
+
+def strErr(err):
+	if isinstance(err, Exception):
+		return "%s" % err
+	else:
+		str = "%s" % err
+		if not str or not len(str):
+			str = "%s" % err.__class__
+			return str.lstrip("exceptions.")
+		else:
+			return str
 
 
 def matchName(name, arg):
@@ -134,6 +176,7 @@ def matchName(name, arg):
 		return True
 	else:
 		return False
+
 
 
 # Temp files

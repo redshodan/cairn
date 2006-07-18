@@ -120,15 +120,16 @@ def run():
 			obj = func(**modInfo.args)
 		else:
 			obj = func()
-		#try:
-		if True:
+		try:
 			if not obj.run(cairn.sysdefs.__sysdef) and not Options.get("force"):
-				raise cairn.Exception("Failed to run module: " + modInfo.module.__name__)
-		#except cairn.Exception, err:
-		#	if not Options.get("force"):
-		#		raise err
-		#	else:
-		#		err.printSelf()
+				raise cairn.Exception("Failed to run module: " +
+									  modInfo.module.__name__)
+		except cairn.Exception, err:
+			if not Options.get("force"):
+				raise err
+			else:
+				err.printSelf()
+				warn("Force is set, ignoring the previous error")
 		getModuleList().next()
 	return
 
@@ -173,8 +174,7 @@ def selectPlatform(root, moduleNames, force = False):
 			verifySysDef([], [], platform)
 			return platform
 		else:
-			raise cairn.Exception("No system definitions match this platform.",
-								  cairn.ERR_SYSDEF)
+			raise cairn.Exception("No system definitions match this platform.")
 
 	# Found one, run with it
 	if len(exactMatches) == 1:
@@ -184,10 +184,9 @@ def selectPlatform(root, moduleNames, force = False):
 		cairn.error("There are mutiple system definition matchs:")
 		for module in exactMatches:
 			cairn.error("  %s" % module.__name__)
-		raise cairn.Exception("Multiple system definitions found. Please choose the correct one.", cairn.ERR_SYSDEF)
+		raise cairn.Exception("Multiple system definitions found. Please choose the correct one.")
 	elif len(exactMatches) < 0:
-		raise cairn.Exception("No system definitions match this platform.",
-							  cairn.ERR_SYSDEF)
+		raise cairn.Exception("No system definitions match this platform.")
 	return
 
 
@@ -197,7 +196,7 @@ def verifyModule(module):
 			and not cairn.Options.get("continue")):
 			raise
 	except:
-		raise cairn.Exception("Incomplete module " + str(module), cairn.ERR_SYSDEF)
+		raise cairn.Exception("Incomplete module %s" % str(module))
 	return
 
 
@@ -211,8 +210,8 @@ def verifySysDef(partialMatches, exactMatches, module):
 			and not cairn.Options.get("continue")):
 			raise
 	except:
-		raise cairn.Exception("Incomplete system definition code in module " +
-							  str(module), cairn.ERR_SYSDEF)
+		raise cairn.Exception("Incomplete system definition code in module %s" %
+							  str(module))
 	func = getattr(module, "matchPartial")
 	if func():
 		partialMatches.append(module)

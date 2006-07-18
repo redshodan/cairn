@@ -352,11 +352,9 @@ def applyInsert(moduleNames, userModule):
 		before = True
 	else:
 		before = False
-	print "insert:", userModule.lhs, userModule.rhs
 	re = makeRE(userModule)
 	for i, v in enumerate(moduleNames):
 		if re.search(v.getValue()):
-			print "insert", before
 			if before:
 				moduleNames.insert(i, userModule)
 			else:

@@ -53,8 +53,9 @@ def run(klass):
 	try:
 		inst = klass()
 		inst.run()
-	except cairn.Exception, err:
-		err.printSelf()
-		sys.exit(err.code)
+	except Exception, err:
+		# The one true catch point for all errors
+		cairn.logErr(err)
+		sys.exit(1)
 	sys.exit(0)
 	return

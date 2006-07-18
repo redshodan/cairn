@@ -107,7 +107,6 @@ class RunArchiver(object):
 					try:
 						buff = os.read(output.stdout, 512)
 					except Exception, err:
-						print "except!"
 						errStr = str(err)
 						try: os.close(readfds[0])
 						except: pass
@@ -145,14 +144,14 @@ class RunArchiver(object):
 
 
 	def displayPercent(self, percent):
-		print "\r%d%%  " % percent,
+		cairn.displayRaw("\r%d%%  " % percent)
 		sys.stdout.flush()
 		return
 
 
 	def finishDisplayPercent(self):
 		self.displayPercent(100)
-		print
+		cairn.displayNL()
 		return
 
 
@@ -164,9 +163,9 @@ class RunArchiver(object):
 
 
 	def run(self, sysdef):
-		#try:
-		archive = self.prepare(sysdef)
-		self.runTools(sysdef, archive)
-		#except Exception, err:
-		#	raise cairn.Exception("Failed while running archive tools: %s" % err)
+		try:
+			archive = self.prepare(sysdef)
+			self.runTools(sysdef, archive)
+		except Exception, err:
+			raise cairn.Exception("Failed while running archive tools: %s" % err)
 		return True
