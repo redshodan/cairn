@@ -318,6 +318,29 @@ def unIndent(self):
 	return
 
 
+def toPrettyStr(self, strs=[], indent=""):
+	isText = True
+	for node in self.childNodes:
+		if node.nodeType != node.TEXT_NODE:
+			isText = False
+			break
+	if isText:
+		str = "%s<%s>" % (indent, self.nodeName)
+		for node in self.childNodes:
+			str = str + node.data
+		str = "%s</%s>" % (str, self.nodeName)
+		strs.append(str)
+	else:
+		str = "%s<%s>" % (indent, self.nodeName)
+		strs.append(str)
+		for node in self.childNodes:
+			node.toPrettyStr(strs, indent + "  ")
+		str = "%s</%s>" % (indent, self.nodeName)
+		strs.append(str)
+	if indent == "":
+		return "\n".join(strs)
+
+
 def inject(obj, func):
 	setattr(obj, func.__name__, new.instancemethod(func, obj, obj.__class__))
 	return
@@ -348,6 +371,7 @@ def injectFuncs(elem):
 	inject(elem, getText)
 	inject(elem, setText)
 	inject(elem, unIndent)
+	inject(elem, toPrettyStr)
 	return
 
 

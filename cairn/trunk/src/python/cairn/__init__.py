@@ -63,7 +63,7 @@ def init():
 	checkPythonVer()
 	initProcessParams()
 	Logging.init()
-	debug("Python: %s" % sys.version)
+	debug("Python: %s" % sys.version.replace("\n", ""))
 	return
 
 

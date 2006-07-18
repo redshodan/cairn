@@ -112,30 +112,29 @@ class ModuleInfo(object):
 		return val.split(";")
 
 
-	def printSelf(self):
+	def __str__(self):
 		str = "ModuleSpec.ModuleInfo: type = %s opType = %s lhs = '%s' rhs = '%s' "
 		str = str + "op = '%s' regex = '%s'"
 		str = str % (typeToStr(self.type), opTypeToStr(self.opType), self.lhs,
 					 self.rhs, self.op, self.regex)
-		cairn.debug(str)
-		return
+		return str
 
 
 def parseModuleSpec(sysdef, moduleSpec, userModuleSpec, prefix):
-	cairn.debug("Parsing module spec='%s' prefix='%s'" % (moduleSpec, prefix))
+	cairn.debug("Parsing module spec: spec='%s' prefix='%s'" % (moduleSpec, prefix))
 	modules = splitModuleSpec(moduleSpec, prefix)
-	cairn.debug("system module spec:")
+	cairn.debug("System module spec:")
 	for mod in modules:
-		mod.printSelf()
+		cairn.debug("  %s" % mod)
 	if userModuleSpec:
 		userModuleNames = splitModuleSpec(userModuleSpec, None)
-		cairn.debug("user module spec:")
+		cairn.debug("User module spec:")
 		for mod in userModuleNames:
-			mod.printSelf()
+			cairn.debug("  %s" % mod)
 		applySpec(modules, userModuleNames)
-		cairn.debug("combined spec:")
+		cairn.debug("Combined spec:")
 		for mod in modules:
-			mod.printSelf()
+			cairn.debug("  %s" % mod)
 	return modules
 
 

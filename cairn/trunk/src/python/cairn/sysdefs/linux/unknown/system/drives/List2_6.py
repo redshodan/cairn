@@ -20,6 +20,7 @@ class List2_6(object):
 		cairn.log("Checking drives")
 		list = os.listdir("/sys/block")
 		list.sort()
+		cairn.debug("All drives found: %s" % " ".join(list))
 		for device in list:
 			if not Shared.matchDevice(device):
 				continue
@@ -39,16 +40,35 @@ class List2_6(object):
 					raise cairn.Exception(msg + ret[1])
 				drive.setChild("size", ret[1].strip())
 				model = self.findModel(device)
-				drive.setChild("model", model)
+				if model:
+					drive.setChild("model", model)
 		cairn.displayNL()
 		return True
 
 
+	def logSCSI(self):
+		try: os.stat("/proc/scsi/scsi")
+		except: return
+		try:
+			scsi = file("/proc/scsi/scsi")
+			contents = scsi.read()
+			cairn.debug("/proc/scsi/scsi\n%s" % contents)
+		except Exception, err:
+			cairn.verbose("Failed to read /proc/scsi/scsi: %s" %
+						  cairn.strErr(err))
+		return
+
+
 	def findModel(self, device):
-		if device[0] == "h":
-			return self.findModelIDE(device)
-		elif device[0] == "s":
-			return self.findModelSCSI(device)
+		try:
+			if device[0] == "h":
+				return self.findModelIDE(device)
+			elif device[0] == "s":
+				return self.findModelSCSI(device)
+		except Exception, err:
+			cairn.verbose("Failed to find model for %s: %s" %
+						  (device, cairn.strErr(err)))
+			return None
 
 
 	def findModelIDE(self, device):
@@ -63,6 +83,8 @@ class List2_6(object):
 		# cheesy and limited, yes I know
 		letters = "abcdefghijklmnopqrstuvwxyz"
 		scsi = file("/proc/scsi/scsi")
+		contents = scsi.read()
+		cairn.debug("/proc/scsi/scsi\n%s" % contents)
 		dev = -1
 		model = None
 		type = None

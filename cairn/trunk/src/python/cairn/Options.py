@@ -76,6 +76,12 @@ class Opt(optparse.Option):
 		return
 
 
+	def take_action(self, action, dest, opt, value, values, parser):
+		if self.info:
+			setSysInfoOpt(self.info, value)
+		return optparse.Option.take_action(self, action, dest, opt, value,
+										   values, parser)
+
 
 # Custom opt setters. Have to be here before the opts array.
 def setVerboseOpt(option, opt, value, parser):
@@ -323,8 +329,14 @@ def iterHelpLevels(level):
 	return ret
 
 
+def setSysInfoOpt(option, value):
+	__sysInfoOpts[option] = value
+	return
+
+
 def init():
-	cairn.allLog("Starting program %s" % get("program"))
+	cairn.allLog("Starting program %s: %s" %
+				 (get("program"), " ".join(sys.argv)))
 	__sysInfoOpts["archive/cmdline"] = " ".join(sys.argv)
 	buildOptMap(cliCommonOpts)
 	if get("program") == "copy":
@@ -353,6 +365,9 @@ def printAll():
 	cairn.display("Unknown options:")
 	for opt in __extraOpts:
 		cairn.display("  %s" % opt)
+	cairn.display("System Info Opts:")
+	for opt, value in __sysInfoOpts.iteritems():
+		cairn.display("  %s -> %s" % (opt, value))
 	return
 
 

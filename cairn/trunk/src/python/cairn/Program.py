@@ -3,6 +3,7 @@
 
 
 import sys
+import exceptions
 
 import cairn
 from cairn import sysdefs
@@ -55,7 +56,8 @@ def run(klass):
 		inst.run()
 	except Exception, err:
 		# The one true catch point for all errors
-		cairn.logErr(err)
-		sys.exit(1)
+		if not isinstance(err, exceptions.SystemExit):
+			cairn.logErr(err)
+			sys.exit(1)
 	sys.exit(0)
 	return

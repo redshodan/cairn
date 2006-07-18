@@ -13,6 +13,17 @@ def getClass():
 
 class Summary(object):
 
+	def logSummary(self, sysdef):
+		strs = []
+		strs.append(sysdef.info.getElem("os").toPrettyStr([]))
+		strs.append(sysdef.info.getElem("arch").toPrettyStr([]))
+		strs.append(sysdef.info.getElem("machine").toPrettyStr([]))
+		strs.append(sysdef.info.getElem("env").toPrettyStr([]))
+		strs.append(sysdef.info.getElem("hardware").toPrettyStr([]))
+		cairn.debug("System summary:\n%s" % "\n".join(strs))
+		return
+
+
 	def summary(self, sysdef):
 		if Options.get("summary"):
 			sysdef.printSummary()
@@ -43,6 +54,7 @@ class Summary(object):
 
 
 	def run(self, sysdef):
+		self.logSummary(sysdef)
 		self.summary(sysdef)
 		self.printMeta(sysdef)
 		self.dumpMeta(sysdef)

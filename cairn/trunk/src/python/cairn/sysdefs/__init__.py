@@ -94,7 +94,6 @@ def loadModuleList():
 		sysmodules = Options.get("run-modules")
 	else:
 		sysmodules = cairn.sysdefs.__program.getModuleString()
-	print "sysmod", sysmodules
 	IModule.loadList(cairn.sysdefs.__sysdef, sysmodules, userModuleSpec,
 					 modList, None)
 	cairn.sysdefs.__sysdef.moduleList = modList
@@ -108,8 +107,9 @@ def verifyModuleList():
 
 
 def run():
-	cairn.debug("Final static module list: ")
-	cairn.debug(getModuleList().toString("  ", "\n"))
+	cairn.debug("Final static module list:")
+	for name in getModuleList().toStrings():
+		cairn.debug("  %s" % name)
 	for modInfo in getModuleList().iter():
 		if haveQuit():
 			cairn.debug("Module requested quit")
@@ -130,7 +130,7 @@ def run():
 									  modInfo.module.__name__)
 		except cairn.Exception, err:
 			if not Options.get("force"):
-				raise err
+				raise cairn.Exception("", err)
 			else:
 				cairn.logErr(err)
 				cairn.warn("Force is set, ignoring the previous error")

@@ -17,7 +17,7 @@ def loadList(sysdef, moduleSpec, userModuleSpec, moduleList, prefix):
 	str = ""
 	for mod in modInfos:
 		str = "%s; %s" % (str, mod.getValue())
-	cairn.debug("Module list: %s" % str.lstrip(";"))
+	cairn.debug("Module list: %s" % str.lstrip(";").strip())
 	loadModulesByInst(sysdef, modInfos, userModuleSpec, moduleList)
 	return
 
@@ -195,8 +195,8 @@ class ModuleList(object):
 		return True
 
 
-	def toString(self, padding = ", ", eol = ""):
-		str = ""
+	def toStrings(self):
+		strs = []
 		for modInfo in self.__list:
-			str = "%s%s%s%s" % (str, padding, modInfo.module.__name__, eol)
-		return str
+			strs.append("%s" % modInfo.module.__name__)
+		return strs
