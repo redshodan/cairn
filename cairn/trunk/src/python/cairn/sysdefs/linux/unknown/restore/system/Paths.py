@@ -20,6 +20,7 @@ class Paths(tmpl.Paths):
 				 Tool("mkfs.jfs", "env/tools/mkfs.jfs", False),
 				 Tool("mkfs.reiserfs", "env/tools/mkfs.reiserfs", False),
 				 Tool("mkswap", "env/tools/mkswap", False),
-				 Tool("chroot", "env/tools/chroot", True)
+				 Tool("chroot", "env/tools/chroot", True),
+				 Tool("sync", "env/tools/sync", False)
 			   ]
 		self.__BINS = self.__BINS + bins

@@ -32,8 +32,9 @@ def findTools(sysdef, path, toolList):
 	sysdef.info.setChild("env/path", path)
 	for entry in toolList:
 		if isinstance(entry, Tool):
-			sysdef.info.setChild(entry.tag,
-								 IModule.findFileInPath(path, entry.tool))
+			found = IModule.findFileInPath(path, entry.tool)
+			if found:
+				sysdef.info.setChild(entry.tag, found)
 		else:
 			first = None
 			for tool in entry.tools:

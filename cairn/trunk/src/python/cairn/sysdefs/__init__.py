@@ -90,8 +90,12 @@ def loadProgramDefaults():
 def loadModuleList():
 	modList = IModule.ModuleList(cairn.sysdefs.__sysdef)
 	userModuleSpec = Options.get("modules")
-	IModule.loadList(cairn.sysdefs.__sysdef,
-					 cairn.sysdefs.__program.getModuleString(), userModuleSpec,
+	if Options.get("run-modules"):
+		sysmodules = Options.get("run-modules")
+	else:
+		sysmodules = cairn.sysdefs.__program.getModuleString()
+	print "sysmod", sysmodules
+	IModule.loadList(cairn.sysdefs.__sysdef, sysmodules, userModuleSpec,
 					 modList, None)
 	cairn.sysdefs.__sysdef.moduleList = modList
 	return

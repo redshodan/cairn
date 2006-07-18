@@ -7,5 +7,5 @@ from cairn import Options
 
 
 def getSubModuleString(sysdef):
-	str = "UnMountParts; "
+	str = "Sync; UnMountParts; "
 	return str
