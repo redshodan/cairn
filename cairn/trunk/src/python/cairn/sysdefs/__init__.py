@@ -128,8 +128,8 @@ def run():
 			if not Options.get("force"):
 				raise err
 			else:
-				err.printSelf()
-				warn("Force is set, ignoring the previous error")
+				cairn.logErr(err)
+				cairn.warn("Force is set, ignoring the previous error")
 		getModuleList().next()
 	return
 
