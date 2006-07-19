@@ -34,5 +34,5 @@ class UserModule(object):
 			exec objCode
 			return ret
 		except Exception, err:
-			raise cairn.Exception("Failed running user code: %s" % err)
+			raise cairn.Exception("Failed running user code", err)
 		return False

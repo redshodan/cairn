@@ -89,7 +89,7 @@ def setVerboseOpt(option, opt, value, parser):
 	if not level:
 		set("log", Logging.VERBOSE)
 		Logging.setLogLevel(Logging.VERBOSE)
-	elif (level > Logging.DEBUG):
+	elif (level > Logging.DEVEL):
 		level = level - 10
 		set("log", level)
 		Logging.setLogLevel(level)
@@ -196,7 +196,7 @@ cliCommonOpts = [
 	{"long":"log", "short":"l", "type":"string", "action":"callback",
 	 "default":Logging.INFO, "callback":setLogOpt, "level":ADVANCED | DEBUG,
  	 "help":"Set the logging level: none, error, warn, log (default), " + \
-	 "verbose, debug.", "metavar":"LEVEL"},
+	 "verbose, debug, devel.", "metavar":"LEVEL"},
 	{"long":"log-file", "type":"string", "level":ADVANCED | DEBUG,
 	 "action":"callback", "callback":setLogFileOpt,
 	 "help":"Set the file to log to."},

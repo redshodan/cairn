@@ -1,4 +1,4 @@
-"""templates.unix.load.Machine Module"""
+"""templates.unix.system.Machine Module"""
 
 
 import platform
@@ -15,8 +15,6 @@ def getClass():
 class Machine(object):
 
 	def run(self, sysdef):
-		if not platform.node() or (len(platform.node()) <= 0):
-			cairn.warn("Could not figure out hostname")
-		else:
+		if platform.node() and len(platform.node()):
 			sysdef.info.setChild("machine/name", platform.node())
 		return True

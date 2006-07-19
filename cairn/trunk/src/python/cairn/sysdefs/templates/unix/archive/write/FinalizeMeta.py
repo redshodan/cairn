@@ -38,18 +38,17 @@ class FinalizeMeta(object):
 
 
 	def readMeta(self, archive):
-		meta = []
+		meta = ""
 		while True:
 			buff = archive.read(512)
 			if not buff:
 				break
-			pos = buff.find("__ARCHIVE__")
+			meta = meta + buff
+			pos = meta.find("__ARCHIVE__")
 			if pos >= 0:
-				meta.append(buff[:pos])
-				break
-			else:
-				meta.append(buff)
-		return "".join(meta)
+				return meta[:pos]
+		raise cairn.Exception("Invalid image file.")
+		return
 
 
 	def findOffset(self, archive, meta):

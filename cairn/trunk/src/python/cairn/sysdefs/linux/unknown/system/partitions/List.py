@@ -67,6 +67,6 @@ class List(tmpl.List):
 						part.setChild("type", word[1].strip())
 						partNum = partNum + 1
 					except Exception, err:
-						raise cairn.Exception("Failed to parse sfdisk output: %s" % err)
+						raise cairn.Exception("Failed to parse sfdisk output", err)
 		cairn.verbose("\nsfdisk output: %s" % ret[1])
 		return

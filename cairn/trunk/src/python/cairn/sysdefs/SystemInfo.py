@@ -323,11 +323,13 @@ def setPad(self):
 	if length > 10240:
 		cairn.debug("XML is %d long. Not padding." % length)
 		return
-	# size adjust 5 for '<pad>'. '</pad>' is already in xml as an empty
-	# element. Plus a '\n'.
+	# size adjust 6 for '<pad>' plus a '\n'. '</pad>' is already in xml as
+	# an empty element.
 	padlen = 10240 - length - 6
 	cairn.debug("Padding XML by %d." % padlen)
-	self.setChild("pad", "*".ljust(padlen, "*"))
+	pad =  "".zfill(padlen)
+	pad = pad.replace("0", "*")
+	self.setChild("pad", pad)
 	return
 
 
@@ -354,7 +356,8 @@ def printXML(self):
 def saveToFile(self, file, pretty):
 	if pretty:
 		self.clear("pad")
-		self.doc().writexml(file, "", "  ", "\n")
+		#self.doc().writexml(file, "", "  ", "\n")
+		file.write(self.root().toPrettyStr())
 	else:
 		self.unIndent()
 		self.setPad()

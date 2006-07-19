@@ -9,12 +9,13 @@ from cairn import Version
 
 
 # Log levels
-DEBUG = logging.DEBUG
-VERBOSE = logging.DEBUG + 10
-INFO = logging.DEBUG + 20
-WARNING = logging.DEBUG + 30
-ERROR = logging.DEBUG + 40
-CRITICAL = logging.DEBUG + 50
+DEVEL = 10
+DEBUG = DEVEL + 10
+VERBOSE = DEBUG + 10
+INFO = VERBOSE + 10
+WARNING = INFO + 10
+ERROR = WARNING + 10
+CRITICAL = ERROR + 10
 
 # Log objects
 display = None
@@ -70,7 +71,7 @@ class Log(object):
 		self.defer.init()
 		self.rootHandler = None
 		self.targetHandler = None
-		self.logger.setLevel(DEBUG)
+		self.logger.setLevel(DEVEL)
 		self.logger.addHandler(self.defer)
 		return
 
@@ -102,13 +103,15 @@ class Log(object):
 
 def init():
 	# Redefine levels
+	logging.addLevelName(DEVEL, "DEVEL")
+	logging.addLevelName(DEBUG, "DEBUG")
 	logging.addLevelName(VERBOSE, "VERBOSE")
 	logging.addLevelName(INFO, "INFO")
 	logging.addLevelName(WARNING, "WARNING")
 	logging.addLevelName(ERROR, "ERROR")
 	logging.addLevelName(CRITICAL, "CRITICAL")
 
-	# all logger, always captures everything
+	# all logger, always captures everything (except for devel, by default)
 	cairn.Logging.all = Log("all", DEBUG,
 							"%(asctime)s %(name)s %(levelname)s %(message)s",
 							"%m-%d %H:%M")
@@ -139,6 +142,8 @@ def setLogLevel(level):
 	cairn.Logging.display.setLevel(level)
 	if level > cairn.Logging.error.level:
 		cairn.Logging.error.setLevel(level)
+	if level == DEVEL:
+		cairn.Logging.all.setLevel(level)
 	return
 
 
@@ -155,5 +160,7 @@ def strToLogLevel(str):
 		return VERBOSE
 	elif cairn.matchName("debug", str):
 		return DEBUG
+	elif cairn.matchName("devel", str):
+		return DEVEL
 	else:
 		return None

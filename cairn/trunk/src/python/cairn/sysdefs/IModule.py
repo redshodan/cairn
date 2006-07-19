@@ -17,7 +17,7 @@ def loadList(sysdef, moduleSpec, userModuleSpec, moduleList, prefix):
 	str = ""
 	for mod in modInfos:
 		str = "%s; %s" % (str, mod.getValue())
-	cairn.debug("Module list: %s" % str.lstrip(";").strip())
+	cairn.devel("Module list: %s" % str.lstrip(";").strip())
 	loadModulesByInst(sysdef, modInfos, userModuleSpec, moduleList)
 	return
 
@@ -74,7 +74,7 @@ def checkSubModule(sysdef, info, userModuleSpec, moduleList):
 	except AttributeError:
 		pass
 	subModules = ModuleList(sysdef)
-	cairn.debug("Found sub-module %s: %s" % (info.name, moduleNames))
+	cairn.devel("Found sub-module %s: %s" % (info.name, moduleNames))
 	loadList(sysdef, moduleNames, userModuleSpec, subModules, info.name)
 	for subModule in subModules.iter():
 		moduleList.append(subModule)
@@ -91,14 +91,14 @@ def loadModulesByName(root, moduleNames, modules):
 
 
 def loadAModule(module):
-	cairn.debug("  Looking for %s" % module)
+	cairn.devel("  Looking for %s" % module)
 	try:
 		__import__(module)
 		try:
 			getattr(sys.modules[module], "empty")
 			return None
 		except:
-			cairn.debug("Found %s" % module)
+			cairn.devel("Found %s" % module)
 			return sys.modules[module]
 	except ImportError, err:
 		return None

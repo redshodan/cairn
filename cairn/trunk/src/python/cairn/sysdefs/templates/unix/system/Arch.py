@@ -1,4 +1,4 @@
-"""Generic unix.load.Arch Module"""
+"""templates.unix.system.Arch Module"""
 
 
 import os

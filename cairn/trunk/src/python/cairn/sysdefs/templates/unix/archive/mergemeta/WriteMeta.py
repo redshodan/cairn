@@ -22,7 +22,7 @@ class WriteMeta(object):
 			archive = file(filename, "r+")
 			return archive
 		except Exception, err:
-			raise cairn.Exception("Failed to open archive file: %s" % err)
+			raise cairn.Exception("Failed to open archive file", err)
 		return
 
 
@@ -31,7 +31,7 @@ class WriteMeta(object):
 			sysdef.readInfo.saveToFile(archive, False)
 			archive.close()
 		except Exception, err:
-			raise cairn.Exception("Failed to write metadata file: %s" % err)
+			raise cairn.Exception("Failed to write metadata file", err)
 		return
 
 

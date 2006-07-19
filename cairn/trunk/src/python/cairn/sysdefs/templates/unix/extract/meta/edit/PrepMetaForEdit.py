@@ -22,7 +22,7 @@ class PrepMetaForEdit(object):
 			metaFile = file(meta, "w+")
 			return metaFile
 		except Exception, err:
-			raise cairn.Exception("Failed to open metadata file: %s" % err)
+			raise cairn.Exception("Failed to open metadata file", err)
 		return
 
 
@@ -31,7 +31,7 @@ class PrepMetaForEdit(object):
 			sysdef.readInfo.saveToFile(metaFile, True)
 			metaFile.close()
 		except Exception, err:
-			raise cairn.Exception("Failed to write metadata file: %s" % err)
+			raise cairn.Exception("Failed to write metadata file", err)
 		return
 
 

@@ -167,5 +167,5 @@ class RunArchiver(object):
 			archive = self.prepare(sysdef)
 			self.runTools(sysdef, archive)
 		except Exception, err:
-			raise cairn.Exception("Failed while running archive tools: %s" % err)
+			raise cairn.Exception("Failed while running archive tools", err)
 		return True

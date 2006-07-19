@@ -105,6 +105,9 @@ def verbose(msg, *args):
 def debug(msg, *args):
 	return Logging.display.log(Logging.DEBUG, "%s" % msg)
 
+def devel(msg, *args):
+	return Logging.display.log(Logging.DEVEL, "%s" % msg)
+
 
 def log(msg, *args):
 	return Logging.display.log(Logging.INFO, "%s" % msg)

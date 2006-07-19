@@ -76,8 +76,7 @@ def loadPlatform():
 	if darwin.matchPlatform():
 		cairn.sysdefs.__sysdef = darwin.loadPlatform()
 		return
-	raise cairn.Exception("Unable to determine the system definition for this machine.",
-						  cairn.ERR_SYSDEF)
+	raise cairn.Exception("Unable to determine the system definition for this machine.")
 	return
 
 

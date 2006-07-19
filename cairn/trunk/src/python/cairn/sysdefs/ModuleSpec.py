@@ -121,20 +121,20 @@ class ModuleInfo(object):
 
 
 def parseModuleSpec(sysdef, moduleSpec, userModuleSpec, prefix):
-	cairn.debug("Parsing module spec: spec='%s' prefix='%s'" % (moduleSpec, prefix))
+	cairn.devel("Parsing module spec: spec='%s' prefix='%s'" % (moduleSpec, prefix))
 	modules = splitModuleSpec(moduleSpec, prefix)
-	cairn.debug("System module spec:")
+	cairn.devel("System module spec:")
 	for mod in modules:
-		cairn.debug("  %s" % mod)
+		cairn.devel("  %s" % mod)
 	if userModuleSpec:
 		userModuleNames = splitModuleSpec(userModuleSpec, None)
-		cairn.debug("User module spec:")
+		cairn.devel("User module spec:")
 		for mod in userModuleNames:
-			cairn.debug("  %s" % mod)
+			cairn.devel("  %s" % mod)
 		applySpec(modules, userModuleNames)
-		cairn.debug("Combined spec:")
+		cairn.devel("Combined spec:")
 		for mod in modules:
-			cairn.debug("  %s" % mod)
+			cairn.devel("  %s" % mod)
 	return modules
 
 

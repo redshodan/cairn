@@ -27,7 +27,7 @@ class WriteMeta(object):
 			metaFile = file(metaFileName, "w+")
 			return metaFile
 		except Exception, err:
-			raise cairn.Exception("Failed to open metadata file: %s" % err)
+			raise cairn.Exception("Failed to open metadata file", err)
 		return
 
 
@@ -36,7 +36,7 @@ class WriteMeta(object):
 			sysdef.info.saveToFile(metaFile, False)
 			metaFile.close()
 		except Exception, err:
-			raise cairn.Exception("Failed to write metadata file: %s" % err)
+			raise cairn.Exception("Failed to write metadata file", err)
 		return
 
 
