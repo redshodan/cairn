@@ -355,14 +355,17 @@ def printXML(self):
 
 def saveToFile(self, file, pretty):
 	if pretty:
-		self.clear("pad")
-		#self.doc().writexml(file, "", "  ", "\n")
-		file.write(self.root().toPrettyStr())
+		file.write(self.prettyStr())
 	else:
 		self.unIndent()
 		self.setPad()
 		file.write(self.doc().toxml())
 	return
+
+
+def prettyStr(self):
+	self.clear("pad")
+	return self.root().toPrettyStr()
 
 
 def printSummary(self):
@@ -429,6 +432,7 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, verify)
 	DOMHelper.inject(doc, printXML)
 	DOMHelper.inject(doc, saveToFile)
+	DOMHelper.inject(doc, prettyStr)
 	DOMHelper.inject(doc, printSummary)
 	DOMHelper.inject(doc, printDrives)
 	return

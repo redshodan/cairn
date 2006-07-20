@@ -7,7 +7,7 @@ from cairn import Options
 
 
 def getSubModuleString(sysdef):
-	str = "Prep; Tools; Excludes; %s; PrepMeta; WriteMeta; RunArchiver; FinalizeMeta;"
+	str = "Prep; Tools; Excludes; %s; PrepMeta; LogMeta; WriteMeta; RunArchiver; FinalizeMeta;"
 	if Options.get("quick"):
 		str = str % "EstimateSizeQuick"
 	else:

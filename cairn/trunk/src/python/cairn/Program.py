@@ -57,7 +57,6 @@ def run(klass):
 	except Exception, err:
 		# The one true catch point for all errors
 		if not isinstance(err, exceptions.SystemExit):
-			cairn.logErr(err)
-			sys.exit(1)
+			cairn.handleException(err)
 	sys.exit(0)
 	return

@@ -134,6 +134,15 @@ def displayNL():
 	return
 
 
+def handleException(err):
+	Logging.all.log(Logging.ERROR, "***A FATAL EXCEPTION HAPPENED***")
+	Logging.all.log(Logging.ERROR, "***META DUMP***\n%s" % \
+					sysdefs.getInfo().prettyStr())
+	logErr(err)
+	sys.exit(1)
+	return
+
+
 def logErr(err):
 	msg = ["***EXCEPTION***"]
 	if isinstance(err, Exception):
