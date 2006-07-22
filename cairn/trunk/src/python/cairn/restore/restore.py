@@ -23,6 +23,6 @@ class Restore(Program.Program):
 
 
 
-def run():
-	Program.run(Restore)
+def run(libname):
+	Program.run(Restore, libname)
 	return

@@ -20,6 +20,6 @@ class Extract(Program.Program):
 		return True
 
 
-def run():
-	Program.run(Extract)
+def run(libname):
+	Program.run(Extract, libname)
 	return

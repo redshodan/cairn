@@ -50,7 +50,7 @@ class Program(object):
 		return
 
 
-def run(klass):
+def run(klass, libname):
 	try:
 		inst = klass()
 		inst.run()

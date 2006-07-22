@@ -17,6 +17,6 @@ class Copy(Program.Program):
 
 
 
-def run():
-	Program.run(Copy)
+def run(libname):
+	Program.run(Copy, libname)
 	return

@@ -194,10 +194,17 @@ def matchName(name, arg):
 
 # Temp files
 def mktemp(filename):
-	dir = Options.get("tmpdir")
-	file = tempfile.mkstemp("", filename, dir)
+	tmpdir = Options.get("tmpdir")
+	file = tempfile.mkstemp("", filename, tmpdir)
 	addFileForCleanup(file[1])
 	return file
+
+
+def mkdtemp(filename):
+	tmpdir = Options.get("tmpdir")
+	dir = tempfile.mkdtemp("", filename, tmpdir)
+	addFileForCleanup(dir)
+	return dir
 
 
 # Exit and cleanup

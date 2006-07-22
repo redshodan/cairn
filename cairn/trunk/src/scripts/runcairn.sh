@@ -88,13 +88,13 @@ elif cmdname.endswith("extract"):
 
 if action == "copy":
 	from cairn.copy import copy
-	copy.run()
+	copy.run(libname)
 elif action == "restore":
 	from cairn.restore import restore
-	restore.run()
+	restore.run(libname)
 elif action == "extract":
 	from cairn.extract import extract
-	extract.run()
+	extract.run(libname)
 else:
 	if action != "help":
 		print "Invalid action"
