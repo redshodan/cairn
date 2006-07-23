@@ -17,6 +17,7 @@ $(BUILD_LIB)/cairn.zip: $(PYTHON_FILES) clean
 	tar --exclude .svn -cf - $(PYDIRS) | tar -C $(BUILD_SRC) -xf -
 	sed -e 's/^SVNREV = .*/SVNREV = $(SVNREV)/' $(BUILD_SRC)/cairn/Version.py > $(BUILD_SRC)/cairn/Version.py.tmp
 	mv -f $(BUILD_SRC)/cairn/Version.py.tmp $(BUILD_SRC)/cairn/Version.py
+	cp $(BUILD_LIB)/pylibparted.so $(BUILD_SRC)/thirdparty
 	(cd $(BUILD_SRC); zip -qr ../lib/cairn.zip $(PYDIRS))
 
 $(BUILD_BIN)/cairn: $(BUILD_LIB)/cairn.zip $(SCRIPTS)/runcairn.sh
