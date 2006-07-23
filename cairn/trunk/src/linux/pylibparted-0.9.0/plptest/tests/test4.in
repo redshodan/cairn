@@ -1,0 +1,2 @@
+device /dev/hda
+delpart 1

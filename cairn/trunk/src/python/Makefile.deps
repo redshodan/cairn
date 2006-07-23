@@ -1,0 +1,2 @@
+#### Targets dependencies
+$(BUILD_BIN)/cairn: python $(PYTHON_FILES) scripts/runcairn.sh

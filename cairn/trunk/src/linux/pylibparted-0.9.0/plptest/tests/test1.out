@@ -1,0 +1,6 @@
+Disk geometry for /dev/hda: 0.000-38204.578 megabytes
+Disk label type: msdos
+Minor    Start       End     Type      Filesystem  Flags
+1          0.031     54.909  primary   linux-swap  
+                                                                          Information: Don't forget to update /etc/fstab, if necessary.
+

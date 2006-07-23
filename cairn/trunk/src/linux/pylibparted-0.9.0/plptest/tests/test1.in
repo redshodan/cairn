@@ -1,0 +1,2 @@
+device /dev/hda
+resize 1 63 104422
