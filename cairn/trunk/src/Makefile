@@ -9,8 +9,9 @@ include $(TOPDIR)/Makefile.vars
 # Vars for auto dir targs
 ifeq ($(OS), Linux)
 include linux/Makefile.vars
+include linux/Makefile.auto
 endif
-include python/Makefile.vars
+include python/Makefile.auto
 
 
 all: $(DIR_TARGS)

@@ -15,9 +15,9 @@ done
 cd ${TOP}
 
 # Adjust a few special cases
-if [ -d "${TOP}/misc" ]; then
-	cp ${TOP}/misc/svnignore /tmp/svnignore-tmp
-	echo build >> /tmp/svnignore-tmp
-	svn propset svn:ignore -F /tmp/svnignore-tmp .
-	rm /tmp/svnignore-tmp
-fi
+#if [ -d "${TOP}/misc" ]; then
+#	cp ${TOP}/misc/svnignore /tmp/svnignore-tmp
+#	echo build >> /tmp/svnignore-tmp
+#	svn propset svn:ignore -F /tmp/svnignore-tmp .
+#	rm /tmp/svnignore-tmp
+#fi

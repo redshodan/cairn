@@ -1,1 +1,2 @@
-$(PARTED)/build: $(PARTED)
+$(BUILD_LIB)/pylibparted.so: linux
+
