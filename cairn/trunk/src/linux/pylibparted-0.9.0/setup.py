@@ -18,6 +18,8 @@
 # Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301, USA
 
 from distutils.core import setup, Extension
+
+
 setup(name='pylibparted', version='0.9.0',
       author='Ulisses Furquim', author_email='ulissesf@gmail.com',
       url='http://pylibparted.tigris.org/',
@@ -27,7 +29,8 @@ setup(name='pylibparted', version='0.9.0',
 				  'plppedgeometry.c', 'plppedfilesystemtype.c',
 				  'plppedfilesystem.c', 'plppedpartition.c',
 				  'plppedalignment.c', 'plppedconstraint.c',
-                                  'plppedexception.c', 'plppedtimer.c'],
-		  extra_compile_args=['-g', '-Wall', '-Bstatic -lparted -Bdynamic'],
-		  libraries=['dl', 'parted'])
+								  'plppedexception.c', 'plppedtimer.c'],
+				  extra_compile_args=['-Wall', '-I../../../build/include'],
+				  extra_link_args=['../../../build/lib/libparted.a'],
+				  libraries=['dl', 'uuid'])
       ])

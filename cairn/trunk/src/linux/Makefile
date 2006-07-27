@@ -7,26 +7,42 @@ include $(TOPDIR)/Makefile.vars
 
 include Makefile.vars
 
-LIBS=$(BUILD_LIB)/pylibparted.so
+LIBS=$(BUILD_LIB)/libparted.a $(BUILD_LIB)/pylibparted.so
 
 #### Auto dir targs
-DIRS=$(PARTED)
-$(PARTED)=$(PARTED)/build
+DIRS=$(PARTED) $(PYPARTED)
+$(PYPARTED)=$(PYPARTED)/build
 
 
-all: $(DIR_TARGS) $(LIBS)
+all: $(LIBS)
 
 
 #### pylibparted
-$(PARTED)/build/lib*/pylibparted.so: $(PARTED)
-$(BUILD_LIB)/pylibparted.so: $(PARTED)/build/lib*/pylibparted.so
+$(PYPARTED):
+	make -C $(PYPARTED)
+
+$(PYPARTED)/build/lib*/pylibparted.so: $(BUILD_LIB)/libparted.a $(PYPARTED)
+
+$(BUILD_LIB)/pylibparted.so: $(PYPARTED)/build/lib*/pylibparted.so
 	cp $< $@
 
-$(PARTED)/build: $(PARTED)
-$(BUILD_LIB)/pylibparted.so: $(PARTED)
+
+$(PYPARTED)/build: $(PYPARTED)
+$(BUILD_LIB)/pylibparted.so: $(PYPARTED)
+
+#### libparted
+$(PARTED)/Makefile:
+	(cd $(PARTED); ./configure --prefix=`pwd`/../$(BUILD) --without-readline --disable-dependency-tracking --enable-shared=no --disable-nls)
+
+$(BUILD_LIB)/libparted.a: $(PARTED)/Makefile
+	make -C $(PARTED)
+	make -C $(PARTED) install
 
 clean:
-	rm $(LIBS)
+	for a in $(DIRS); do make -C $$a distclean; make -C $$a clean; done
+	rm -f $(LIBS)
 
 
 include $(TOPDIR)/Makefile.rules
+
+.PHONY: $(PYPARTED)

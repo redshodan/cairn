@@ -12,10 +12,11 @@ from cairn import Options
 import cairn.sysdefs.IModule
 
 
-__sysdef = object()
+__sysdef = None
 __userCfg = None
 __quit = False
 __program = None
+
 
 def getDef():
 	return __sysdef
@@ -27,6 +28,10 @@ def getInfo():
 
 def getModuleList():
 	return __sysdef.moduleList
+
+
+def getProgram():
+	return cairn.sysdefs.__program
 
 
 def setProgram(program):
@@ -68,15 +73,19 @@ def loadPlatform():
 		cairn.sysdefs.__sysdef = selectPlatform(root, [words[len(words)-1]], True)
 		return
 
-	import cairn.sysdefs.linux
-	if linux.matchPlatform():
-		cairn.sysdefs.__sysdef = linux.loadPlatform()
-		return
-	import cairn.sysdefs.darwin
-	if darwin.matchPlatform():
-		cairn.sysdefs.__sysdef = darwin.loadPlatform()
-		return
-	raise cairn.Exception("Unable to determine the system definition for this machine.")
+	if not cairn.sysdefs.__sysdef:
+		import cairn.sysdefs.linux
+		if linux.matchPlatform():
+			cairn.sysdefs.__sysdef = linux.loadPlatform()
+	if not cairn.sysdefs.__sysdef:
+		import cairn.sysdefs.darwin
+		if darwin.matchPlatform():
+			cairn.sysdefs.__sysdef = darwin.loadPlatform()
+	if not cairn.sysdefs.__sysdef:
+		raise cairn.Exception("Unable to determine the system definition for this machine.")
+
+	if not cairn.sysdefs.__sysdef.setup():
+		raise cairn.Exception("Unable to setup the system definition.")
 	return
 
 

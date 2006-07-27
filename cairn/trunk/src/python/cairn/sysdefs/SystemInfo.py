@@ -70,7 +70,19 @@ Hardware
 	   <empty/>
 	   <device/>
 	   <mapped-device/>
+	   <type/>
 	   <size/>
+	   <sector-size/>
+	   <bios-geom>
+	     <c/>
+		 <h/>
+		 <s/>
+       </bios-geom>
+	   <hw-geom>
+	     <c/>
+		 <h/>
+		 <s/>
+       </hw-geom>
 	   <os-driver/>
 	   <part-tool-cfg/>
 	   <model/>
@@ -80,8 +92,10 @@ Hardware
 		 <size/>
 	     <label/>
 		 <type/>
+		 <active/>
 		 <fs-type/>
 		 <mount/>
+		 <flags></flags>
 		 <fs-space>
 		   <total/>
 		   <used/>
@@ -255,10 +269,20 @@ def createDriveElem(self, name):
 	elem = drive.createElem("empty")
 	elem = drive.createElem("device")
 	elem = drive.createElem("mapped-device")
+	elem = drive.createElem("type")
 	elem = drive.createElem("size")
+	elem = drive.createElem("sector-size")
 	elem = drive.createElem("os-driver")
 	elem = drive.createElem("model")
 	return drive
+
+
+def createDriveGeomElem(self, drive, name, c, h, s):
+	geom = drive.createElem(name)
+	elem = geom.createElem("c", c)
+	elem = geom.createElem("h", h)
+	elem = geom.createElem("s", s)
+	return geom
 
 
 def createPartitionElem(self, drive, name):
@@ -269,8 +293,10 @@ def createPartitionElem(self, drive, name):
 	elem = part.createElem("size")
 	elem = part.createElem("label")
 	elem = part.createElem("type")
+	elem = part.createElem("active")
 	elem = part.createElem("fs-type")
 	elem = part.createElem("mount")
+	elem = part.createElem("flags")
 	return part
 
 
@@ -423,6 +449,7 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, createEnvElem)
 	DOMHelper.inject(doc, createHardwareElem)
 	DOMHelper.inject(doc, createDriveElem)
+	DOMHelper.inject(doc, createDriveGeomElem)
 	DOMHelper.inject(doc, createPartitionElem)
 	DOMHelper.inject(doc, createPartitionFSSpaceElem)
 	DOMHelper.inject(doc, createArchiveElem)

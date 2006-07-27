@@ -3,7 +3,6 @@
 
 import os
 import os.path
-import commands
 import re
 import stat
 
@@ -39,8 +38,8 @@ class MountParts(tmpl.MountParts):
 		except:
 			pass
 		cairn.verbose("Making mount directory: %s" % dir)
-		ret = commands.getstatusoutput("mkdir -p %s" % dir)
-		if ret[0] != 0:
-			raise cairn.Exception("Failed to create mount dir %s: %s" %
-								  (dir, ret[1]))
+		try:
+			os.makedirs(dir)
+		except Exception, err:
+			raise cairn.Exception("Failed to create mount dir %s:" % dir, err)
 		return

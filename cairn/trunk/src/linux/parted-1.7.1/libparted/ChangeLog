@@ -1,0 +1,94 @@
+2006-05-25  Leslie P. Polzer <polzer@gnu.org>
+	* fs/hfs/hfs.c (hfs_resize, hfsplus_resize): make hgee/hgms assertion
+	only when debugging is turned on.
+
+	* fs/ext2/ext2.c (ext2_open): removed call to ext2_determine_itoffset;
+	also moving it from this file to ext2_resize.c.
+	* fs/ext2/ext2_resize.c (ext2_resize): added call to
+	ext2_determine_itoffset and show a warning if not successful.
+
+ 	* labels/mac.c (strncasestr): search the whole type string for
+        'driver', not just the strlen of 'driver'. This fixes the detection of
+        driver partitions on mac disklabels.
+
+	* labels/mac.c (mac_partition_get_flag): added 'set 2 raid on/off'
+	capability for mac labels.
+	
+	* labels/mac.c (struct MacRawDisk, struct MacPartitionData): fixed
+	data types of some fields (do not need to be 64 bit wide) and updated
+	meaning of reserved spaces.
+
+	* labels/mac.c (struct MacRawDisk, struct MacDeviceDriver, struct
+	MacDiskData, mac_alloc, _rawpart_has_driver, _rawpart_analyse,
+	mac_read, _pad_raw_part, _generate_raw_part, write_block_zero,
+	mac_write, mac_partition_new): fixes removal of driver partition;
+	this would previously crash MacOS 9.
+
+2006-05-15  Leslie P. Polzer <polzer@gnu.org>
+	* fs/ext2/ext2_block_relocator.c (ext2_block_relocator_mark):
+	turned exception into warning and let it provide additional info.
+
+2006-04-15  Leslie P. Polzer <polzer@gnu.org>
+	* labels/gpt.c (_parse_header): corrected endianness issue (one
+	conversion too much)
+
+2006-04-06  Jonathan duSaint <jon@rockgeeks.net>
+	* unit.c (ped_unit_get_size, parse_unit_suffix): added support for
+	binary units.
+
+2006-04-06  Leslie P. Polzer <polzer@gnu.org>
+	* arch/linux.c (_device_set_sector_size): handle sector size for
+	ioctl and printf correctly as "long long".
+
+	* labels/dvh.c (dvh_probe), labels/bsd.c (bsd_probe), labels/mac.c
+	(mac_probe), labels/pc98.c (pc98_probe), labels/sun.c (sun_probe),
+	labels/dos.c (dos_probe), labels/loop.c (loop_probe): immediately
+	return negative probe when the device's logical sector size is not
+	equal to 512.
+
+2006-03-30  Leslie P. Polzer <polzer@gnu.org>
+	* fs/reiserfs/reiserfs.c: added missing block size initializer.
+
+2006-03-27  Leslie P. Polzer <polzer@gnu.org>
+	* arch/linux.c (linux_probe_all): probe standard devices before
+	/sys/block and /proc/partitions.
+
+	* labels/gpt.c: added Apple GUID support.
+
+2006-03-08  Leslie P. Polzer <polzer@gnu.org>
+	* blkpg.h: moved to arch/.
+
+2006-03-03  Leslie P. Polzer <polzer@gnu.org>
+	* labels/Makefile.am (liblabels_la_SOURCES): added "dvh.h".
+
+	* Makefile.am (libparted_la_SOURCES): fixed @OS@.c location.
+
+	* arch/linux.c (_probe_standard_devices): probe IDE devices before
+	SCSI.
+
+2006-02-25  Leslie P. Polzer <polzer@gnu.org>
+	* labels/gpt.c (_read_header, gpt_read): fixed memory leaks.
+
+2006-02-23  Leslie P. Polzer <polzer@gnu.org>
+	* labels/gpt.c (pth_free): fixed illegal memory deallocation by
+	freeing reserved space before parent.
+
+	* labels/gpt.c (pth_crc32): calculate crc32 from static size.
+
+	* labels/gpt.c (pth_free): free reserved field before freeing parent
+	data structure.
+
+	* labels/gpt.c (pth_crc32): calculate crc32 from static size.
+
+2006-02-20  Leslie P. Polzer <polzer@gnu.org>
+	* device.c: added ped_device_get_constraint. 
+
+
+-----------------------------------------------------------------------------
+
+This file is part of GNU Parted
+Copyright (C) 1999 - 2006 Free Software Foundation Inc.
+
+This file may be modified and/or distributed without restriction.  This is
+not an invitation to misrepresent the history of GNU Parted.
+

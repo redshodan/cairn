@@ -13,8 +13,9 @@ import cairn.Options as Options
 
 class Program(object):
 
-	def __init__(self):
+	def __init__(self, libname):
 		self._defaults = {}
+		self._libname = libname
 		return
 
 
@@ -28,6 +29,10 @@ class Program(object):
 
 	def getModuleString(self):
 		return ""
+
+
+	def getLibname(self):
+		return self._libname
 
 
 	def name(self):
@@ -52,7 +57,7 @@ class Program(object):
 
 def run(klass, libname):
 	try:
-		inst = klass()
+		inst = klass(libname)
 		inst.run()
 	except Exception, err:
 		# The one true catch point for all errors

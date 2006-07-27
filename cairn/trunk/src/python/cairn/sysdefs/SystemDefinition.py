@@ -13,6 +13,7 @@ from cairn.sysdefs import IModule
 
 
 class SystemDefinition(object):
+
 	def __init__(self):
 		self.info = SystemInfo.createNew()
 		self.readInfo = None
@@ -51,3 +52,7 @@ class SystemDefinition(object):
 	def printMeta(self):
 		self.info.printXML()
 		return
+
+
+	def setup(self):
+		return True

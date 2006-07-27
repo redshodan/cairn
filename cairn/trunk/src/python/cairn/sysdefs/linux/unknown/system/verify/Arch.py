@@ -14,6 +14,7 @@ def getClass():
 class Arch(object):
 
 	def run(self, sysdef):
-		if sysdef.info.get("arch/name") != "i386":
-			raise cairn.exception("Invalid architecture %s detected. Currently only i386 is correctly supported." % sysdef.info.get("arch/name"))
+		if ((sysdef.info.get("arch/name") != "i386") and
+			(sysdef.info.get("arch/name") != "ppc")):
+			raise cairn.Exception("Invalid architecture %s detected. Currently only i386 and ppc are correctly supported." % sysdef.info.get("arch/name"))
 		return True

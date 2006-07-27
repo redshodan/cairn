@@ -19,6 +19,8 @@ $(BUILD_LIB)/cairn.zip: $(PYTHON_FILES) clean
 	mv -f $(BUILD_SRC)/cairn/Version.py.tmp $(BUILD_SRC)/cairn/Version.py
 ifeq ($(OS), Linux)
 	cp $(BUILD_LIB)/pylibparted.so $(BUILD_SRC)/thirdparty
+#	cp $(BUILD_LIB)/libuuid* $(BUILD_SRC)/thirdparty
+#	cp $(BUILD_LIB)/libparted* $(BUILD_SRC)/thirdparty
 endif
 	(cd $(BUILD_SRC); zip -qr ../lib/cairn.zip $(PYDIRS))
 
