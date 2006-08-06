@@ -16,7 +16,7 @@ def getClass():
 class Paths(tmpl.Paths):
 	def __init__(self):
 		self.__PATH = "/sbin:/usr/sbin:/bin:/usr/bin"
-		self.__BINS = [ Tool("sfdisk", "env/tools/part", True),
+		self.__BINS = [ #Tool("sfdisk", "env/tools/part", True),
 		                Tool("mount", "env/tools/mount", True),
 		                Tool("umount", "env/tools/unmount", True),
 						ToolGroup("env/archive-tool", "env/archive-tool-user",

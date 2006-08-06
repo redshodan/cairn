@@ -9,7 +9,7 @@ from cairn import Program
 class Copy(Program.Program):
 
 	def getModuleString(self):
-		return "system; copy;"
+		return "ui; system; copy; ui.Shutdown"
 
 
 	def name(self):

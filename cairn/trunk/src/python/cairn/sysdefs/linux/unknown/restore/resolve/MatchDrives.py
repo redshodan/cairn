@@ -44,6 +44,16 @@ class MatchDrives(tmpl.MatchDrives):
 				partial = True
 				if not ((sysDrives[index].get("model") ==
 						 imgDrives[index].get("model")) and
+						(sysDrives[index].get("sector-size") ==
+						 imgDrives[index].get("sector-size")) and
+						self.compareGeom(sysDrives[index].getElem("bios-geom"),
+										 imgDrives[index].
+										     getElem("bios-geom")) and
+						self.compareGeom(sysDrives[index].getElem("hw-geom"),
+										 imgDrives[index].
+										     getElem("hw-geom")) and
+						(sysDrives[index].get("type") ==
+						 imgDrives[index].get("type")) and
 						(sysDrives[index].get("size") ==
 						 imgDrives[index].get("size"))):
 					perfect = False
@@ -60,6 +70,15 @@ class MatchDrives(tmpl.MatchDrives):
 			return False
 		else:
 			sysdef.readInfo.setChild("hardware/drive-match", "none")
+			return False
+
+
+	def compareGeom(self, sysGeom, imgGeom):
+		if ((sysGeom.get("c") == imgGeom.get("c")) and
+			(sysGeom.get("h") == imgGeom.get("h")) and
+			(sysGeom.get("s") == imgGeom.get("s"))):
+			return True
+		else:
 			return False
 
 

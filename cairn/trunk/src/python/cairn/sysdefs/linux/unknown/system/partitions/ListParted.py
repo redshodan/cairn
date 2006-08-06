@@ -1,4 +1,4 @@
-"""linux.unknown.system.partitions.List Module"""
+"""linux.unknown.system.partitions.ListParted Module"""
 
 
 import commands
@@ -8,43 +8,39 @@ import os
 import pylibparted as parted
 
 import cairn
-import cairn.sysdefs.templates.unix.system.partitions.List as tmpl
 
 
 def getClass():
-	return List()
+	return ListParted()
 
 
-#
-# For PC's it seems the smallest unit of space is a sector which is 512 bytes in
-# size. Work with that assumption.
-#
-
-
-class List(tmpl.List):
+class ListParted(object):
 
 	def run(self, sysdef):
 		cairn.log("Checking partitions")
 		for drive in sysdef.info.getElems("hardware/drive"):
 			cairn.displayRaw("  %s:" % drive.get("device").lstrip("/dev/"))
 			device = drive.get("device")
-			pdev = parted.PedDevice(device)
-			pdisk = pdev.diskNew()
-			pparts = pdisk.getPartitions()
-			foundPart = False
-			for ppart in pparts:
-				type = ppart.getType()
-				if ((type == parted.PARTITION_NORMAL) or
-					(type == parted.PARTITION_LOGICAL) or
-					(type == parted.PARTITION_LVM) or
-					(type == parted.PARTITION_LOGICAL)):
-					foundPart = True
-					pdev = ppart.getPath()
-					cairn.displayRaw(" " + pdev.lstrip("/dev/"))
-					self.definePartition(sysdef, drive, ppart)
-			if not foundPart:
-				drive.setChild("empty", "True")
-				cairn.displayRaw(" No partitions found")
+			try:
+				pdev = parted.PedDevice(device)
+				pdisk = pdev.diskNew()
+				pparts = pdisk.getPartitions()
+				foundPart = False
+				for ppart in pparts:
+					type = ppart.getType()
+					if ((type == parted.PARTITION_NORMAL) or
+						(type == parted.PARTITION_LOGICAL) or
+						(type == parted.PARTITION_LVM) or
+						(type == parted.PARTITION_LOGICAL)):
+						foundPart = True
+						pdev = ppart.getPath()
+						cairn.displayRaw(" " + pdev.lstrip("/dev/"))
+						self.definePartition(sysdef, drive, ppart)
+				if not foundPart:
+					drive.setChild("empty", "True")
+					cairn.displayRaw(" No partitions found")
+			except Exception, err:
+				raise cairn.Exception("Failed to partition drive", err)
 			cairn.displayNL()
 		return True
 

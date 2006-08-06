@@ -23,6 +23,7 @@ ERR_SYSDEF = 3
 ERR_BINARY = 4
 
 __file_cleanup = []
+__uiCleanUp = None
 
 
 
@@ -214,7 +215,19 @@ def addFileForCleanup(file):
 	return
 
 
+def setUICleanUp(func):
+	global __uiCleanUp
+	__uiCleanUp = func
+	return
+
+
 def cairnAtExit():
+	global __uiCleanUp
+	if __uiCleanUp:
+		try:
+			__uiCleanUp()
+		except Exception, err:
+			logErr(err)
 	if Options.get("no-cleanup"):
 		return
 	for file in __file_cleanup:

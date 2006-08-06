@@ -226,6 +226,8 @@ cliCommonOpts = [
  	 "help":"Print a summary of the discovered environment information and exit."},
  	{"long":"sysdef", "type":"string", "level":EXPERT,
  	 "help":"Manually choose the system definition eg: linux.redhat"},
+	{"long":"ui", "type":"string", "level":ADVANCED, "default":"none",
+ 	 "help":"Manually choose the user interface: curses, none"},
 	{"long":"verbose", "short":"v", "action":"callback",
 	 "default":False, "callback":setVerboseOpt,
  	 "help":"Verbose operation. Multiple flags will increase verboseness."},

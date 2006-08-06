@@ -25,6 +25,7 @@ $(PYPARTED)/build/lib*/pylibparted.so: $(BUILD_LIB)/libparted.a $(PYPARTED)
 
 $(BUILD_LIB)/pylibparted.so: $(PYPARTED)/build/lib*/pylibparted.so
 	cp $< $@
+	strip --strip-debug --strip-unneeded $@
 
 
 $(PYPARTED)/build: $(PYPARTED)
