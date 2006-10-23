@@ -14,10 +14,12 @@ for DIR in ${DIRS}; do
 done
 cd ${TOP}
 
-# Adjust a few special cases
-#if [ -d "${TOP}/misc" ]; then
-#	cp ${TOP}/misc/svnignore /tmp/svnignore-tmp
-#	echo build >> /tmp/svnignore-tmp
-#	svn propset svn:ignore -F /tmp/svnignore-tmp .
-#	rm /tmp/svnignore-tmp
-#fi
+# Adjust special cases
+for FILE in `find ${TOP} -name svnignore`; do
+    cp -f ${TOP}/misc/svnignore /tmp/svnignore-tmp
+    cat ${FILE} >> /tmp/svnignore-tmp
+    cd `dirname ${FILE}`
+    svn propset svn:ignore -F /tmp/svnignore-tmp .
+    rm /tmp/svnignore-tmp
+    cd ${TOP}
+done
