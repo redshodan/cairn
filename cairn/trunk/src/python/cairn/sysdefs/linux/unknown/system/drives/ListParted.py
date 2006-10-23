@@ -46,10 +46,18 @@ class ListParted(object):
 				sysdef.info.createDriveGeomElem(drive, "hw-geom",
 												"%d" % chs[0], "%d" % chs[1],
 												"%d" % chs[2])
-				pdisk = pdev.diskNew()
-				ptype = pdisk.getType()
-				drive.setChild("type", ptype.getName())
+				empty = False
+				try:
+					pdev.diskProbe()
+				except:
+					drive.setChild("empty", "True")
+					empty = True
+				if not empty:
+					pdisk = pdev.diskNew()
+					ptype = pdisk.getType()
+					drive.setChild("type", ptype.getName())
 			cairn.displayNL()
 		except Exception, err:
+			cairn.displayNL()
 			raise cairn.Exception("Failed to probe drives:", err)
 		return True

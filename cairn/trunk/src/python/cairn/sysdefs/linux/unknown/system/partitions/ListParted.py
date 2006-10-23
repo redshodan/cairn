@@ -20,6 +20,10 @@ class ListParted(object):
 		cairn.log("Checking partitions")
 		for drive in sysdef.info.getElems("hardware/drive"):
 			cairn.displayRaw("  %s:" % drive.get("device").lstrip("/dev/"))
+			if drive.get("empty"):
+				cairn.displayRaw(" No partitions found")
+				cairn.displayNL()
+				continue
 			device = drive.get("device")
 			try:
 				pdev = parted.PedDevice(device)
@@ -40,6 +44,7 @@ class ListParted(object):
 					drive.setChild("empty", "True")
 					cairn.displayRaw(" No partitions found")
 			except Exception, err:
+				cairn.displayNL()
 				raise cairn.Exception("Failed to partition drive", err)
 			cairn.displayNL()
 		return True
@@ -51,7 +56,8 @@ class ListParted(object):
 		geom = ppart.getGeometry()
 		part.setChild("start", "%ld" % geom.getStart())
 		part.setChild("size", "%ld" % geom.getLength())
-		part.setChild("label", ppart.getName())
+		if drive.get("type") != "msdos":
+			part.setChild("label", ppart.getName())
 		part.setChild("type", ppart.getTypeName())
 		if ppart.isActive():
 			part.setChild("active", "true")
