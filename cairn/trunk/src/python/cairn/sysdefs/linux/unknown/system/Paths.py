@@ -19,6 +19,7 @@ class Paths(tmpl.Paths):
 		self.__BINS = [ #Tool("sfdisk", "env/tools/part", True),
 		                Tool("mount", "env/tools/mount", True),
 		                Tool("umount", "env/tools/unmount", True),
+		                Tool("mdadm", "env/tools/mdadm", False),
 						ToolGroup("env/archive-tool", "env/archive-tool-user",
 								  "archive", True,
 								  [ Tool("tar", "env/tools/tar", False),

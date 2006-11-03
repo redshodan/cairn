@@ -169,6 +169,7 @@ def create(self):
 	self.createElems()
 	self.setOpts(Options.getSysInfoOpts())
 	self.normalize()
+	return
 
 
 def setOpts(self, options):
@@ -426,6 +427,8 @@ def printDrives(self):
 	cairn.display("  Drives:")
 	for drive in self.getElems("hardware/drive"):
 		cairn.display("    %s: %s" % (drive.instName(), drive.get("device")))
+		if drive.get("empty"):
+			cairn.display("      empty")
 		for part in drive.getElems("partition"):
 			msg = "      part %s: device=%s label=%s type=%s fs-type=%s mount=%s" % (part.instName(), part.get("device"), part.get("label"), part.get("type"), part.get("fs-type"), part.get("mount"))
 			space = part.getElem("fs-space")

@@ -1,7 +1,6 @@
 """linux.unknown.system.partitions.ListParted Module"""
 
 
-import commands
 import re
 import os
 
@@ -56,7 +55,7 @@ class ListParted(object):
 		geom = ppart.getGeometry()
 		part.setChild("start", "%ld" % geom.getStart())
 		part.setChild("size", "%ld" % geom.getLength())
-		if drive.get("type") != "msdos":
+		if ((ppart.getTypeName() == "gpt") or (ppart.getTypeName() == "mac")):
 			part.setChild("label", ppart.getName())
 		part.setChild("type", ppart.getTypeName())
 		if ppart.isActive():

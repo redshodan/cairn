@@ -254,6 +254,8 @@ cliCopyRestoreCommonOpts = [
 	 "help":"File containing exclude directives."},
 	{"long":"metafile", "type":"string", "info":"archive/metafilename",
  	 "help":"Set the metafile name.", "level":EXPERT},
+	{"long":"no-raid", "action":"store_true", "default":False, "level":ADVANCED,
+ 	 "help":"Do not look for or backup software raids."},
 	{"long":"setmeta", "type":"string", "callback":setInfoOpt,
 	 "level":EXPERT | DEBUG, "metavar":"NAME=VAL",
  	 "help":"Set a system metainfo option, overriding discovered value."},

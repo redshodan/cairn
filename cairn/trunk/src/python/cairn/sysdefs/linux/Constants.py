@@ -26,5 +26,6 @@ FS_MAP = {
 	"swap" : "env/tools/mkswap",
 }
 
+MD_RE = re.compile("md[0-9]")
 DEVICE_RE = [re.compile("hd[a-z]+"), re.compile("sd[a-z]+"),
-			 re.compile("ubd[a-z]+")]
+			 re.compile("ubd[a-z]+"), MD_RE]
