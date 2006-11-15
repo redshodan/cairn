@@ -24,3 +24,4 @@ class Paths(tmpl.Paths):
 				 Tool("sync", "env/tools/sync", False)
 			   ]
 		self.__BINS = self.__BINS + bins
+		return

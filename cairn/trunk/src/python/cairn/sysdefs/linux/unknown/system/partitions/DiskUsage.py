@@ -18,8 +18,8 @@ def getClass():
 class DiskUsage(tmpl.DiskUsage):
 	def run(self, sysdef):
 		cairn.verbose("Sizing partitions")
-		for drive in sysdef.info.getElems("hardware/drive"):
-			for partition in drive.getElems("partition"):
+		for device in sysdef.info.getElems("hardware/device"):
+			for partition in device.getElems("disk-label/partition"):
 				self.findPartitionDiskUsage(sysdef, partition)
 		return True
 

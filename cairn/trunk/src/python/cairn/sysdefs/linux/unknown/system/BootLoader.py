@@ -16,19 +16,19 @@ def getClass():
 class BootLoader(tmpl.BootLoader):
 
 	def readMBR(self, sysdef):
-		drives = sysdef.info.getElems("hardware/drive")
-		if not drives:
-			cairn.log("No drives found to check for bootloader")
+		devices = sysdef.info.getElems("hardware/device")
+		if not devices:
+			cairn.log("No devices found to check for bootloader")
 			return None
-		dev = drives[0].get("device")
+		dev = devices[0].get("device")
 		try:
 			mbr = file(dev, "r")
 			buf = mbr.read(512)
 			mbr.close()
 			return buf
 		except Exception, err:
-			raise cairn.Exception("Failed to read MBR from drive %s: %s" % (dev,
-																			err))
+			raise cairn.Exception("Failed to read MBR from device %s: %s" %
+								  (dev, err))
 		return None
 
 

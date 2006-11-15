@@ -20,6 +20,10 @@ class Paths(object):
 		return
 
 
+	def userCheck(self, sysdef):
+		return
+
+
 	def getPath(self, sysdef):
 		if Options.get("path"):
 			return Options.get("path")
@@ -34,4 +38,5 @@ class Paths(object):
 
 	def run(self, sysdef):
 		Tools.findTools(sysdef, self.getPath(sysdef), self.getBins(sysdef))
+		self.userCheck(sysdef)
 		return True

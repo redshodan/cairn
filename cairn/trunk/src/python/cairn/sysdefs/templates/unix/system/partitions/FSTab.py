@@ -26,9 +26,9 @@ class FSTab(object):
 
 	def run(self, sysdef):
 		partitions = []
-		drives = sysdef.info.getElems("hardware/drive")
-		for drive in drives:
-			partitions = partitions + drive.getElems("partition")
+		devices = sysdef.info.getElems("hardware/device")
+		for device in devices:
+			partitions = partitions + device.getElems("disk-label/partition")
 		try:
 			fstab = file(self.fstabFile(), "rb")
 		except Exception, err:
@@ -36,7 +36,7 @@ class FSTab(object):
 								  (self.fstabFile(), err))
 		for line in fstab:
 			if (not re.search("^\s*\#", line) and
-				re.search("\s*[/a-zA-Z0-9]+\s+[/a-zA-Z0-9]+\s+[a-zA-Z0-9]+\s+[,\-a-zA-Z0-9]+\s+[0-9]+\s+[0-9]+", line)):
+				re.search("\s*[/a-zA-Z0-9]+\s+[/a-zA-Z0-9]+\s+[a-zA-Z0-9]+\s+[=,\-a-zA-Z0-9]+\s+[0-9]+\s+[0-9]+", line)):
 				arr = line.split()
 				for part in partitions:
 					if part.get("device") == arr[DEVICE]:

@@ -1,11 +1,13 @@
 """linux.Shared - Common linux code"""
 
 
-import re
+import os, re
 import commands
+import pylibparted as parted
 
 import cairn
 from cairn.sysdefs.linux.Constants import *
+
 
 
 ##
@@ -16,6 +18,13 @@ from cairn.sysdefs.linux.Constants import *
 mountedFS = []
 
 
+def listDevices():
+	list = os.listdir("/sys/block")
+	list.sort()
+	cairn.debug("All devices found: %s" % " ".join(list))
+	return list
+
+
 def matchDevice(device, deviceRegexp = None):
 	if not deviceRegexp:
 		deviceRegexp = DEVICE_RE
@@ -23,6 +32,75 @@ def matchDevice(device, deviceRegexp = None):
 		if pattern.match(device):
 			return True
 	return False
+
+
+def getDeviceType(device):
+	if isRemovable(device):
+		return None
+	if matchDevice(device, LVM_RE):
+		return "lvm"
+	if matchDevice(device, MD_RE):
+		return "md"
+	if matchDevice(device, MDP_RE):
+		return "mdp"
+	if matchDevice(device, DRIVE_RE):
+		return "drive"
+	return None
+
+
+def isRemovable(device):
+	try:
+		removable = file("/sys/block/%s/removable" % device, "r")
+		line = removable.readline()
+		removable.close()
+		if line and line.startswith("1"):
+			return True
+	except:
+		pass
+	return False
+
+
+def defineDevice(sysdef, device, devShort, devType):
+	try:
+		pdev = parted.PedDevice(device)
+		devElem = sysdef.info.createDeviceElem(devShort)
+		devElem.setChild("device", device)
+		devElem.setChild("type", devType)
+		devElem.setChild("size", "%d" % pdev.getLength())
+		devElem.setChild("sector-size", "%d" % pdev.getSectorSize())
+		sysdef.info.createDeviceSubDevsElem(devElem)
+		if (devType == "drive"):
+			defineDriveHW(sysdef, devElem, pdev)
+		empty = False
+		try:
+			pdev.diskProbe()
+		except Exception, err:
+			cairn.error("Failed to probe device: %s" % device, err)
+			devElem.setChild("empty", "True")
+			empty = True
+		if not empty:
+			pdisk = pdev.diskNew()
+			ptype = pdisk.getType()
+			dlabel = sysdef.info.createDiskLabelElem(devElem)
+			dlabel.setChild("type", ptype.getName())
+	except Exception, err:
+		cairn.displayNL()
+		raise cairn.Exception("Failed to probe devices:", err)
+	return devElem
+
+
+def defineDriveHW(sysdef, drive, pdev):
+	hw = sysdef.info.createDeviceHWElem(drive)
+	model = pdev.getModel()
+	if model:
+		hw.setChild("model", model)
+	chs = pdev.getBiosCHS()
+	sysdef.info.createDeviceHWGeomElem(hw, "bios-geom", "%d" % chs[0],
+									   "%d" % chs[1], "%d" % chs[2])
+	chs = pdev.getHwCHS()
+	sysdef.info.createDeviceHWGeomElem(hw, "hw-geom", "%d" % chs[0],
+									   "%d" % chs[1], "%d" % chs[2])
+	return
 
 
 def mount(sysdef, device, dir, opts = ""):

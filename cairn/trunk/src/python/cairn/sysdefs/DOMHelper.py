@@ -324,14 +324,16 @@ def toPrettyStr(self, strs=[], indent=""):
 		if node.nodeType != node.TEXT_NODE:
 			isText = False
 			break
+	attrstr = ""
+	for attr in self.attributes.items():
+		attrstr = attrstr + " %s=\"%s\"" % (attr[0], attr[1])
+	str = "%s<%s%s>" % (indent, self.nodeName, attrstr)
 	if isText:
-		str = "%s<%s>" % (indent, self.nodeName)
 		for node in self.childNodes:
 			str = str + node.data
 		str = "%s</%s>" % (str, self.nodeName)
 		strs.append(str)
 	else:
-		str = "%s<%s>" % (indent, self.nodeName)
 		strs.append(str)
 		for node in self.childNodes:
 			node.toPrettyStr(strs, indent + "  ")

@@ -17,15 +17,15 @@ class ListParted(object):
 
 	def run(self, sysdef):
 		cairn.log("Checking partitions")
-		for drive in sysdef.info.getElems("hardware/drive"):
-			cairn.displayRaw("  %s:" % drive.get("device").lstrip("/dev/"))
-			if drive.get("empty"):
+		for device in sysdef.info.getElems("hardware/device"):
+			cairn.displayRaw("  %s:" % device.get("device").lstrip("/dev/"))
+			if device.get("empty"):
 				cairn.displayRaw(" No partitions found")
 				cairn.displayNL()
 				continue
-			device = drive.get("device")
+			dev = device.get("device")
 			try:
-				pdev = parted.PedDevice(device)
+				pdev = parted.PedDevice(dev)
 				pdisk = pdev.diskNew()
 				pparts = pdisk.getPartitions()
 				foundPart = False
@@ -38,19 +38,19 @@ class ListParted(object):
 						foundPart = True
 						pdev = ppart.getPath()
 						cairn.displayRaw(" " + pdev.lstrip("/dev/"))
-						self.definePartition(sysdef, drive, ppart)
+						self.definePartition(sysdef, device, ppart)
 				if not foundPart:
-					drive.setChild("empty", "True")
+					device.setChild("empty", "True")
 					cairn.displayRaw(" No partitions found")
 			except Exception, err:
 				cairn.displayNL()
-				raise cairn.Exception("Failed to partition drive", err)
+				raise cairn.Exception("Failed to read device partitions", err)
 			cairn.displayNL()
 		return True
 
 
-	def definePartition(self, sysdef, drive, ppart):
-		part = sysdef.info.createPartitionElem(drive, "%d" % ppart.getNum())
+	def definePartition(self, sysdef, device, ppart):
+		part = sysdef.info.createPartitionElem(device, "%d" % ppart.getNum())
 		part.setChild("device", ppart.getPath())
 		geom = ppart.getGeometry()
 		part.setChild("start", "%ld" % geom.getStart())

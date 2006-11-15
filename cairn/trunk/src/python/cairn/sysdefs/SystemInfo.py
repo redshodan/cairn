@@ -56,53 +56,77 @@ Machine
 Environment
    <env>
      <path/>                - System binary path
-	 <archive-tool>
-	 <zip-tool>
-	 <tools>
-	                        - sysdef dependent tools
+	 <archive-tool/>
+	 <zip-tool/>
+	 <tools>                - sysdef dependent tools
+       <foo/>
      </tools>
    </env>
 
 Hardware
    <hardware>
-     <drive-match/>         - perfect, devices, partial or none
-     <drive name="">
+     <drive-match/>           - perfect, devices, partial or none
+     <device name="">
 	   <empty/>
 	   <device/>
 	   <mapped-device/>
-	   <type/>
+	   <type/>                - drive, md, mdp, lvm
 	   <size/>
 	   <sector-size/>
-	   <bios-geom>
-	     <c/>
-		 <h/>
-		 <s/>
-       </bios-geom>
-	   <hw-geom>
-	     <c/>
-		 <h/>
-		 <s/>
-       </hw-geom>
-	   <os-driver/>
-	   <part-tool-cfg/>
-	   <model/>
-	   <partition name="">
-	     <device/>
-		 <start/>
-		 <size/>
-	     <label/>
-		 <type/>
-		 <active/>
-		 <fs-type/>
-		 <mount/>
-		 <flags></flags>
-		 <fs-space>
-		   <total/>
-		   <used/>
-		   <free/>
-		 </space>
-	   </partition>
-	 </drive>
+       <sub-devs>
+         <sub-dev>            - exists if is a meta device
+           <device/>
+           <mapped-device/>
+           <type/>            - drive, md, mdp, lv, pv
+           <size/>
+           <sector-size/>
+         <sub-dev/>
+       <sub-devs/>
+       <hw>                   - exists if is a real drive
+	     <os-driver/>
+	     <model/>
+         <bios-geom>
+	       <c/> <h/> <s/>
+         </bios-geom>
+         <hw-geom>
+	       <c/> <h/> <s/>
+         </hw-geom>
+       </hw>
+       <disk-label>
+         <type/>
+         <partition name="">  - exists if is a partitionable device
+           <device/>
+           <mapped-device/>
+           <start/>
+           <size/>
+           <label/>
+           <type/>
+           <active/>
+           <fs-type/>
+           <mount/>
+           <flags/>
+           <fs-space>
+             <total/>
+             <used/>
+             <free/>
+           </fs-space>
+         </partition>
+       </disk-label>
+	 </device>
+	 <lvm-cfg/>
+	   <pvs>
+	     <pv/>
+	   </pvs>
+	   <vgs>
+	     <vg/>
+	   </vgs>
+	   <lvs>
+	     <lv/>
+	   </lvs>
+	   <vg-backups>
+	     <vg/>              - contains the output of vgcfgbackup
+       </vg-backups>
+	 </lvm-cfg>
    </hardware>
 
 Archive
@@ -261,33 +285,64 @@ def createEnvElem(self):
 def createHardwareElem(self):
 	hardware = self.createElem("hardware")
 	elem = hardware.createElem("drive-match")
+	lvm = hardware.createElem("lvm-cfg")
+	elem = lvm.createElem("pvs")
+	elem = lvm.createElem("vgs")
+	elem = lvm.createElem("lvs")
+	elem = lvm.createElem("vg-backups")
 	return hardware
 
 
-def createDriveElem(self, name):
+def createDeviceElem(self, name):
 	hardware = self.getElem("hardware")
-	drive = hardware.createElem("drive=%s" % name)
-	elem = drive.createElem("empty")
-	elem = drive.createElem("device")
-	elem = drive.createElem("mapped-device")
-	elem = drive.createElem("type")
-	elem = drive.createElem("size")
-	elem = drive.createElem("sector-size")
-	elem = drive.createElem("os-driver")
-	elem = drive.createElem("model")
-	return drive
+	device = hardware.createElem("device=%s" % name)
+	elem = device.createElem("empty")
+	elem = device.createElem("device")
+	elem = device.createElem("mapped-device")
+	elem = device.createElem("type")
+	elem = device.createElem("size")
+	elem = device.createElem("sector-size")
+	return device
 
 
-def createDriveGeomElem(self, drive, name, c, h, s):
-	geom = drive.createElem(name)
+def createDeviceSubDevsElem(self, drive):
+	return drive.createElem("sub-devs")
+
+
+def createDeviceSubDevElem(self, sdevs):
+	sdev = sdevs.createElem("sub-dev")
+	elem = sdev.createElem("device")
+	elem = sdev.createElem("mapped-device")
+	elem = sdev.createElem("type")
+	elem = sdev.createElem("size")
+	elem = sdev.createElem("sector-size")
+	return sdev
+
+
+def createDeviceHWElem(self, device):
+	hw = device.createElem("hw")
+	elem = hw.createElem("os-driver")
+	elem = hw.createElem("model")
+	return hw
+
+
+def createDeviceHWGeomElem(self, hw, name, c, h, s):
+	geom = hw.createElem(name)
 	elem = geom.createElem("c", c)
 	elem = geom.createElem("h", h)
 	elem = geom.createElem("s", s)
 	return geom
 
 
-def createPartitionElem(self, drive, name):
-	part = drive.createElem("partition=%s" % name)
+def createDiskLabelElem(self, device):
+	dlabel = device.createElem("disk-label")
+	elem = dlabel.createElem("type")
+	return dlabel
+
+
+def createPartitionElem(self, device, name):
+	dlabel = device.getElem("disk-label")
+	part = dlabel.createElem("partition=%s" % name)
 	elem = part.createElem("device")
 	elem = part.createElem("mapped-device")
 	elem = part.createElem("start")
@@ -419,17 +474,17 @@ def printSummary(self):
 	cairn.display("            tools: ")
 	for tool in self.getElem("env/tools").getElems():
 		cairn.display("               %s: %s" % (tool.nodeName, tool.getText()))
-	self.printDrives()
+	self.printDevices()
 	return
 
 
-def printDrives(self):
-	cairn.display("  Drives:")
-	for drive in self.getElems("hardware/drive"):
-		cairn.display("    %s: %s" % (drive.instName(), drive.get("device")))
-		if drive.get("empty"):
+def printDevices(self):
+	cairn.display("  Devices:")
+	for device in self.getElems("hardware/device"):
+		cairn.display("    %s: %s" % (device.instName(), device.get("device")))
+		if device.get("empty"):
 			cairn.display("      empty")
-		for part in drive.getElems("partition"):
+		for part in device.getElems("disk-label/partition"):
 			msg = "      part %s: device=%s label=%s type=%s fs-type=%s mount=%s" % (part.instName(), part.get("device"), part.get("label"), part.get("type"), part.get("fs-type"), part.get("mount"))
 			space = part.getElem("fs-space")
 			if space:
@@ -451,8 +506,12 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, createBootloaderElem)
 	DOMHelper.inject(doc, createEnvElem)
 	DOMHelper.inject(doc, createHardwareElem)
-	DOMHelper.inject(doc, createDriveElem)
-	DOMHelper.inject(doc, createDriveGeomElem)
+	DOMHelper.inject(doc, createDeviceElem)
+	DOMHelper.inject(doc, createDeviceSubDevsElem)
+	DOMHelper.inject(doc, createDeviceSubDevElem)
+	DOMHelper.inject(doc, createDeviceHWElem)
+	DOMHelper.inject(doc, createDeviceHWGeomElem)
+	DOMHelper.inject(doc, createDiskLabelElem)
 	DOMHelper.inject(doc, createPartitionElem)
 	DOMHelper.inject(doc, createPartitionFSSpaceElem)
 	DOMHelper.inject(doc, createArchiveElem)
@@ -464,5 +523,5 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, saveToFile)
 	DOMHelper.inject(doc, prettyStr)
 	DOMHelper.inject(doc, printSummary)
-	DOMHelper.inject(doc, printDrives)
+	DOMHelper.inject(doc, printDevices)
 	return

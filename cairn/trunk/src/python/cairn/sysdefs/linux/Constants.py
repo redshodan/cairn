@@ -26,6 +26,15 @@ FS_MAP = {
 	"swap" : "env/tools/mkswap",
 }
 
-MD_RE = re.compile("md[0-9]")
-DEVICE_RE = [re.compile("hd[a-z]+"), re.compile("sd[a-z]+"),
-			 re.compile("ubd[a-z]+"), MD_RE]
+MD_RE = [re.compile("md[0-9]+")]
+MDP_RE = [re.compile("md[0-9]+_d[0-9]+")]
+LVM_RE = [re.compile("dm[0-9]")]
+DRIVE_RE = [re.compile("hd[a-z]+"), re.compile("sd[a-z]+"),
+			re.compile("ubd[a-z]+")]
+
+### Device types
+DEVICE_TYPES = ["drive", "md", "mdp", "lvm"]
+DEVICE_MAP = {"drive" : DRIVE_RE, "lvm" : LVM_RE, "md" : MD_RE,
+			  "mdp" : MDP_RE}
+
+LVM_TOOLS = ["pvscan", "vgscan", "lvscan"]
