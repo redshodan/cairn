@@ -40,6 +40,9 @@ class MatchDevices(tmpl.MatchDevices):
 		sysDevices = sysdef.info.getElems("hardware/device")
 		imgDevices = sysdef.readInfo.getElems("hardware/device")
 		for index in range(len(sysDevices)):
+			if ((sysDevices[index].get("type") != "drive") or
+				(imgDevices[index].get("type") != "drive")):
+				continue
 			if sysDevices[index].get("device") == imgDevices[index].get("device"):
 				partial = True
 				if not ((sysDevices[index].get("model") ==

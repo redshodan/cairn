@@ -1,9 +1,10 @@
-"""linux.unknown.system.drives.ListLVM Module"""
+"""linux.unknown.system.lvm.List Module"""
 
 
 import re
 import commands
 
+import pylibparted as parted
 
 import cairn
 from cairn import Options
@@ -12,10 +13,10 @@ from cairn.sysdefs.linux import Shared
 
 
 def getClass():
-	return ListLVM()
+	return List()
 
 
-class ListLVM(object):
+class List(object):
 
 	def scanPVs(self, sysdef):
 		cmd = sysdef.info.get("env/tools/pvscan")
@@ -29,7 +30,8 @@ class ListLVM(object):
 			if re.match("^PV /dev/*", line):
 				words = line.split()
 				pvs.append(words[1])
-				pvsElem.createElem("pv", words[1], True)
+				elem = pvsElem.createElem("pv", words[1], True)
+				elem.setAttr("vg", words[3])
 		return pvs
 
 
@@ -60,11 +62,50 @@ class ListLVM(object):
 			line = line.strip()
 			if re.match("^\S*\s*'.*'\s*\[\S*\s*\S*\]", line):
 				words = line.split()
-				lv = words[1].strip("'")
-				lv = lv[5:]
-				lvs.append(lv)
-				lvsElem.createElem("lv", lv, True)
+				full = words[1].strip("'")
+				full = full[5:]
+				words = full.split("/")
+				vg = words[0]
+				lv = words[1]
+				lvs.append(full)
+				elem = lvsElem.createElem("lv", lv, True)
+				elem.setAttr("vg", vg)
 		return lvs
+
+
+	def defineDevices(self, sysdef):
+		lvs = sysdef.info.getElems("hardware/lvm-cfg/lvs/lv")
+		for vg in sysdef.info.getElems("hardware/lvm-cfg/vgs/vg"):
+			vgname = vg.getText()
+			vgdev = "/dev/" + vgname
+			devElem = sysdef.info.createDeviceElem(vgname)
+			devElem.setChild("device", vgdev)
+			devElem.setChild("type", "lvm")
+			dlabel = sysdef.info.createDiskLabelElem(devElem)
+			dlabel.setChild("type", "lvm")
+			count = 1
+			for lv in lvs:
+				if lv.getAttr("vg") != vgname:
+					continue
+				fulldev = "%s/%s" % (vgdev, lv.getText())
+				partElem = sysdef.info.createPartitionElem(devElem,
+														   "%d" % count)
+				partElem.setChild("device", fulldev)
+				empty = True
+				try:
+					pdev = parted.PedDevice(fulldev)
+					pdisk = pdev.diskNew()
+					pparts = pdisk.getPartitions()
+					Shared.definePartition(sysdef, devElem, partElem,
+										   pparts[0])
+					empty = False
+				except Exception, err:
+					cairn.error("%s" % err)
+				if empty:
+					partElem.setChild("empty", "true")
+				partElem.setChild("type", "loop")
+				count = count + 1
+		return True
 
 
 	def run(self, sysdef):
@@ -78,4 +119,5 @@ class ListLVM(object):
 		cairn.info("  Found VGs: %s" % " ".join(vgs))
 		lvs = self.scanLVs(sysdef)
 		cairn.info("  Found LVs: %s" % " ".join(lvs))
+		self.defineDevices(sysdef)
 		return True

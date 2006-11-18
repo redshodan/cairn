@@ -21,5 +21,5 @@ class ListDrives(object):
 				continue
 			cairn.displayRaw("  %s" % devShort)
 			Shared.defineDevice(sysdef, "/dev/" + devShort, devShort, dtype)
-			cairn.displayNL()
+		cairn.displayNL()
 		return True

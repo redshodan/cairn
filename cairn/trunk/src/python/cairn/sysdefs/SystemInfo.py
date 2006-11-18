@@ -95,6 +95,7 @@ Hardware
        <disk-label>
          <type/>
          <partition name="">  - exists if is a partitionable device
+		   <empty/>
            <device/>
            <mapped-device/>
            <start/>
@@ -115,7 +116,7 @@ Hardware
 	 </device>
 	 <lvm-cfg/>
 	   <pvs>
-	     <pv/>
+	     <pv vg=""/>
 	   </pvs>
 	   <vgs>
 	     <vg/>
@@ -343,6 +344,7 @@ def createDiskLabelElem(self, device):
 def createPartitionElem(self, device, name):
 	dlabel = device.getElem("disk-label")
 	part = dlabel.createElem("partition=%s" % name)
+	elem = part.createElem("empty")
 	elem = part.createElem("device")
 	elem = part.createElem("mapped-device")
 	elem = part.createElem("start")

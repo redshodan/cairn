@@ -34,14 +34,8 @@ def getLong(self, path = None):
 
 
 # Get the named attribute from this node
-def getAttr(self, path, attr):
-	elem = self.root()
-	if path:
-		elem = self.getElem(path)
-	if elem.hasAttribute(attr):
-		return elem.getAttribute(attr)
-	else:
-		return None
+def getAttr(self, attr):
+	return self.root().getAttribute(attr)
 
 
 # Get first child element of this node, or by path from this node
@@ -360,6 +354,8 @@ def injectFuncs(elem):
 	inject(elem, clear)
 	inject(elem, name)
 	inject(elem, instName)
+	inject(elem, setAttr)
+	inject(elem, getAttr)
 
 	# semi-private utilities
 	inject(elem, parsePath)
