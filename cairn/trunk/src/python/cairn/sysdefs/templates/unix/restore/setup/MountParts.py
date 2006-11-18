@@ -13,9 +13,9 @@ class MountParts(object):
 	def orderedList(self, sysdef):
 		mountList = []
 		fsMap = {}
-		for drive in sysdef.readInfo.getElems("hardware/drive"):
-			if not drive.get("empty"):
-				for part in drive.getElems("partition"):
+		for device in sysdef.readInfo.getElems("hardware/device"):
+			if not device.get("empty"):
+				for part in device.getElems("disk-label/partition"):
 					mountList.append(part.get("mount"))
 					fsMap[part.get("mount")] = part
 		mountList.sort()

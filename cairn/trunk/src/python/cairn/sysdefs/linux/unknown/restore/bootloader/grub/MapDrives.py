@@ -27,8 +27,9 @@ class MapDrives(object):
 		except Exception, err:
 			raise cairn.Exception("Failed to open %s: %s" % (mapFileName, err))
 		id = 0
-		for disk in sysdef.readInfo.getElems("hardware/drive"):
-			mapFile.write("(hd%d)  %s" % (id, disk.get("device")))
+		for disk in sysdef.readInfo.getElems("hardware/device"):
+			if (disk.get("type") == "disk"):
+				mapFile.write("(hd%d)  %s" % (id, disk.get("device")))
 		mapFile.close()
 		return
 
@@ -38,12 +39,13 @@ class MapDrives(object):
 		fsMap = {}
 		driveID = -1
 		partID = -1
-		for drive in sysdef.readInfo.getElems("hardware/drive"):
-			driveID = driveID + 1
-			for part in drive.getElems("partition"):
-				partID = partID + 1
-				mountList.append(part.get("mount"))
-				fsMap[part.get("mount")] = [drive, driveID, part, partID]
+		for device in sysdef.readInfo.getElems("hardware/device"):
+			if (device.get("type") == "disk"):
+				driveID = driveID + 1
+				for part in device.getElems("disk-label/partition"):
+					partID = partID + 1
+					mountList.append(part.get("mount"))
+					fsMap[part.get("mount")] = [device, driveID, part, partID]
 		if "/boot" in mountList:
 			tuple = fsMap["/boot"]
 		elif "/" in mountList:

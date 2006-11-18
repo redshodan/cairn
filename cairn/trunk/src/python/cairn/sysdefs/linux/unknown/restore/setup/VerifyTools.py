@@ -13,8 +13,8 @@ def getClass():
 class VerifyTools(tmpl.VerifyTools):
 
 	def run(self, sysdef):
-		for drive in sysdef.readInfo.getElems("hardware/drive"):
-			for part in drive.getElems("partition"):
+		for device in sysdef.readInfo.getElems("hardware/device"):
+			for part in device.getElems("disk-label/partition"):
 				fsType = part.get("fs-type")
 				if not len(fsType):
 					continue

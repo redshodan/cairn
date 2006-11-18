@@ -1,27 +1,27 @@
-"""linux.unknown.setup.PartDrivesParted Module"""
+"""linux.unknown.setup.PartDevicesParted Module"""
 
 
 import pylibparted as parted
 
 import cairn
-import cairn.sysdefs.templates.unix.restore.setup.PartDrives as tmpl
+import cairn.sysdefs.templates.unix.restore.setup.PartDevices as tmpl
 
 
 def getClass():
-	return PartDrivesParted()
+	return PartDevicesParted()
 
 
-class PartDrivesParted(tmpl.PartDrives):
+class PartDevicesParted(tmpl.PartDevices):
 
-	def partitionDrive(self, sysdef, drive):
-		device = drive.get("device")
-		parts = drive.getElems("partition")
+	def partitionDevice(self, sysdef, device):
+		dev = device.get("device")
+		parts = device.getElems("disk-label/partition")
 		try:
-			pdev = parted.PedDevice(device)
+			pdev = parted.PedDevice(dev)
 			pdisk = parted.PedDisk(pdev, pdev.getType())
 			pdisk.delAllPartitions()
 			for part in parts:
-				pcon = device.getAnyConstraint()
+				pcon = pdev.getAnyConstraint()
 				ppart = parted.PedPartition(pdisk,
 											self.mapPartType(part.get("type")),
 											None, int(part.get("geom.start")),
@@ -30,7 +30,8 @@ class PartDrivesParted(tmpl.PartDrives):
 				pdisk.addPartition(part, pcon)
 			pdisk.commit()
 		except Exception, err:
-			raise cairn.Exception("Failed to write partition table to %s" % device, err)
+			raise cairn.Exception("Failed to write partition table to %s" %
+								  dev, err)
 		return
 
 

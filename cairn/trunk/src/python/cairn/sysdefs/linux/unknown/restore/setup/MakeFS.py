@@ -33,8 +33,8 @@ class MakeFS(tmpl.MakeFS):
 
 	def run(self, sysdef):
 		cairn.log("Creating filesystems")
-		for drive in sysdef.readInfo.getElems("hardware/drive"):
-			if not drive.get("empty"):
-				for part in drive.getElems("partition"):
+		for device in sysdef.readInfo.getElems("hardware/device"):
+			if not device.get("empty"):
+				for part in device.getElems("device-label/partition"):
 					self.makeFS(sysdef, part)
 		return True

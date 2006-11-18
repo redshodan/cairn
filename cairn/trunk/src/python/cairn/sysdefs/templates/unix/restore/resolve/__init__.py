@@ -7,5 +7,5 @@ from cairn import Options
 
 
 def getSubModuleString(sysdef):
-	str = "MatchDrives; Summary;"
+	str = "MatchDevices; Summary;"
 	return str
