@@ -87,7 +87,7 @@ class List(object):
 			for lv in lvs:
 				if lv.getAttr("vg") != vgname:
 					continue
-				fulldev = "%s/%s" % (vgdev, lv.getText())
+				fulldev = "/dev/mapper/%s-%s" % (vgname, lv.getText())
 				partElem = sysdef.info.createPartitionElem(devElem,
 														   "%d" % count)
 				partElem.setChild("device", fulldev)
@@ -96,8 +96,7 @@ class List(object):
 					pdev = parted.PedDevice(fulldev)
 					pdisk = pdev.diskNew()
 					pparts = pdisk.getPartitions()
-					Shared.definePartition(sysdef, devElem, partElem,
-										   pparts[0])
+					Shared.definePartition(sysdef, partElem, pparts[0])
 					empty = False
 				except Exception, err:
 					cairn.error("%s" % err)
