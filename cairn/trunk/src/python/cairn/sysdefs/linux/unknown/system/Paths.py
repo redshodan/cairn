@@ -23,7 +23,6 @@ class Paths(tmpl.Paths):
 		self.__BINS = [ Tool("mount", "env/tools/mount", True),
 						Tool("umount", "env/tools/unmount", True),
 						Tool("mdadm", "env/tools/mdadm", False),
-						Tool("vgcfgbackup", "env/tools/vgcfgbackup", False),
 						ToolGroup("env/archive-tool", "env/archive-tool-user",
 								  "archive", True,
 								  [ Tool("tar", "env/tools/tar", False),
@@ -35,7 +34,7 @@ class Paths(tmpl.Paths):
 									Tool("compress", "env/tools/compress",
 										 False) ])
 						]
-		for tool in Constants.LVM_TOOLS:
+		for tool in Constants.LVM_COPY_TOOLS:
 			self.__BINS.append(Tool(tool, "env/tools/" + tool, False))
 		return
 
@@ -64,7 +63,7 @@ class Paths(tmpl.Paths):
 		if Options.get("no-lvm"):
 			return
 		# Check for 
-		for tool in Constants.LVM_TOOLS:
+		for tool in Constants.LVM_COPY_TOOLS:
 			if not sysdef.info.get("env/tools/" + tool):
 				cairn.warn(("Failed to find program %s. " +
 							"LVM volumes will not be handled") % tool)

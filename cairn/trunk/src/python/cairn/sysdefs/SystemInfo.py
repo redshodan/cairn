@@ -67,7 +67,7 @@ Hardware
    <hardware>
      <drive-match/>           - perfect, devices, partial or none
      <device name="">
-	   <empty/>
+	   <status/>              - probed, skipped, empty
 	   <device/>
 	   <mapped-device/>
 	   <type/>                - drive, md, mdp, lvm
@@ -116,7 +116,7 @@ Hardware
 	 </device>
 	 <lvm-cfg/>
 	   <pvs>
-	     <pv vg=""/>
+	     <pv vg="" uuid="">
 	   </pvs>
 	   <vgs>
 	     <vg/>
@@ -141,6 +141,7 @@ Archive
      <excludes>
 	   <exclude ignored_fs='T/F:' user='T/F'/>
 	 </excludes>
+	 <skip-devices/>
 	 <archive-tool/>
 	 <archive-tool-cmd/>
      <zip-tool/>
@@ -297,7 +298,7 @@ def createHardwareElem(self):
 def createDeviceElem(self, name):
 	hardware = self.getElem("hardware")
 	device = hardware.createElem("device=%s" % name)
-	elem = device.createElem("empty")
+	elem = device.createElem("status")
 	elem = device.createElem("device")
 	elem = device.createElem("mapped-device")
 	elem = device.createElem("type")
@@ -344,7 +345,7 @@ def createDiskLabelElem(self, device):
 def createPartitionElem(self, device, name):
 	dlabel = device.getElem("disk-label")
 	part = dlabel.createElem("partition=%s" % name)
-	elem = part.createElem("empty")
+	elem = part.createElem("status")
 	elem = part.createElem("device")
 	elem = part.createElem("mapped-device")
 	elem = part.createElem("start")
@@ -484,8 +485,10 @@ def printDevices(self):
 	cairn.display("  Devices:")
 	for device in self.getElems("hardware/device"):
 		cairn.display("    %s: %s" % (device.instName(), device.get("device")))
-		if device.get("empty"):
+		if device.get("status") == "empty":
 			cairn.display("      empty")
+		elif device.get("status") == "skipped":
+			cairn.display("      skipped")
 		for part in device.getElems("disk-label/partition"):
 			msg = "      part %s: device=%s label=%s type=%s fs-type=%s mount=%s" % (part.instName(), part.get("device"), part.get("label"), part.get("type"), part.get("fs-type"), part.get("mount"))
 			space = part.getElem("fs-space")
@@ -493,6 +496,24 @@ def printDevices(self):
 				msg = msg + " (fs-space: total=%s used=%s free=%s)" % (space.get("total"), space.get("used"), space.get("free"))
 			cairn.display(msg)
 	return
+
+
+###
+### Parsing accessors
+###
+
+def getSkipDevices(self, type):
+	skip = self.get("archive/skip-devices")
+	skips = {}
+	if skip:
+		phrases = skip.split(";")
+		for phrase in phrases:
+			words = phrase.split("=")
+			if words[1] != type:
+				continue
+			dev = words[0].lstrip("/dev/")
+			skips[dev] = words[1]
+	return skips
 
 
 def injectDocFuncs(doc):
@@ -526,4 +547,5 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, prettyStr)
 	DOMHelper.inject(doc, printSummary)
 	DOMHelper.inject(doc, printDevices)
+	DOMHelper.inject(doc, getSkipDevices)
 	return

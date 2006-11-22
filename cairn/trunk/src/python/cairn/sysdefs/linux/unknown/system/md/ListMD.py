@@ -14,6 +14,8 @@ def getClass():
 
 class ListMD(object):
 
+	# TODO: do skips
+
 	def run(self, sysdef):
 		if Options.get("no-raid") or not sysdef.info.get("env/tools/lvm"):
 			cairn.log("Skipping Software RAID check")

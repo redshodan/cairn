@@ -7,8 +7,8 @@ if [ -z "${PYTHON}" ]; then
 	exit 1
 fi
 
-# mktemp varies too much. this certainly is not terribly secure, but hopefully
-# it wont matter
+# mktemp cross platform varies too much. this certainly is not terribly secure,
+# but hopefully it wont matter
 ALPHA="a b c d e f g h i j k l m n o p q r s t u v w x y z"
 for L1 in ${ALPHA}; do
 	for L2 in ${ALPHA}; do
@@ -39,7 +39,7 @@ srcfile = os.path.abspath(sys.argv[1])
 sys.argv = sys.argv[1:]
 cmdname = os.path.abspath(sys.argv[1])
 sys.argv = sys.argv[1:]
-if "--nocleanup" in sys.argv:
+if "--no-cleanup" in sys.argv:
 	nocleanup = True
 else:
 	nocleanup = False
@@ -87,8 +87,8 @@ elif cmdname.endswith("extract"):
 	action = "extract"
 
 if action == "copy":
-	from cairn.copy import copy
-	copy.run(libname)
+	from cairn.copy import copy as ccopy
+	ccopy.run(libname)
 elif action == "restore":
 	from cairn.restore import restore
 	restore.run(libname)

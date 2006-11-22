@@ -43,7 +43,7 @@ class List(tmpl.List):
 			raise cairn.Exception(msg + ret[1])
 		drive.setChild("part-tool-cfg", content)
 		if not content.strip():
-			drive.setChild("empty", "True")
+			drive.setChild("status", "empty")
 			cairn.displayRaw(" No partitions found")
 		else:
 			partNum = 1

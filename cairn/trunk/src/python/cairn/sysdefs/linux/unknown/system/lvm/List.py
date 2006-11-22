@@ -19,7 +19,7 @@ def getClass():
 class List(object):
 
 	def scanPVs(self, sysdef):
-		cmd = sysdef.info.get("env/tools/pvscan")
+		cmd = "%s -u " % sysdef.info.get("env/tools/pvscan")
 		(status, output) = commands.getstatusoutput(cmd)
 		if (status != 0):
 			raise cairn.Exception("Failed to scan Physical Volumes: %s" % output)
@@ -31,7 +31,13 @@ class List(object):
 				words = line.split()
 				pvs.append(words[1])
 				elem = pvsElem.createElem("pv", words[1], True)
-				elem.setAttr("vg", words[3])
+				elem.setAttr("vg", words[6])
+				elem.setAttr("uuid", words[4])
+		if len(pvs):
+			word = " ".join(pvs)
+		else:
+			word = "none"
+		cairn.info("  PVs:  %s" % word)
 		return pvs
 
 
@@ -48,6 +54,11 @@ class List(object):
 				words = line.split("\"")
 				vgs.append(words[1])
 				vgsElem.createElem("vg", words[1], True)
+		if len(vgs):
+			word = " ".join(vgs)
+		else:
+			word = "none"
+		cairn.info("  VGs:  %s" % word)
 		return vgs
 
 
@@ -70,10 +81,16 @@ class List(object):
 				lvs.append(full)
 				elem = lvsElem.createElem("lv", lv, True)
 				elem.setAttr("vg", vg)
+		if len(lvs):
+			word = " ".join(lvs)
+		else:
+			word = "none"
+		cairn.info("  LVs:  %s" % word)
 		return lvs
 
 
 	def defineDevices(self, sysdef):
+		skips = sysdef.info.getSkipDevices("drive")
 		lvs = sysdef.info.getElems("hardware/lvm-cfg/lvs/lv")
 		for vg in sysdef.info.getElems("hardware/lvm-cfg/vgs/vg"):
 			vgname = vg.getText()
@@ -81,6 +98,9 @@ class List(object):
 			devElem = sysdef.info.createDeviceElem(vgname)
 			devElem.setChild("device", vgdev)
 			devElem.setChild("type", "lvm")
+			if Shared.skipDevice(skips, vgname):
+				devElem.setChild("status", "skipped")
+				continue
 			dlabel = sysdef.info.createDiskLabelElem(devElem)
 			dlabel.setChild("type", "lvm")
 			count = 1
@@ -101,7 +121,7 @@ class List(object):
 				except Exception, err:
 					cairn.error("%s" % err)
 				if empty:
-					partElem.setChild("empty", "true")
+					partElem.setChild("status", "empty")
 				partElem.setChild("type", "loop")
 				count = count + 1
 		return True
@@ -113,10 +133,7 @@ class List(object):
 			return True
 		cairn.log("Checking for LVM volumes")
 		pvs = self.scanPVs(sysdef)
-		cairn.info("  Found PVs: %s" % " ".join(pvs))
 		vgs = self.scanVGs(sysdef)
-		cairn.info("  Found VGs: %s" % " ".join(vgs))
 		lvs = self.scanLVs(sysdef)
-		cairn.info("  Found LVs: %s" % " ".join(lvs))
 		self.defineDevices(sysdef)
 		return True

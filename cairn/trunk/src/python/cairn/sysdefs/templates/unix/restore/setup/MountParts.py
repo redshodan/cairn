@@ -14,7 +14,7 @@ class MountParts(object):
 		mountList = []
 		fsMap = {}
 		for device in sysdef.readInfo.getElems("hardware/device"):
-			if not device.get("empty"):
+			if device.get("status") == "probed":
 				for part in device.getElems("disk-label/partition"):
 					mountList.append(part.get("mount"))
 					fsMap[part.get("mount")] = part

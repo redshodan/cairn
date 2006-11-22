@@ -20,7 +20,7 @@ class Arch(tmpl.Arch):
 
 	def run(self, sysdef):
 		if not super(Arch, self).run(sysdef):
-			return false
+			return False
 
 		modelNameRE = re.compile("^model name")
 		cpuinfo = file("/proc/cpuinfo", "r")

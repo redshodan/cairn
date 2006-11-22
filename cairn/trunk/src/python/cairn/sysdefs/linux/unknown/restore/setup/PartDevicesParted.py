@@ -45,3 +45,13 @@ class PartDevicesParted(tmpl.PartDevices):
 		else:
 			raise cairn.Exception("Invalid partition type: %s" % type)
 		return
+
+
+	def run(self, sysdef):
+		cairn.log("Partitioning devices:")
+		for device in sysdef.readInfo.getElems("hardware/device"):
+			if ((device.get("status") == "probed") and
+				(device.get("type") == "drive")):
+				cairn.displayRaw("  %s" % device.get("device"))
+				self.partitionDevice(sysdef, device)
+		return True

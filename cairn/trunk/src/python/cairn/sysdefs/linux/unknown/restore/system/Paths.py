@@ -24,4 +24,33 @@ class Paths(tmpl.Paths):
 				 Tool("sync", "env/tools/sync", False)
 			   ]
 		self.__BINS = self.__BINS + bins
+		for tool in Constants.LVM_RESTORE_TOOLS:
+			self.__BINS.append(Tool(tool, "env/tools/" + tool, False))
+		return
+
+
+	def userCheck(self, sysdef):
+		self.checkMD(sysdef)
+		self.checkLVM(sysdef)
+		return
+
+
+	def checkMD(self, sysdef):
+		if Options.get("no-raid"):
+			return
+		return
+
+
+	def checkLVM(self, sysdef):
+		if Options.get("no-lvm"):
+			return
+		# Check for 
+		for tool in Constants.LVM_COPY_TOOLS:
+			if not sysdef.info.get("env/tools/" + tool):
+				cairn.warn(("Failed to find program %s. " +
+							"LVM volumes will not be handled") % tool)
+				sysdef.info.setChild("env/tools/lvm", "False")
+				return
+		cairn.debug("lvm tools found")
+		sysdef.info.setChild("env/tools/lvm", "True")
 		return

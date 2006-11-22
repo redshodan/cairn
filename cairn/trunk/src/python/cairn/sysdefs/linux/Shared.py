@@ -48,6 +48,13 @@ def getDeviceType(device):
 	return None
 
 
+def skipDevice(skips, device):
+	for sdev in skips.keys():
+		if sdev == device:
+			return True
+	return False
+
+
 def isRemovable(device):
 	try:
 		removable = file("/sys/block/%s/removable" % device, "r")
@@ -60,11 +67,19 @@ def isRemovable(device):
 	return False
 
 
+def defineDeviceSkipped(sysdef, device, devShort, devType):
+	devElem = sysdef.info.createDeviceElem(devShort)
+	devElem.setChild("device", device)
+	devElem.setChild("status", "skipped")
+	return
+
+
 def defineDevice(sysdef, device, devShort, devType):
 	try:
 		pdev = parted.PedDevice(device)
 		devElem = sysdef.info.createDeviceElem(devShort)
 		devElem.setChild("device", device)
+		devElem.setChild("status", "probed")
 		devElem.setChild("type", devType)
 		devElem.setChild("size", "%d" % pdev.getLength())
 		devElem.setChild("sector-size", "%d" % pdev.getSectorSize())
@@ -77,7 +92,7 @@ def defineDevice(sysdef, device, devShort, devType):
 		except Exception, err:
 			cairn.displayNL()
 			cairn.error(str(err))
-			devElem.setChild("empty", "True")
+			devElem.setChild("status", "empty")
 			empty = True
 		if not empty:
 			ptype = pdisk.getType()

@@ -24,7 +24,7 @@ class ListParted(object):
 				continue
 			cairn.displayRaw("  %s:" % device.get("device"))
 			cairn.displayRaw("  %s:" % device.get("device").lstrip("/dev/"))
-			if device.get("empty"):
+			if device.get("status") != "probed":
 				cairn.displayRaw(" No partitions found")
 				cairn.displayNL()
 				continue
@@ -41,13 +41,13 @@ class ListParted(object):
 						(type == parted.PARTITION_LOGICAL)):
 						foundPart = True
 						pdev = ppart.getPath()
-						cairn.displayRaw(" " + dev.lstrip("/dev/"))
+						cairn.displayRaw(" " + ppart.getPath().lstrip("/dev/"))
 						pname = "%d" % ppart.getNum()
 						part = sysdef.info.createPartitionElem(device, pname)
 						part.setChild("device", ppart.getPath())
 						Shared.definePartition(sysdef, part, ppart)
 				if not foundPart:
-					device.setChild("empty", "True")
+					device.setChild("status", "empty")
 					cairn.displayRaw(" No partitions found")
 			except Exception, err:
 				cairn.displayNL()

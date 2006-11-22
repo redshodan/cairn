@@ -19,19 +19,32 @@ __program = None
 
 
 def getDef():
+	global __sysdef
 	return __sysdef
 
 
 def getInfo():
-	return __sysdef.info
+	global __sysdef
+	if __sysdef:
+		return __sysdef.info
+	else:
+		return None
 
 
 def getModuleList():
-	return __sysdef.moduleList
+	global __sysdef
+	if __sysdef:
+		return __sysdef.moduleList
+	else:
+		return None
 
 
 def getProgram():
-	return cairn.sysdefs.__program
+	global __program
+	if __program:
+		return __program
+	else:
+		return None
 
 
 def setProgram(program):
@@ -49,6 +62,7 @@ def load():
 
 
 def loadUserConfig():
+	global __userCfg
 	filename = Options.get("configfile")
 	if not filename:
 		return
@@ -65,46 +79,49 @@ def loadUserConfig():
 def loadPlatform():
 	"""Platform selector"""
 
-	import cairn.sysdefs
+	global __sysdef
+
 	userSysdef = Options.get("sysdef")
 	if userSysdef:
 		words = userSysdef.split(".")
 		root = ".".join(words[0:len(words)-1])
-		cairn.sysdefs.__sysdef = selectPlatform(root, [words[len(words)-1]], True)
+		__sysdef = selectPlatform(root, [words[len(words)-1]], True)
 		return
 
-	if not cairn.sysdefs.__sysdef:
+	if not __sysdef:
 		import cairn.sysdefs.linux
 		if linux.matchPlatform():
-			cairn.sysdefs.__sysdef = linux.loadPlatform()
-	if not cairn.sysdefs.__sysdef:
+			__sysdef = linux.loadPlatform()
+	if not __sysdef:
 		import cairn.sysdefs.darwin
 		if darwin.matchPlatform():
-			cairn.sysdefs.__sysdef = darwin.loadPlatform()
-	if not cairn.sysdefs.__sysdef:
+			__sysdef = darwin.loadPlatform()
+	if not __sysdef:
 		raise cairn.Exception("Unable to determine the system definition for this machine.")
 
-	if not cairn.sysdefs.__sysdef.setup():
+	if not __sysdef.setup():
 		raise cairn.Exception("Unable to setup the system definition.")
 	return
 
 
 def loadProgramDefaults():
+	global __sysdef
 	for opt, val in __program.getDefaults().iteritems():
-		cairn.sysdefs.__sysdef.info.setChild(opt, val)
+		__sysdef.info.setChild(opt, val)
 	return
 
 
 def loadModuleList():
-	modList = IModule.ModuleList(cairn.sysdefs.__sysdef)
+	global __sysdef
+	modList = IModule.ModuleList(__sysdef)
 	userModuleSpec = Options.get("modules")
 	if Options.get("run-modules"):
 		sysmodules = Options.get("run-modules")
 	else:
 		sysmodules = cairn.sysdefs.__program.getModuleString()
-	IModule.loadList(cairn.sysdefs.__sysdef, sysmodules, userModuleSpec,
+	IModule.loadList(__sysdef, sysmodules, userModuleSpec,
 					 modList, None)
-	cairn.sysdefs.__sysdef.moduleList = modList
+	__sysdef.moduleList = modList
 	return
 
 
@@ -115,6 +132,7 @@ def verifyModuleList():
 
 
 def run():
+	global __sysdef
 	cairn.debug("Final static module list:")
 	for name in getModuleList().toStrings():
 		cairn.debug("  %s" % name)
@@ -133,7 +151,7 @@ def run():
 		else:
 			obj = func()
 		try:
-			if not obj.run(cairn.sysdefs.__sysdef) and not Options.get("force"):
+			if not obj.run(__sysdef) and not Options.get("force"):
 				raise cairn.Exception("Failed to run module: " +
 									  modInfo.module.__name__)
 		except cairn.Exception, err:
@@ -147,17 +165,20 @@ def run():
 
 
 def printSummary():
-	cairn.sysdefs.__sysdef.printSummary();
+	global __sysdef
+	__sysdef.printSummary();
 	return
 
 
 def quit():
-	cairn.sysdefs.__quit = True
+	global __quit
+	__quit = True
 	return
 
 
 def haveQuit():
-	return cairn.sysdefs.__quit
+	global __quit
+	return __quit
 
 
 ###

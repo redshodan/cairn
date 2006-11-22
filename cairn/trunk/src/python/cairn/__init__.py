@@ -136,9 +136,13 @@ def displayNL():
 
 
 def handleException(err):
+	import cairn.sysdefs
 	Logging.all.log(Logging.ERROR, "***A FATAL EXCEPTION HAPPENED***")
-	Logging.all.log(Logging.ERROR, "***META DUMP***\n%s" % \
-					sysdefs.getInfo().prettyStr())
+	if sysdefs and sysdefs.getInfo():
+		Logging.all.log(Logging.ERROR, "***META DUMP***\n%s" % 
+						sysdefs.getInfo().prettyStr())
+	else:
+		Logging.all.log(Logging.ERROR, "***META DUMP***\nEmpty meta")
 	logErr(err)
 	sys.exit(1)
 	return
