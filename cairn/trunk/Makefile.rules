@@ -21,3 +21,6 @@ clean:
 #### subversion
 svnignore:
 	$(TOPDIR)/misc/svnignore-update.sh
+
+
+.PHONE: svnignore

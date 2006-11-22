@@ -8,7 +8,7 @@ include $(TOPDIR)/Makefile.vars
 
 
 #### Vars
-BUILD_DIRS=build build/python build/lib build/bin build/src
+BUILD_DIRS=build build/python build/lib build/bin build/src build/trac
 DIRS=src
 
 
@@ -36,6 +36,9 @@ $(PYTHON_INST)/lib/libpython$(PYTHON_VER).so: $(PYTHON_BUILD)
 	make -C $(PYTHON_BUILD)
 	make -C $(PYTHON_BUILD) install
 
+todo: build/trac
+	misc/buildtodo $(TOPDIR)/TODO
+
 
 clean:
 	rm -rf build
@@ -43,4 +46,4 @@ clean:
 
 include $(TOPDIR)/Makefile.rules
 
-.PHONY: $(SUBDIRS) $(DIRS) python
+.PHONY: $(SUBDIRS) $(DIRS) python svnignore
