@@ -1,2 +1,5 @@
 CAIRN Copy requirements:
-  python 2.3, sfdisk
+  Base:  python 2.3
+  Linux:
+    Required: basic system tools like mount, mkfs.*, etc
+    Optional: LVM2 tools, mdadm
