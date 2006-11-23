@@ -1,11 +1,10 @@
 CAIRN - Copy And Intelligently Restore via Network
 --------------------------------------------------
 
-CAIRN is a modular copy and restore program for the imaging of a
-computer.  It can copy every file on a computer and gather information
-on how to recreate it from bare metal. CAIRN is primarily a network
-oriented restore program, but is also flexible enough to boot from any
-possible method.
+CAIRN is a modular computer image copy and restore program.  It can copy 
+every file on a computer and gather information on how to recreate it from
+bare metal. CAIRN is primarily a network oriented restore program, but is
+also flexible enough to boot from any possible method.
 
 
 Licensing
@@ -50,18 +49,20 @@ CAIRN is in BETA stage right now. Do not be surprised if this release makes
 your computer sprout legs and run off into the forest never to be seen again.
 It is possible. Seriously though this is the first release of CAIRN and is 
 very beta. We are confident it will work with simple setups, but there is NO
-guarentee. This is mainly a testing release for anyone who is inclined to test
+guarantee. This is mainly a testing release for anyone who is inclined to test
 it. If you have a spare machine and would like to test CAIRN please let us
 know. Any help will be greatly appreciated. The nature of a project like CAIRN 
-is such that there simply can not be enough testing.
+is such that there simply can never be enough testing on enough different
+setups.
 
 Vist http://trac.cairn-project.org to file bugs or enhancement requests. Since
 CAIRN is pretty new there is a lot left to be done. If you have a great idea
 get it in quick.
 
-Currently CAIRN does not support software RAID or LVM setups. That is in the
-immediate todo list and will be done soon. It should be possible to restore a 
-software RAID or LVM machine, but it will take a lot of manual intervention.
+Currently CAIRN supports imaging a computer and restoring it exactly as it was
+originally. The next release of CAIRN will focus on being able to adjust how
+the image is restored and to account for changes in hardware.
+
 
 
 Quick Help
@@ -88,7 +89,7 @@ Restoring:
 Documentation
 -------------
 
-Currently there is no large amount of documentation. Running CAIRN with no
+Currently there is not a large amount of documentation. Running CAIRN with no
 arguments will invoke the help. This is the best documentation right now.
 
 
