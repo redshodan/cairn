@@ -16,9 +16,12 @@ class MountParts(object):
 		for device in sysdef.readInfo.getElems("hardware/device"):
 			if device.get("status") == "probed":
 				for part in device.getElems("disk-label/partition"):
-					mountList.append(part.get("mount"))
-					fsMap[part.get("mount")] = part
+					mount = part.get("mount")
+					if mount:
+						mountList.append(mount)
+						fsMap[part.get("mount")] = part
 		mountList.sort()
+		cairn.verbose("Sorted mounts: %s" % " ".join(mountList))
 		return mountList, fsMap
 
 

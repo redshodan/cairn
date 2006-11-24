@@ -22,7 +22,6 @@ class ListParted(object):
 		for device in sysdef.info.getElems("hardware/device"):
 			if device.get("type") != "drive":
 				continue
-			cairn.displayRaw("  %s:" % device.get("device"))
 			cairn.displayRaw("  %s:" % device.get("device").lstrip("/dev/"))
 			if device.get("status") != "probed":
 				cairn.displayRaw(" No partitions found")
@@ -33,20 +32,18 @@ class ListParted(object):
 				pdev = parted.PedDevice(dev)
 				pdisk = pdev.diskNew()
 				pparts = pdisk.getPartitions()
-				foundPart = False
 				for ppart in pparts:
-					type = ppart.getType()
-					if ((type == parted.PARTITION_NORMAL) or
-						(type == parted.PARTITION_LVM) or
-						(type == parted.PARTITION_LOGICAL)):
-						foundPart = True
-						pdev = ppart.getPath()
+					if ppart.getType() & parted.PARTITION_METADATA:
+						continue
+					pdev = ppart.getPath()
+					if not (ppart.getType() & parted.PARTITION_METADATA):
 						cairn.displayRaw(" " + ppart.getPath().lstrip("/dev/"))
-						pname = "%d" % ppart.getNum()
-						part = sysdef.info.createPartitionElem(device, pname)
+					pname = "%d" % ppart.getNum()
+					part = sysdef.info.createPartitionElem(device, pname)
+					if not (ppart.getType() & parted.PARTITION_METADATA):
 						part.setChild("device", ppart.getPath())
-						Shared.definePartition(sysdef, part, ppart)
-				if not foundPart:
+					Shared.definePartition(sysdef, part, ppart)
+				if not len(pparts):
 					device.setChild("status", "empty")
 					cairn.displayRaw(" No partitions found")
 			except Exception, err:

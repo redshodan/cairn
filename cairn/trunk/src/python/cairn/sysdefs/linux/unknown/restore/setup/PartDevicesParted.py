@@ -5,6 +5,8 @@ import pylibparted as parted
 
 import cairn
 import cairn.sysdefs.templates.unix.restore.setup.PartDevices as tmpl
+from cairn.sysdefs.linux import Shared
+
 
 
 def getClass():
@@ -14,36 +16,27 @@ def getClass():
 class PartDevicesParted(tmpl.PartDevices):
 
 	def partitionDevice(self, sysdef, device):
-		dev = device.get("device")
+		dev = device.get("mapped-device")
 		parts = device.getElems("disk-label/partition")
 		try:
 			pdev = parted.PedDevice(dev)
-			pdisk = parted.PedDisk(pdev, pdev.getType())
+			pdtype = parted.PedDiskType(device.get("disk-label/type"))
+			pdisk = parted.PedDisk(pdev, pdtype)
 			pdisk.delAllPartitions()
 			for part in parts:
+				type = part.get("type")
+				cairn.verbose("partition: %s : %s" % (part.get("device"), type))
 				pcon = pdev.getAnyConstraint()
 				ppart = parted.PedPartition(pdisk,
-											self.mapPartType(part.get("type")),
-											None, int(part.get("geom.start")),
-											int(part.get("geom.size")) +
-											int(part.get("geom.start")))
-				pdisk.addPartition(part, pcon)
+											Shared.mapPartType(type),
+											None, int(part.get("start")),
+											int(part.get("size")) +
+											int(part.get("start")))
+				pdisk.addPartition(ppart, pcon)
 			pdisk.commit()
 		except Exception, err:
 			raise cairn.Exception("Failed to write partition table to %s" %
 								  dev, err)
-		return
-
-
-	def mapPartType(self, type):
-		if type == "primary":
-			return parted.PARTITION_NORMAL
-		elif type == "extended":
-			return parted.PARTITION_EXTENDED
-		elif type == "logical":
-			return parted.PARTITION_LOGICAL
-		else:
-			raise cairn.Exception("Invalid partition type: %s" % type)
 		return
 
 
@@ -54,4 +47,5 @@ class PartDevicesParted(tmpl.PartDevices):
 				(device.get("type") == "drive")):
 				cairn.displayRaw("  %s" % device.get("device"))
 				self.partitionDevice(sysdef, device)
+		cairn.displayNL()
 		return True

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+
+for a in hda sda sdb sdc sdd sde sdf sdg sdh sdi sdj; do
+    dd if=/dev/zero of=/dev/${a} bs=1024 count=1024
+    sfdisk -R /dev/${a}
+done

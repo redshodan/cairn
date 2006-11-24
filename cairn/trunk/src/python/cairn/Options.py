@@ -209,7 +209,7 @@ cliCommonOpts = [
 	 "default":Logging.INFO, "callback":setLogOpt, "level":ADVANCED | DEBUG,
  	 "help":"Set the logging level: none, error, warn, log (default), " + \
 	 "verbose, debug, devel.", "metavar":"LEVEL"},
-	{"long":"log-file", "type":"string", "level":ADVANCED | DEBUG,
+	{"long":"log-file", "short":"L", "type":"string", "level":ADVANCED | DEBUG,
 	 "action":"callback", "callback":setLogFileOpt,
 	 "help":"Set the file to log to."},
 	{"long":"log-module", "type":"string", "callback":setLogModuleOpt,

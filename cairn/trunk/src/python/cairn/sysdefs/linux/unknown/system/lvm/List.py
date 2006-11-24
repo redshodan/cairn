@@ -101,6 +101,7 @@ class List(object):
 			if Shared.skipDevice(skips, vgname):
 				devElem.setChild("status", "skipped")
 				continue
+			devElem.setChild("status", "probed")
 			dlabel = sysdef.info.createDiskLabelElem(devElem)
 			dlabel.setChild("type", "lvm")
 			count = 1

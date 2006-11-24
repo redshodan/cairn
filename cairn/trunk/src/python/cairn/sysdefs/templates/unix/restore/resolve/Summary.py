@@ -22,18 +22,21 @@ class Summary(object):
 		cairn.display("Summary of actions that will be taken:")
 		cairn.display("Image devices:")
 		for device in sysdef.readInfo.getElems("hardware/device"):
-			cairn.display("  %s: size=%s model=%s" %
-						  (device.get("device"), device.get("size"),
-						   device.get("model")))
+			if device.get("type") == "drive":
+				cairn.display("  %s: size=%s model=%s" %
+				              (device.get("device"), device.get("size"),
+							   device.get("hw/model")))
 		cairn.display("System devices:")
 		for device in sysdef.info.getElems("hardware/device"):
-			cairn.display("  %s: size=%s model=%s" %
-						  (device.get("device"), device.get("size"),
-						   device.get("model")))
+			if device.get("type") == "drive":
+				cairn.display("  %s: size=%s model=%s" %
+				              (device.get("device"), device.get("size"),
+							   device.get("hw/model")))
 		cairn.display("Device mapping (image -> system):")
 		for device in sysdef.readInfo.getElems("hardware/device"):
-			cairn.display("  %s -> %s" % (device.get("device"),
-										  device.get("mapped-device")))
+			if device.get("type") == "drive":
+				cairn.display("  %s -> %s" % (device.get("device"),
+											  device.get("mapped-device")))
 		cairn.displayNL()
 		# This needs more work before it'll be useful in the slightest
 		#driveMatch = sysdef.readInfo.get("hardware/drive-match")

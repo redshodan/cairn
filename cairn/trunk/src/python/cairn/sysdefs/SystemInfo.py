@@ -125,14 +125,14 @@ Hardware
 	     <lv/>
 	   </lvs>
 	   <vg-backups>
-	     <vg/>              - contains the output of vgcfgbackup
+	     <vg name=""/>        - contains the output of vgcfgbackup
        </vg-backups>
 	 </lvm-cfg>
    </hardware>
 
 Archive
    <archive>
-	 <cmdline/>             - command line used to create the image
+	 <cmdline/>               - command line used to create the image
      <filename/>
      <md5sum/>
 	 <size/>

@@ -2,8 +2,13 @@
 
 
 import cairn
+from cairn import Options
 
 
 
 def getSubModuleString(sysdef):
-	return "OS; Arch; Machine; Paths; drives; partitions; BootLoader; Summary; verify"
+	str = "OS; Arch; Machine; Paths; drives; "
+	if Options.get("program") == "copy":
+		str = str + "partitions; BootLoader; "
+	str = str + "Summary; verify"
+	return str

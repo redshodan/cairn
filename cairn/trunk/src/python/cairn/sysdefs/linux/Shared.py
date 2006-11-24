@@ -6,6 +6,7 @@ import commands
 import pylibparted as parted
 
 import cairn
+from cairn import Options
 from cairn.sysdefs.linux.Constants import *
 
 
@@ -90,8 +91,11 @@ def defineDevice(sysdef, device, devShort, devType):
 		try:
 			pdisk = pdev.diskNew()
 		except Exception, err:
-			cairn.displayNL()
-			cairn.error(str(err))
+			if Options.get("program") == "copy":
+				cairn.displayNL()
+				cairn.error(str(err))
+			else:
+				cairn.verbose(str(err))
 			devElem.setChild("status", "empty")
 			empty = True
 		if not empty:
@@ -122,8 +126,10 @@ def definePartition(sysdef, part, ppart):
 	geom = ppart.getGeometry()
 	part.setChild("start", "%ld" % geom.getStart())
 	part.setChild("size", "%ld" % geom.getLength())
-	if ((ppart.getTypeName() == "gpt") or (ppart.getTypeName() == "mac")):
+	try:
 		part.setChild("label", ppart.getName())
+	except:
+		pass
 	part.setChild("type", ppart.getTypeName())
 	if ppart.isActive():
 		part.setChild("active", "true")
@@ -133,6 +139,14 @@ def definePartition(sysdef, part, ppart):
 	flags = part.getElem("flags")
 	for flag in ppart.getFlagsNames():
 		flags.createElem("flag", flag)
+	return
+
+
+def mapPartType(type):
+	if type in PART_TYPE_MAP:
+		return PART_TYPE_MAP[type]
+	else:
+		raise cairn.Exception("Invalid partition type: %s" % type)
 	return
 
 

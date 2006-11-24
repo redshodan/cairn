@@ -2,7 +2,11 @@
 
 
 import cairn.sysdefs.linux.unknown.system.Paths as tmpl
+
+import cairn
+from cairn import Options
 from cairn.sysdefs.Tools import Tool, ToolGroup
+from cairn.sysdefs.linux import Constants
 
 
 

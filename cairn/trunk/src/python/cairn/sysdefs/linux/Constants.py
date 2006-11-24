@@ -3,6 +3,7 @@
 
 
 import re
+import pylibparted as parted
 
 
 
@@ -24,6 +25,14 @@ FS_MAP = {
 	"jfs" : "env/tools/mkfs.jfs",
 	"reiserfs" : "env/tools/mkfs.reiserfs",
 	"swap" : "env/tools/mkswap",
+	"linux-swap" : "env/tools/mkswap",
+}
+
+PART_TYPE_MAP = \
+{
+	"extended":parted.PARTITION_EXTENDED, "logical":parted.PARTITION_LOGICAL,
+	"lvm":parted.PARTITION_LVM, "metadata":parted.PARTITION_METADATA,
+	"primary":parted.PARTITION_NORMAL
 }
 
 MD_RE = [re.compile("md[0-9]+")]

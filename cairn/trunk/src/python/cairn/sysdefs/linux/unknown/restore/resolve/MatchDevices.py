@@ -45,16 +45,16 @@ class MatchDevices(tmpl.MatchDevices):
 				continue
 			if sysDevices[index].get("device") == imgDevices[index].get("device"):
 				partial = True
-				if not ((sysDevices[index].get("model") ==
-						 imgDevices[index].get("model")) and
+				if not ((sysDevices[index].get("hw/model") ==
+						 imgDevices[index].get("hw/model")) and
 						(sysDevices[index].get("sector-size") ==
 						 imgDevices[index].get("sector-size")) and
-						self.compareGeom(sysDevices[index].getElem("bios-geom"),
+						self.compareGeom(sysDevices[index].getElem("hw/bios-geom"),
 										 imgDevices[index].
-										     getElem("bios-geom")) and
-						self.compareGeom(sysDevices[index].getElem("hw-geom"),
+										     getElem("hw/bios-geom")) and
+						self.compareGeom(sysDevices[index].getElem("hw/hw-geom"),
 										 imgDevices[index].
-										     getElem("hw-geom")) and
+										     getElem("hw/hw-geom")) and
 						(sysDevices[index].get("type") ==
 						 imgDevices[index].get("type")) and
 						(sysDevices[index].get("size") ==

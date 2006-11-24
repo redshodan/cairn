@@ -12,5 +12,5 @@ def getClass():
 class PartDevices(tmpl.PartDevices):
 
 	def run(self, sysdef):
-		sysdef.info.insertAfterMe("restore.setup.PartDevicesParted")
+		sysdef.moduleList.insertAfterMe("restore.setup.PartDevicesParted")
 		return True

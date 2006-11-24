@@ -35,6 +35,6 @@ class MakeFS(tmpl.MakeFS):
 		cairn.log("Creating filesystems")
 		for device in sysdef.readInfo.getElems("hardware/device"):
 			if device.get("status") == "probed":
-				for part in device.getElems("device-label/partition"):
+				for part in device.getElems("disk-label/partition"):
 					self.makeFS(sysdef, part)
 		return True
