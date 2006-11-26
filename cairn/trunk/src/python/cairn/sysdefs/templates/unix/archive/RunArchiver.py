@@ -164,6 +164,7 @@ class RunArchiver(object):
 
 	def run(self, sysdef):
 		try:
+			cairn.display("Extracting files:")
 			archive = self.prepare(sysdef)
 			self.runTools(sysdef, archive)
 		except Exception, err:

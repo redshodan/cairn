@@ -75,7 +75,7 @@ class Summary(object):
 		self.display(sysdef)
 		if Options.get("pretend"):
 			sysdef.quit()
-		elif Options.get("batch"):
+		elif Options.get("yes"):
 			self.warn(sysdef)
 		else:
 			if not self.ask(sysdef):

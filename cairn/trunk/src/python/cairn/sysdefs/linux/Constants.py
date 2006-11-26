@@ -47,4 +47,4 @@ DEVICE_MAP = {"drive" : DRIVE_RE, "lvm" : LVM_RE, "md" : MD_RE,
 			  "mdp" : MDP_RE}
 
 LVM_COPY_TOOLS = ["pvscan", "vgscan", "lvscan", "vgcfgbackup"]
-LVM_RESTORE_TOOLS = ["pvcreate", "vgcfgrestore"]
+LVM_RESTORE_TOOLS = ["pvcreate", "vgcfgrestore", "vgchange"]

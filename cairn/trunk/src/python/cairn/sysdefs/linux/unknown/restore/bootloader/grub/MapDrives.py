@@ -28,7 +28,7 @@ class MapDrives(object):
 			raise cairn.Exception("Failed to open %s: %s" % (mapFileName, err))
 		id = 0
 		for disk in sysdef.readInfo.getElems("hardware/device"):
-			if (disk.get("type") == "disk"):
+			if (disk.get("type") == "drive"):
 				mapFile.write("(hd%d)  %s" % (id, disk.get("device")))
 		mapFile.close()
 		return
@@ -39,10 +39,20 @@ class MapDrives(object):
 		fsMap = {}
 		driveID = -1
 		partID = -1
+		devices = {}
 		for device in sysdef.readInfo.getElems("hardware/device"):
-			if (device.get("type") == "disk"):
+			devices[device.get("device")] = device
+		# hda is before sda. Assuming IDE is still before SATA or SCSI in
+		# BIOS disk order. Will have to change if thats not really true.
+		keys = devices.keys()
+		keys.sort()
+		for key in keys:
+			device = devices[key]
+			if (device.get("type") == "drive"):
 				driveID = driveID + 1
 				for part in device.getElems("disk-label/partition"):
+					if part.get("type") == "metadata":
+						continue
 					partID = partID + 1
 					mountList.append(part.get("mount"))
 					fsMap[part.get("mount")] = [device, driveID, part, partID]

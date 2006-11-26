@@ -97,6 +97,7 @@ class List(object):
 			vgdev = "/dev/" + vgname
 			devElem = sysdef.info.createDeviceElem(vgname)
 			devElem.setChild("device", vgdev)
+			devElem.setChild("mapped-device", vgdev)
 			devElem.setChild("type", "lvm")
 			if Shared.skipDevice(skips, vgname):
 				devElem.setChild("status", "skipped")
@@ -112,6 +113,7 @@ class List(object):
 				partElem = sysdef.info.createPartitionElem(devElem,
 														   "%d" % count)
 				partElem.setChild("device", fulldev)
+				partElem.setChild("mapped-device", fulldev)
 				empty = True
 				try:
 					pdev = parted.PedDevice(fulldev)

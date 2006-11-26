@@ -243,14 +243,14 @@ cliCommonOpts = [
 	{"long":"verbose", "short":"v", "action":"callback",
 	 "default":False, "callback":setVerboseOpt,
  	 "help":"Verbose operation. Multiple flags will increase verboseness."},
+	{"long":"yes", "short":"y", "action":"store_true", "default":False,
+	 "level":ADVANCED | DEBUG, "help":"Automatically answer yes to all questions"}
 ]
 
 cliCopyRestoreCommonOpts = [
 	{"long":"all-files", "type":"string", "level":ADVANCED,
 	 "callback":setAllFiles, "metavar":"DIR",
 	 "help":"Set the location of all outputed files: temp files, the logfile, and the image file. This is equivalent to calling --tmp, --log-file, --destination with the same directory."},
-	{"long":"batch", "short":"b", "action":"store_true", "level":ADVANCED,
-	 "help":"Batch mode or non-interactive opteration. Supress all questions."},
 	{"long":"boot", "short":"B", "type":"string", "level":ADVANCED,
 	 "help":"Force this bootloader to be used."},
 	{"long":"configfile", "short":"c", "type":"string", "level":ADVANCED,

@@ -43,6 +43,18 @@ class CreateLVM(object):
 		return
 
 
+	def saveVGFiles(self, sysdef):
+		cairn.verbose("Saving vgcfgrestore files")
+		vgfiles = {}
+		for vg in sysdef.readInfo.getElems("hardware/lvm-cfg/vg-backups/vg"):
+			cfgfile = cairn.mktemp("cairn-vgcfg-")
+			name = vg.getAttr("name")
+			os.write(cfgfile[0], vg.getText())
+			os.close(cfgfile[0])
+			vgfiles[name] = cfgfile[1]
+		return vgfiles
+
+
 	def restoreVG(self, sysdef, vgElem, vgfiles):
 		vgname = vgElem.getText()
 		cmd = "%s -f %s %s" % (sysdef.info.get("env/tools/vgcfgrestore"),
@@ -56,16 +68,16 @@ class CreateLVM(object):
 		return
 
 
-	def saveVGFiles(self, sysdef):
-		cairn.verbose("Saving vgcfgrestore files")
-		vgfiles = {}
-		for vg in sysdef.readInfo.getElems("hardware/lvm-cfg/vg-backups/vg"):
-			cfgfile = cairn.mktemp("cairn-vgcfg-")
-			name = vg.getAttr("name")
-			os.write(cfgfile[0], vg.getText())
-			os.close(cfgfile[0])
-			vgfiles[name] = cfgfile[1]
-		return vgfiles
+	def activateVG(self, sysdef, vgElem):
+		vgname = vgElem.getText()
+		cmd = "%s -ay %s" % (sysdef.info.get("env/tools/vgchange"), vgname)
+		(status, output) = commands.getstatusoutput(cmd)
+		cairn.verbose(cmd)
+		cairn.verbose(output)
+		if (status != 0):
+			raise cairn.Exception("Failed to activate Volume Group %d: %s" %
+								  (vgname, output))
+		return
 
 
 	def run(self, sysdef):
@@ -80,5 +92,6 @@ class CreateLVM(object):
 		for vg in sysdef.readInfo.getElems("hardware/lvm-cfg/vgs/vg"):
 			cairn.displayRaw("  %s" % vg.getText())
 			self.restoreVG(sysdef, vg, vgfiles)
+			self.activateVG(sysdef, vg)
 		cairn.displayNL()
 		return True
