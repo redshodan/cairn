@@ -138,13 +138,10 @@ def setInfoOpt(option, opt, value, parser):
 
 
 def setSkipDeviceOpt(option, opt, value, parser):
-	words = value.split("=")
-	if ((len(words) != 2) or not words[0] or not words[1] or
-		((words[1] != "drive") and (words[1] != "md") and (words[1] != "lvm"))):
-		raise cairn.Exception("Invalid paramter to --skip. Must be in the form: device=[drive|md|lvm] where device is like '/dev/hda' or 'md0'.")
+	words = value.split(",")
 	cur = ""
 	if "archive/skip-devices" in __sysInfoOpts:
-		cur = __sysInfoOpts["archive/skip-devices"] + ";"
+		cur = __sysInfoOpts["archive/skip-devices"] + ","
 	__sysInfoOpts["archive/skip-devices"] = "%s%s" % (cur, value)
 	return
 
@@ -274,8 +271,8 @@ cliCopyRestoreCommonOpts = [
 	 "level":EXPERT | DEBUG, "metavar":"NAME=VAL",
  	 "help":"Set a system metainfo option, overriding discovered value."},
 	{"long":"skip", "type":"string", "callback":setSkipDeviceOpt,
-	 "level":ADVANCED, "metavar":"device=[drive|md|lvm]",
-	 "help":"Do not include specified device where device is like '/dev/hda' or 'md0'. Automatically excludes mounts from this device."},
+	 "level":ADVANCED, "metavar":"device[,device]",
+	 "help":"Do not include specified device where device is a full path, '/dev/hda' or device name 'md0'. Automatically excludes mounts from this device."},
 	{"long":"tmpdir", "type":"string", "level":ADVANCED,
 	 "action":"callback", "callback":setTmpDirOpt, "metavar":"DIR",
 	 "help":"Set the location for all temporary files."}

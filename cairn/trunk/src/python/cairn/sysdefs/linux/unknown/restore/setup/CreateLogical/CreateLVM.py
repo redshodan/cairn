@@ -3,7 +3,6 @@
 
 
 import os
-import commands
 
 
 import cairn
@@ -34,12 +33,7 @@ class CreateLVM(object):
 		cmd = "%s --restorefile %s -u %s %s" % \
 			  (sysdef.info.get("env/tools/pvcreate"), vgfiles[vg],
 			   pvElem.getAttr("uuid"), dev)
-		(status, output) = commands.getstatusoutput(cmd)
-		cairn.verbose(cmd)
-		cairn.verbose(output)
-		if (status != 0):
-			raise cairn.Exception("Failed to create Physical Volume %s: %s" %
-								  (dev, output))
+		cairn.run(cmd, "Failed to create Physical Volume %s" % dev)
 		return
 
 
@@ -59,24 +53,14 @@ class CreateLVM(object):
 		vgname = vgElem.getText()
 		cmd = "%s -f %s %s" % (sysdef.info.get("env/tools/vgcfgrestore"),
 							   vgfiles[vgname], vgname)
-		(status, output) = commands.getstatusoutput(cmd)
-		cairn.verbose(cmd)
-		cairn.verbose(output)
-		if (status != 0):
-			raise cairn.Exception("Failed to restore Volume Group %d: %s" %
-								  (vgname, output))
+		cairn.run(cmd, "Failed to restore Volume Group %s" % vgname)
 		return
 
 
 	def activateVG(self, sysdef, vgElem):
 		vgname = vgElem.getText()
 		cmd = "%s -ay %s" % (sysdef.info.get("env/tools/vgchange"), vgname)
-		(status, output) = commands.getstatusoutput(cmd)
-		cairn.verbose(cmd)
-		cairn.verbose(output)
-		if (status != 0):
-			raise cairn.Exception("Failed to activate Volume Group %d: %s" %
-								  (vgname, output))
+		cairn.run(cmd, "Failed to activate Volume Group %s" % vgname)
 		return
 
 

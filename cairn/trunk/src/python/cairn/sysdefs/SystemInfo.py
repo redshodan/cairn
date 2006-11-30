@@ -73,15 +73,6 @@ Hardware
 	   <type/>                - drive, md, mdp, lvm
 	   <size/>
 	   <sector-size/>
-       <sub-devs>
-         <sub-dev>            - exists if is a meta device
-           <device/>
-           <mapped-device/>
-           <type/>            - drive, md, mdp, lv, pv
-           <size/>
-           <sector-size/>
-         <sub-dev/>
-       <sub-devs/>
        <hw>                   - exists if is a real drive
 	     <os-driver/>
 	     <model/>
@@ -114,7 +105,7 @@ Hardware
          </partition>
        </disk-label>
 	 </device>
-	 <lvm-cfg/>
+	 <lvm-cfg>
 	   <pvs>
 	     <pv vg="" uuid="">
 	   </pvs>
@@ -128,6 +119,11 @@ Hardware
 	     <vg name=""/>        - contains the output of vgcfgbackup
        </vg-backups>
 	 </lvm-cfg>
+	 <mdadm-cfg>
+	   <md name="">
+	     <device/>
+		 <
+	 </mdadm-cfg>
    </hardware>
 
 Archive
@@ -305,20 +301,6 @@ def createDeviceElem(self, name):
 	elem = device.createElem("size")
 	elem = device.createElem("sector-size")
 	return device
-
-
-def createDeviceSubDevsElem(self, drive):
-	return drive.createElem("sub-devs")
-
-
-def createDeviceSubDevElem(self, sdevs):
-	sdev = sdevs.createElem("sub-dev")
-	elem = sdev.createElem("device")
-	elem = sdev.createElem("mapped-device")
-	elem = sdev.createElem("type")
-	elem = sdev.createElem("size")
-	elem = sdev.createElem("sector-size")
-	return sdev
 
 
 def createDeviceHWElem(self, device):
@@ -502,17 +484,13 @@ def printDevices(self):
 ### Parsing accessors
 ###
 
-def getSkipDevices(self, type):
+def getSkipDevices(self):
 	skip = self.get("archive/skip-devices")
-	skips = {}
+	skips = []
 	if skip:
-		phrases = skip.split(";")
-		for phrase in phrases:
-			words = phrase.split("=")
-			if words[1] != type:
-				continue
-			dev = words[0].lstrip("/dev/")
-			skips[dev] = words[1]
+		for word in skip.split(","):
+			dev = words.lstrip("/dev/")
+			skips.append(word)
 	return skips
 
 
@@ -530,8 +508,6 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, createEnvElem)
 	DOMHelper.inject(doc, createHardwareElem)
 	DOMHelper.inject(doc, createDeviceElem)
-	DOMHelper.inject(doc, createDeviceSubDevsElem)
-	DOMHelper.inject(doc, createDeviceSubDevElem)
 	DOMHelper.inject(doc, createDeviceHWElem)
 	DOMHelper.inject(doc, createDeviceHWGeomElem)
 	DOMHelper.inject(doc, createDiskLabelElem)

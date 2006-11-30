@@ -1,7 +1,6 @@
 """linux.unknown.restore.setup.MakeFS Module"""
 
 
-import commands
 
 import cairn
 from cairn.sysdefs.linux import Constants
@@ -23,11 +22,7 @@ class MakeFS(tmpl.MakeFS):
 
 		cairn.log("  %s: %s" % (device, fsType))
 		cmd = "%s %s" % (tool, device)
-		ret = commands.getstatusoutput(cmd)
-		if ret[0] != 0:
-			raise cairn.Exception("Failed to run %s on %s: %s" %
-								  (tool, device, ret[1]))
-		cairn.verbose(ret[1])
+		cairn.run(cmd, "Failed to run %s on %s" % (tool, device))
 		return
 
 

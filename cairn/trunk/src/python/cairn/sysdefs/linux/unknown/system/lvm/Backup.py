@@ -3,8 +3,6 @@
 
 import os
 import re
-import commands
-
 
 import cairn
 from cairn import Options
@@ -21,9 +19,7 @@ class LVMBackup(object):
 	def backupVG(self, sysdef, dir, vgname):
 		cmd = "%s -f %s %s" % (sysdef.info.get("env/tools/vgcfgbackup"),
 							   os.path.join(dir, "%s"), vgname)
-		(status, output) = commands.getstatusoutput(cmd)
-		if (status != 0):
-			raise cairn.Exception("Failed to backup Logical Volumes: %s" % output)
+		cairn.run(cmd, "Failed to backup Logical Volumes")
 		vgfile = file(os.path.join(dir, vgname))
 		contents = vgfile.read()
 		vgfile.close()

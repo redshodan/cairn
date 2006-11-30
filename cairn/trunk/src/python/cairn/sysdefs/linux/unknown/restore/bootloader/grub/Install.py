@@ -3,7 +3,6 @@
 
 import os
 import os.path
-import commands
 
 import cairn
 
@@ -20,7 +19,8 @@ class Install(object):
 		try:
 			cmdFile = file(cmdFileName, "w+")
 		except Exception, err:
-			raise cairn.Exception("Failed to open GRUB command file %s: %s" % (cmdFileName, err))
+			raise cairn.Exception("Failed to open GRUB command file %s: %s" %
+								  (cmdFileName, err))
 		cmdFile.write("root=%s\n" %
 					  sysdef.info.get("machine/bootloader/partition"))
 		cmdFile.write("setup %s\n" %
@@ -34,11 +34,9 @@ class Install(object):
 		chroot = sysdef.info.get("env/tools/chroot")
 		grub = sysdef.info.get("env/tools/grub")
 		grub = grub.replace(sysdef.info.get("env/mountdir"), "")
-		cmd = "%s %s %s --no-floppy --batch < %s" % (chroot, mdir, grub, cmdFileName)
-		ret = commands.getstatusoutput(cmd)
-		cairn.debug("grub exit: %d\n%s"% (ret[0], ret[1]))
-		if ret[0] != 0:
-			raise cairn.Exception("Failed to run %s: %s" % (grub, ret[1]))
+		cmd = "%s %s %s --no-floppy --batch < %s" % (chroot, mdir, grub,
+													 cmdFileName)
+		cairn.run(cmd)
 		return
 
 

@@ -15,7 +15,7 @@ class ListDrives(object):
 
 	def run(self, sysdef):
 		cairn.log("Checking for drives")
-		skips = sysdef.info.getSkipDevices("drive")
+		skips = sysdef.info.getSkipDevices()
 		skipped = []
 		found = False
 		for devShort in Shared.listDevices():

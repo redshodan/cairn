@@ -32,14 +32,15 @@ PART_TYPE_MAP = \
 {
 	"extended":parted.PARTITION_EXTENDED, "logical":parted.PARTITION_LOGICAL,
 	"lvm":parted.PARTITION_LVM, "metadata":parted.PARTITION_METADATA,
-	"primary":parted.PARTITION_NORMAL
+	"primary":parted.PARTITION_NORMAL, "free":parted.PARTITION_FREESPACE
 }
 
 MD_RE = [re.compile("md[0-9]+")]
-MDP_RE = [re.compile("md[0-9]+_d[0-9]+")]
+MDP_RE = [re.compile("md_d[0-9]+"), re.compile("mdp[0-9]+")]
 LVM_RE = [re.compile("dm[0-9]")]
 DRIVE_RE = [re.compile("hd[a-z]+"), re.compile("sd[a-z]+"),
 			re.compile("ubd[a-z]+")]
+ALL_DEVICE_RE = (MD_RE, MDP_RE, LVM_RE, DRIVE_RE)
 
 ### Device types
 DEVICE_TYPES = ["drive", "md", "mdp", "lvm"]

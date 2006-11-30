@@ -2,8 +2,6 @@
    command line or config file"""
 
 
-import commands
-
 import cairn
 
 
@@ -23,10 +21,5 @@ class UserShellModule(object):
 
 	def run(self, sysdef):
 		cairn.log("UserShellModule run: " + self.__code)
-		ret = commands.getstatusoutput(self.__code)
-		if ret[0] != 0:
-			raise cairn.Exception("Failed running user code, exit %d: %s" %
-								  (ret[0], ret[1]))
-		cairn.verbose("UserShellModule output:")
-		cairn.verbose(ret[1])
+		cairn.run(self.__code, "Failed running user code")
 		return True

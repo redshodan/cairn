@@ -2,7 +2,6 @@
 
 
 import re
-import commands
 
 import pylibparted as parted
 
@@ -20,9 +19,7 @@ class List(object):
 
 	def scanPVs(self, sysdef):
 		cmd = "%s -u " % sysdef.info.get("env/tools/pvscan")
-		(status, output) = commands.getstatusoutput(cmd)
-		if (status != 0):
-			raise cairn.Exception("Failed to scan Physical Volumes: %s" % output)
+		output = cairn.run(cmd, "Failed to scan Physical Volumes")
 		pvs = []
 		pvsElem = sysdef.info.getElem("hardware/lvm-cfg/pvs")
 		for line in output.split("\n"):
@@ -43,9 +40,7 @@ class List(object):
 
 	def scanVGs(self, sysdef):
 		cmd = sysdef.info.get("env/tools/vgscan")
-		(status, output) = commands.getstatusoutput(cmd)
-		if (status != 0):
-			raise cairn.Exception("Failed to scan Volume Groups: %s" % output)
+		output = cairn.run(cmd, "Failed to scan Volume Groups")
 		vgs = []
 		vgsElem = sysdef.info.getElem("hardware/lvm-cfg/vgs")
 		for line in output.split("\n"):
@@ -64,9 +59,7 @@ class List(object):
 
 	def scanLVs(self, sysdef):
 		cmd = sysdef.info.get("env/tools/lvscan")
-		(status, output) = commands.getstatusoutput(cmd)
-		if (status != 0):
-			raise cairn.Exception("Failed to scan Logical Volumes: %s" % output)
+		output = cairn.run(cmd, "Failed to scan Logical Volumes")
 		lvs = []
 		lvsElem = sysdef.info.getElem("hardware/lvm-cfg/lvs")
 		for line in output.split("\n"):
@@ -90,7 +83,8 @@ class List(object):
 
 
 	def defineDevices(self, sysdef):
-		skips = sysdef.info.getSkipDevices("drive")
+		skips = sysdef.info.getSkipDevices()
+		skipped = []
 		lvs = sysdef.info.getElems("hardware/lvm-cfg/lvs/lv")
 		for vg in sysdef.info.getElems("hardware/lvm-cfg/vgs/vg"):
 			vgname = vg.getText()
@@ -100,6 +94,7 @@ class List(object):
 			devElem.setChild("mapped-device", vgdev)
 			devElem.setChild("type", "lvm")
 			if Shared.skipDevice(skips, vgname):
+				skipped.append(vgname)
 				devElem.setChild("status", "skipped")
 				continue
 			devElem.setChild("status", "probed")

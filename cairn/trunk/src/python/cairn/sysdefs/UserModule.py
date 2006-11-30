@@ -5,7 +5,6 @@
 import os
 import os.path
 import stat
-import commands
 import shutil
 
 import cairn

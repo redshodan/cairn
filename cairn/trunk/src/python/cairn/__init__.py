@@ -9,6 +9,7 @@ import atexit
 import logging
 import traceback
 import tempfile
+import commands
 
 
 from types import *
@@ -195,6 +196,19 @@ def matchName(name, arg):
 	else:
 		return False
 
+
+# Sub process running
+def run(cmd, errmsg = None):
+	verbose("Running command: %s" % cmd)
+	(status, output) = commands.getstatusoutput(cmd)
+	verbose("Command output:")
+	verbose(output)
+	verbose("Command exited with: %d" % status)
+	if (status != 0):
+		if not errmsg:
+			errmsg = "Could not run '%s'" % cmd
+		raise Exception("%s: %s" % (errmsg, output))
+	return output
 
 
 # Temp files
