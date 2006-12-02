@@ -24,9 +24,12 @@ def getClass():
 
 class Percent(object):
 	def __init__(self, estimated):
+		self.quick = Options.get("quick")
 		self.estimated = estimated
 		self.read = 0l
 		self.lastPercent = 0
+		self.counter = 0
+		return
 
 
 
@@ -134,12 +137,18 @@ class RunArchiver(object):
 
 
 	def processPercent(self, percent, buffSize):
-		percent.read = percent.read + buffSize
-		cur = int((float(percent.read) / float(percent.estimated)) *
-				  100)
-		if cur != percent.lastPercent:
-			percent.lastPercent = cur
-			self.displayPercent(cur)
+		percent.read = percent.read + long(buffSize)
+		percent.counter = percent.counter + 1
+		if percent.counter < 100:
+			return
+		if not percent.estimated: #percent.quick:
+			cur = float(percent.read) / 1073741824.0 # 1G
+		else:
+			cur = int((float(percent.read) / float(percent.estimated)) *
+					  100)
+		#if cur != percent.lastPercent:
+		percent.lastPercent = cur
+		self.displayPercent(cur)
 		return
 
 

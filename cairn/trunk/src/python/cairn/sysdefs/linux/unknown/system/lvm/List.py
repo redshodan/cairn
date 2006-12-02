@@ -117,6 +117,7 @@ class List(object):
 					Shared.definePartition(sysdef, partElem, pparts[0])
 					empty = False
 				except Exception, err:
+					cairn.displayNL()
 					cairn.error("%s" % err)
 				if empty:
 					partElem.setChild("status", "empty")

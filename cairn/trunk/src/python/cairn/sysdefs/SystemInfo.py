@@ -104,7 +104,16 @@ Hardware
            </fs-space>
          </partition>
        </disk-label>
-	 </device>
+	   <md-cfg>
+	     <md name="">
+	       <md-dev/>
+		   <level/>
+		   <chunk/>
+		   <layout/>
+		   <device number="" state="">
+		 </md>
+	   </mdadm-cfg>
+     </device>
 	 <lvm-cfg>
 	   <pvs>
 	     <pv vg="" uuid="">
@@ -119,11 +128,6 @@ Hardware
 	     <vg name=""/>        - contains the output of vgcfgbackup
        </vg-backups>
 	 </lvm-cfg>
-	 <mdadm-cfg>
-	   <md name="">
-	     <device/>
-		 <
-	 </mdadm-cfg>
    </hardware>
 
 Archive
@@ -324,6 +328,21 @@ def createDiskLabelElem(self, device):
 	return dlabel
 
 
+def createDeviceMDConfigElem(self, device):
+	mdcfg = device.createElem("md-cfg")
+	elem = mdcfg.createElem("md-dev")
+	elem = mdcfg.createElem("level")
+	elem = mdcfg.createElem("chunk")
+	elem = mdcfg.createElem("layout")
+	return mdcfg
+
+
+def createDeviceMDDeviceElem(self, mdcfg, name, state):
+	device = mdcfg.createElem("device", name, True)
+	device.setAttribute("state", state)
+	return device
+
+
 def createPartitionElem(self, device, name):
 	dlabel = device.getElem("disk-label")
 	part = dlabel.createElem("partition=%s" % name)
@@ -511,6 +530,8 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, createDeviceHWElem)
 	DOMHelper.inject(doc, createDeviceHWGeomElem)
 	DOMHelper.inject(doc, createDiskLabelElem)
+	DOMHelper.inject(doc, createDeviceMDConfigElem)
+	DOMHelper.inject(doc, createDeviceMDDeviceElem)
 	DOMHelper.inject(doc, createPartitionElem)
 	DOMHelper.inject(doc, createPartitionFSSpaceElem)
 	DOMHelper.inject(doc, createArchiveElem)

@@ -10,6 +10,6 @@ from cairn.sysdefs.templates.unix import system
 def getSubModuleString(sysdef):
 	mods = system.getSubModuleString(sysdef)
 	if Options.get("program") == "copy":
-		return mods.replace("drives", "drives; md; lvm")
+		return mods.replace("drives; partitions", "drives; md; partitions; lvm")
 	else:
 		return mods

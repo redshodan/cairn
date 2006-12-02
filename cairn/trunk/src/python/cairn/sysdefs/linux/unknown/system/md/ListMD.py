@@ -56,7 +56,8 @@ class ListMD(object):
 			devElem.setChild("status", "probed")
 			dlabel = sysdef.info.createDiskLabelElem(devElem)
 			dlabel.setChild("type", dtype)
-
+			self.defineMDConfig(sysdef, devElem, devFull)
+			
 			try:
 				pdev = parted.PedDevice(devFull)
 				pdisk = pdev.diskNew()
@@ -84,11 +85,36 @@ class ListMD(object):
 					count = count + 1
 			except Exception, err:
 				cairn.displayNL()
-				raise cairn.Exception("Failed to probe partition table", err)
+				cairn.error("Failed to probe partition table: %s" % err)
 		cairn.displayNL()
 		if len(skipped):
 			cairn.display("Skipped Software RAIDs: %s" % " ".join(skipped))
 		return
+
+
+	def defineMDConfig(self, sysdef, devElem, devFull):
+		mdcfg = sysdef.info.createDeviceMDConfigElem(devElem)
+		mdcfg.setChild("md-dev", devFull)
+		cmd = "%s -D %s" % (sysdef.info.get("env/tools/mdadm"), devFull)
+		output = cairn.run(cmd, "Failed to scan Software Raid %s" % devFull)
+		for line in output.split("\n"):
+			line = line.strip()
+			if line.find("Raid Level :") >= 0:
+				words = line.split(":")
+				mdcfg.setChild("level", words[1].strip())
+			if line.find("Layout :") >= 0:
+				words = line.split(":")
+				mdcfg.setChild("layout", words[1].strip())
+			if line.find("Chunk Size :") >= 0:
+				words = line.split(":")
+				mdcfg.setChild("chunk", words[1].strip())
+			if line.find("active") >= 0:
+				words = line.split()
+				sysdef.info.createDeviceMDDeviceElem(mdcfg, words[-1], "active")
+			if line.find("spare") >= 0:
+				words = line.split()
+				sysdef.info.createDeviceMDDeviceElem(mdcfg, words[-1], "spare")
+		return mdcfg
 
 
 	def run(self, sysdef):
