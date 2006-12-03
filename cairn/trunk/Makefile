@@ -8,7 +8,7 @@ include $(TOPDIR)/Makefile.vars
 
 
 #### Vars
-BUILD_DIRS=build build/python build/lib build/bin build/src build/trac
+BUILD_DIRS=build/python build/lib build/bin build/src build/trac
 DIRS=src
 
 
@@ -16,7 +16,10 @@ all: prep $(DIRS) #python
 
 prep: $(BUILD_DIRS)
 
-$(BUILD_DIRS):
+build:
+	mkdir build
+
+$(BUILD_DIRS): build
 	mkdir $@
 
 $(DIRS):
