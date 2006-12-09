@@ -9,7 +9,7 @@ PYDIRS=cairn thirdparty
 PYTHON_FILES=$(shell find $(PYDIRS) -name '*.py')
 
 
-All: cairn
+all: cairn
 
 cairn: $(BUILD_BIN)/cairn
 
@@ -17,10 +17,8 @@ $(BUILD_LIB)/cairn.zip: $(PYTHON_FILES) clean
 	tar --exclude .svn -cf - $(PYDIRS) | tar -C $(BUILD_SRC) -xf -
 	sed -e 's/^SVNREV = .*/SVNREV = $(SVNREV)/' $(BUILD_SRC)/cairn/Version.py > $(BUILD_SRC)/cairn/Version.py.tmp
 	mv -f $(BUILD_SRC)/cairn/Version.py.tmp $(BUILD_SRC)/cairn/Version.py
-ifeq ($(OS), Linux)
+ifeq ($(TARGET_OS), Linux)
 	cp $(BUILD_LIB)/pylibparted.so $(BUILD_SRC)/thirdparty
-#	cp $(BUILD_LIB)/libuuid* $(BUILD_SRC)/thirdparty
-#	cp $(BUILD_LIB)/libparted* $(BUILD_SRC)/thirdparty
 endif
 	(cd $(BUILD_SRC); zip -qr ../lib/cairn.zip $(PYDIRS))
 

@@ -25,8 +25,12 @@ class MountParts(object):
 		return mountList, fsMap
 
 
+	def mountParts(sysdef, mountList, fsMap):
+		raise cairn.Exception("mountParts must be overridden")
+
+
 	def run(self, sysdef):
 		cairn.log("Mounting filesystems")
 		mountList, fsMap = self.orderedList(sysdef)
-		self.mountList(sysdef, mountList, fsMap)
+		self.mountParts(sysdef, mountList, fsMap)
 		return True

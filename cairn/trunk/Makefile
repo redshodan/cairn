@@ -17,7 +17,7 @@ all: prep $(DIRS) #python
 prep: $(BUILD_DIRS)
 
 build:
-	mkdir build
+	-mkdir build
 
 $(BUILD_DIRS): build
 	mkdir $@

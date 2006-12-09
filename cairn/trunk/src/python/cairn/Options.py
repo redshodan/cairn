@@ -457,8 +457,8 @@ def handleArgs(parser, args, allowBadOpts):
 		setLogFile(get("log-file"))
 	else:
 		if dest:
-			setLogFile(os.path.join(dest,
-									os.path.basename(filename + ".log")))
+			setLogFile(os.path.abspath(os.path.join(dest,
+							 os.path.basename(filename + ".log"))))
 		else:
 			setLogFile(filename + ".log")
 
@@ -471,13 +471,15 @@ def checkFileName(filename):
 		filename = os.path.join(dest, filename)
 	else:
 		filename = os.path.abspath(filename)
+	if get("mountdir") and filename.startswith(get("mountdir")):
+		parser.error("Can not place the image file underneath the mount directory '%s'" % get("mountdir"))
 	return filename
 
 
 def generateImageName():
 	name = "%s-%s.cimg" % (platform.node(), time.strftime("%d-%m-%Y"))
 	if get("destination"):
-		return os.path.join(get("destination"), name)
+		return os.path.abspath(os.path.join(get("destination"), name))
 	else:
 		return os.path.abspath(name)
 

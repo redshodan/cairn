@@ -10,7 +10,7 @@ from cairn import sysdefs
 class Restore(Program.Program):
 
 	def setDefaults(self):
-		self._defaults["env/mountdir"] = "/mnt/cairn"
+		self._defaults["env/mountdir"] = "/mnt/cairn-restore"
 		return
 
 

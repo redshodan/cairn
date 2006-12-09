@@ -17,7 +17,7 @@ def getClass():
 
 class MountParts(tmpl.MountParts):
 
-	def mountList(self, sysdef, mountList, fsMap):
+	def mountParts(self, sysdef, mountList, fsMap):
 		mdir = sysdef.info.get("env/mountdir")
 		self.mkdir(sysdef, mdir)
 		for mount in mountList:
