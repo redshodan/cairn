@@ -89,6 +89,7 @@ Hardware
 		   <empty/>
            <device/>
            <mapped-device/>
+		   <number/>
            <start/>
            <size/>
            <label/>
@@ -349,6 +350,7 @@ def createPartitionElem(self, device, name):
 	elem = part.createElem("status")
 	elem = part.createElem("device")
 	elem = part.createElem("mapped-device")
+	elem = part.createElem("number")
 	elem = part.createElem("start")
 	elem = part.createElem("size")
 	elem = part.createElem("label")
@@ -513,6 +515,21 @@ def getSkipDevices(self):
 	return skips
 
 
+def getDeviceMap(self):
+	devmap = {}
+	for device in self.getElems("hardware/device"):
+		if ((device.get("status") == "probed") and
+			(device.get("type") == "drive")):
+			devmap[device.get("device")] = device.get("mapped-device")
+	return devmap
+
+
+def mapDevice(self, devmap, str):
+	for dev in devmap.keys():
+		str = str.replace(dev, devmap[dev])
+	return str
+
+
 def injectDocFuncs(doc):
 	DOMHelper.inject(doc, create)
 	DOMHelper.inject(doc, setOpts)
@@ -545,4 +562,6 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, printSummary)
 	DOMHelper.inject(doc, printDevices)
 	DOMHelper.inject(doc, getSkipDevices)
+	DOMHelper.inject(doc, getDeviceMap)
+	DOMHelper.inject(doc, mapDevice)
 	return

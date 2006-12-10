@@ -135,6 +135,7 @@ def defineDriveHW(sysdef, drive, pdev):
 
 
 def definePartition(sysdef, part, ppart):
+	part.setChild("number", "%d" % ppart.getNum())
 	geom = ppart.getGeometry()
 	part.setChild("start", "%ld" % geom.getStart())
 	part.setChild("size", "%ld" % geom.getLength())

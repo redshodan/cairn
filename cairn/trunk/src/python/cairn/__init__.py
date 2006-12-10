@@ -157,6 +157,8 @@ def logErr(err):
 	errmsg = strErr(err)
 	msg.append(errmsg)
 	Logging.all.log(Logging.ERROR, "\n".join(msg))
+	displayNL()
+	displayNL()
 	error(errmsg)
 	return
 

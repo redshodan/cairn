@@ -23,12 +23,14 @@ class MatchDevices(tmpl.MatchDevices):
 		for index in range(len(sysDevices)):
 			sysDev = sysDevices[index].get("device")
 			imgDev = imgDevices[index].get("device")
-			cairn.verbose("Mapping image device %s to system device %s" % (imgDev, sysDev))
+			cairn.verbose("Mapping image device %s to system device %s" %
+						  (imgDev, sysDev))
 			imgDevices[index].setChild("mapped-device", sysDev)
 			for part in imgDevices[index].getElems("disk-label/partition"):
 				dev = part.get("device")
 				mapped = dev.replace(imgDev, sysDev)
-				cairn.verbose("Mapping partition device: %s -> %s" % (dev, mapped))
+				cairn.verbose("Mapping partition device: %s -> %s" %
+							  (dev, mapped))
 				part.setChild("mapped-device", mapped)
 		return
 
@@ -43,16 +45,19 @@ class MatchDevices(tmpl.MatchDevices):
 			if ((sysDevices[index].get("type") != "drive") or
 				(imgDevices[index].get("type") != "drive")):
 				continue
-			if sysDevices[index].get("device") == imgDevices[index].get("device"):
+			if (sysDevices[index].get("device") ==
+				imgDevices[index].get("device")):
 				partial = True
 				if not ((sysDevices[index].get("hw/model") ==
 						 imgDevices[index].get("hw/model")) and
 						(sysDevices[index].get("sector-size") ==
 						 imgDevices[index].get("sector-size")) and
-						self.compareGeom(sysDevices[index].getElem("hw/bios-geom"),
+						self.compareGeom(sysDevices[index].
+										     getElem("hw/bios-geom"),
 										 imgDevices[index].
 										     getElem("hw/bios-geom")) and
-						self.compareGeom(sysDevices[index].getElem("hw/hw-geom"),
+						self.compareGeom(sysDevices[index].
+										     getElem("hw/hw-geom"),
 										 imgDevices[index].
 										     getElem("hw/hw-geom")) and
 						(sysDevices[index].get("type") ==

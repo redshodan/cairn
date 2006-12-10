@@ -17,10 +17,10 @@ all: prep $(DIRS) #python
 prep: $(BUILD_DIRS)
 
 build:
-	-mkdir build
+	mkdir build
 
 $(BUILD_DIRS): build
-	mkdir $@
+	if [ -d $@ ]; then touch $@; else mkdir $@; fi
 
 $(DIRS):
 	make -C $@
@@ -49,4 +49,4 @@ clean:
 
 include $(TOPDIR)/Makefile.rules
 
-.PHONY: $(SUBDIRS) $(DIRS) python svnignore
+.PHONY: $(DIRS) python svnignore

@@ -32,15 +32,17 @@ class ListParted(object):
 				pdev = parted.PedDevice(dev)
 				pdisk = pdev.diskNew()
 				pparts = pdisk.getPartitions()
+				num = 0
 				for ppart in pparts:
 					pdev = ppart.getPath()
-					if not ((ppart.getType() & parted.PARTITION_METADATA) or
-							(ppart.getType() & parted.PARTITION_FREESPACE)):
-						cairn.displayRaw(" " + ppart.getPath().lstrip("/dev/"))
-					pname = "%d" % ppart.getNum()
-					part = sysdef.info.createPartitionElem(device, pname)
+					if ((ppart.getType() & parted.PARTITION_METADATA) or
+						(ppart.getType() & parted.PARTITION_FREESPACE)):
+						continue
+					cairn.displayRaw(" " + ppart.getPath().lstrip("/dev/"))
+					part = sysdef.info.createPartitionElem(device, str(num))
 					part.setChild("device", ppart.getPath())
 					Shared.definePartition(sysdef, part, ppart)
+					num = num + 1
 				if not len(pparts):
 					device.setChild("status", "empty")
 					cairn.displayRaw(" No partitions found")

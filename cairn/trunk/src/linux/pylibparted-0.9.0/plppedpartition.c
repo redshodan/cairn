@@ -140,6 +140,22 @@ static PyObject *getNum(plpPedPartition *s)
   return PyInt_FromLong(s->part->num);
 }
 
+PyDoc_STRVAR(setNum__doc__,
+"Description: sets the partition number\n"
+"Receives: an integer object\n"
+"Returns: nothing\n");
+static PyObject *setNum(plpPedPartition *s, PyObject *args)
+{
+    int num;
+
+    if (!PyArg_ParseTuple(args, "i", &num))
+        return NULL;
+    s->part->num = num;
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
 PyDoc_STRVAR(getFsType__doc__,
 "Description: returns the filesystem type on the partition\n"
 "Receives: nothing\n"
@@ -426,6 +442,7 @@ static PyMethodDef plpPedPartition_methods[] = {
     getFlagsNames__doc__ },
   { "getGeometry", (PyCFunction)getGeometry, METH_NOARGS, getGeometry__doc__ },
   { "getNum", (PyCFunction)getNum, METH_NOARGS, getNum__doc__ },
+  { "setNum", (PyCFunction)setNum, METH_VARARGS, setNum__doc__ },
   { "getFsType", (PyCFunction)getFsType, METH_NOARGS, getFsType__doc__ },
   { "getId", (PyCFunction)getId, METH_NOARGS, getId__doc__ },
   { "setGeometry", (PyCFunction)setGeometry, METH_VARARGS,

@@ -23,4 +23,4 @@ svnignore:
 	$(TOPDIR)/misc/svnignore-update.sh
 
 
-.PHONE: svnignore
+.PHONY: svnignore

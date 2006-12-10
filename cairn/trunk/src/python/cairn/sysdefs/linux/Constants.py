@@ -26,6 +26,8 @@ FS_MAP = {
 	"reiserfs" : "env/tools/mkfs.reiserfs",
 	"swap" : "env/tools/mkswap",
 	"linux-swap" : "env/tools/mkswap",
+	"fat16" : "env/tools/mkfs.msdos",
+	"vfat" : "env/tools/mkfs.vfat"
 }
 
 PART_TYPE_MAP = \

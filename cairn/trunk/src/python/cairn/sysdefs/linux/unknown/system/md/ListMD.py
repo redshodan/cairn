@@ -107,7 +107,7 @@ class ListMD(object):
 				mdcfg.setChild("layout", words[1].strip())
 			if line.find("Chunk Size :") >= 0:
 				words = line.split(":")
-				mdcfg.setChild("chunk", words[1].strip())
+				mdcfg.setChild("chunk", words[1].strip().rstrip("K"))
 			if line.find("active") >= 0:
 				words = line.split()
 				sysdef.info.createDeviceMDDeviceElem(mdcfg, words[-1], "active")

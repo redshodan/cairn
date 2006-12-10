@@ -32,6 +32,7 @@ class PartDevicesParted(tmpl.PartDevices):
 											None, int(part.get("start")),
 											int(part.get("size")) +
 											int(part.get("start")))
+				ppart.setNum(int(part.get("number")))
 				pdisk.addPartition(ppart, pcon)
 			pdisk.commit()
 		except Exception, err:
@@ -45,7 +46,7 @@ class PartDevicesParted(tmpl.PartDevices):
 		for device in sysdef.readInfo.getElems("hardware/device"):
 			if ((device.get("status") == "probed") and
 				(device.get("type") == "drive")):
-				cairn.displayRaw("  %s" % device.get("device"))
+				cairn.displayRaw("  %s" % device.get("mapped-device"))
 				self.partitionDevice(sysdef, device)
 		cairn.displayNL()
 		return True
