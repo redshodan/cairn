@@ -61,6 +61,8 @@ class ListMD(object):
 			try:
 				pdev = parted.PedDevice(devFull)
 				pdisk = pdev.diskNew()
+				ptype = pdisk.getType()
+				dlabel.setChild("type", ptype.getName())
 				pparts = pdisk.getPartitions()
 				count = 1
 				for ppart in pparts:

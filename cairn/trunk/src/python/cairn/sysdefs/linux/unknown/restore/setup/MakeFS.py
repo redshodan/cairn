@@ -21,7 +21,10 @@ class MakeFS(tmpl.MakeFS):
 		device = part.get("mapped-device")
 
 		cairn.log("  %s: %s" % (device, fsType))
-		cmd = "%s %s" % (tool, device)
+		args = ""
+		if fsType == "reiserfs":
+			args = "-ff"
+		cmd = "%s %s %s" % (tool, args, device)
 		cairn.run(cmd, "Failed to run %s on %s" % (tool, device))
 		return
 

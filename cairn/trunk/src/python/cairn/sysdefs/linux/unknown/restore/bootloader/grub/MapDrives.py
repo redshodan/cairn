@@ -53,7 +53,8 @@ class MapDrives(object):
 				for part in device.getElems("disk-label/partition"):
 					if part.get("type") == "metadata":
 						continue
-					partID = partID + 1
+					#partID = partID + 1
+					partID = int(part.get("number")) - 1
 					mountList.append(part.get("mount"))
 					fsMap[part.get("mount")] = [device, driveID, part, partID]
 		if "/boot" in mountList:

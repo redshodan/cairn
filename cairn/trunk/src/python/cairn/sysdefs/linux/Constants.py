@@ -51,3 +51,7 @@ DEVICE_MAP = {"drive" : DRIVE_RE, "lvm" : LVM_RE, "md" : MD_RE,
 
 LVM_COPY_TOOLS = ["pvscan", "vgscan", "lvscan", "vgcfgbackup"]
 LVM_RESTORE_TOOLS = ["pvcreate", "vgcfgrestore", "vgchange"]
+
+
+KERNEL_MODULES = ["dm-mod", "md", "raid0", "raid1", "raid10", "raid5", "raid6",
+				  "linear"]

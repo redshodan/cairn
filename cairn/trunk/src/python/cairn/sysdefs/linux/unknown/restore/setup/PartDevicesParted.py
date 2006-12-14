@@ -29,12 +29,14 @@ class PartDevicesParted(tmpl.PartDevices):
 				pcon = pdev.getAnyConstraint()
 				ppart = parted.PedPartition(pdisk,
 											Shared.mapPartType(type),
-											None, int(part.get("start")),
-											int(part.get("size")) +
-											int(part.get("start")))
+											None, long(part.get("start")),
+											long(part.get("size")) +
+											long(part.get("start")))
 				ppart.setNum(int(part.get("number")))
 				pdisk.addPartition(ppart, pcon)
 			pdisk.commit()
+			cairn.run("sfdisk -R %s" % dev,
+					  "Failed to flush partition table to disk")
 		except Exception, err:
 			raise cairn.Exception("Failed to write partition table to %s" %
 								  dev, err)

@@ -4,7 +4,7 @@
 import os
 
 import cairn
-
+from cairn.sysdefs.linux.unknown.restore.setup import PartDevicesParted
 
 
 def getClass():
@@ -47,6 +47,14 @@ class CreateMD(object):
 			cmd = "%s --spare-devices=%d %s" % (cmd, len(rspares),
 												" ".join(rspares))
 		cairn.run(cmd, "Failed to create Software RAID %s" % dev)
+		if type == "mdp":
+			self.partitionMD(sysdef, device)
+		return
+
+
+	def partitionMD(self, sysdef, device):
+		parter = PartDevicesParted.PartDevicesParted()
+		parter.partitionDevice(sysdef, device)
 		return
 
 

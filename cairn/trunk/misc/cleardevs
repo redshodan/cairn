@@ -6,9 +6,23 @@
 ###
 ###
 
+function stopAll
+{
+    MOUNTS=`mount | awk '/* on \/mnt\/cairn-restore/{print $3;}'`
+    for MOUNT in $MOUNTS; do
+        umount $MOUNT
+    done
+
+    vgchange -an
+
+    MDS=`mdadm -Ds | awk '/^ARRAY*/{print $2;}'`
+    for MD in $MDS; do
+        mdadm --stop $MD
+    done
+}
+
 function destroyItAll
 {
-    vgchange -an
     for DIR in `find /sys/block -maxdepth 1 -type d -name '[hs]d*'`; do
         DEV=`basename $DIR`
         for PDIR in `find $DIR -maxdepth 1 -type d -name "${DEV}*"`; do
@@ -53,6 +67,7 @@ echo
 read -p "Type 'destroy' to continue: " DESTROY
 
 if [ "$DESTROY" == "destroy" ]; then
+    stopAll
     destroyItAll
 else
     echo

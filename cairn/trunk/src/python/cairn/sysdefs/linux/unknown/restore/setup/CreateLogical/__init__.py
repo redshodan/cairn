@@ -7,5 +7,5 @@ from cairn import Options
 
 
 def getSubModuleString(sysdef):
-	str = "CreateMD; CreateLVM;"
+	str = "ModuleProbe; CreateMD; CreateLVM;"
 	return str
