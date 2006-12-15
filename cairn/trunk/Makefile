@@ -49,4 +49,4 @@ clean:
 
 include $(TOPDIR)/Makefile.rules
 
-.PHONY: $(DIRS) python svnignore
+.PHONY: $(DIRS) python svnignore todo
