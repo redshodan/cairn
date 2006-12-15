@@ -52,6 +52,7 @@ class Program(object):
 		sysdefs.setProgram(self)
 		sysdefs.load()
 		sysdefs.run()
+		cairn.deinit()
 		return
 
 

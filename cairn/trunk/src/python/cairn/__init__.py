@@ -10,6 +10,7 @@ import logging
 import traceback
 import tempfile
 import commands
+import time
 
 
 from types import *
@@ -23,8 +24,10 @@ ERR_MODULE = 2
 ERR_SYSDEF = 3
 ERR_BINARY = 4
 
+# Module globals
 __file_cleanup = []
 __uiCleanUp = None
+_start_time = 0
 
 
 
@@ -63,9 +66,41 @@ class Exception(exceptions.Exception):
 # in a CAIRN program.
 def init():
 	checkPythonVer()
+	stampStartTime()
 	initProcessParams()
 	Logging.init()
 	debug("Python: %s" % sys.version.replace("\n", ""))
+	return
+
+
+def deinit():
+	logRunTimeStr()
+	return
+
+
+def stampStartTime():
+	global _start_time
+	_start_time = time.time()
+	return
+
+
+def getRunTimeStr():
+	global _start_time
+	delta = int(time.time() - _start_time)
+	hours = delta / 3600
+	delta = delta % 3600
+	mins = delta / 60
+	delta = delta % 60
+	secs = delta
+	return "%d hours, %d minutes, %d seconds" % (hours, mins, secs)
+
+
+def logRunTimeStr():
+	global _start_time
+	if not _start_time:
+		return
+	displayNL()
+	info("CAIRN ran for %s" % getRunTimeStr())
 	return
 
 
@@ -138,6 +173,7 @@ def displayNL():
 
 def handleException(err):
 	import cairn.sysdefs
+	logRunTimeStr()
 	Logging.all.log(Logging.ERROR, "***A FATAL EXCEPTION HAPPENED***")
 	if sysdefs and sysdefs.getInfo():
 		Logging.all.log(Logging.ERROR, "***META DUMP***\n%s" % 
