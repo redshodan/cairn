@@ -1,6 +1,9 @@
 """linux.unknown.system.Paths Module"""
 
 
+import os
+import stat
+
 
 import cairn
 from cairn import Options
@@ -48,21 +51,50 @@ class Paths(tmpl.Paths):
 	def checkMD(self, sysdef):
 		if Options.get("no-raid"):
 			return
-		# Check for 
+		# Check for mdadm tool
 		if not sysdef.info.get("env/tools/mdadm"):
 			cairn.warn("Failed to find program mdadm. Software RAIDs will " +
 					   "not be handled.")
 			sysdef.info.setChild("env/tools/md", "False")
-		else:
-			cairn.debug("mdadm found")
-			sysdef.info.setChild("env/tools/md", "True")
+		cairn.debug("mdadm found")
+		# Check for md module if we are copy. Restore should take care of the
+		# module itself.
+		if Options.get("program") == "copy":
+			fail = True
+			try:
+				try:
+					try:
+						info = os.lstat("/proc/mdstat")
+					except:
+						raise Exception("No Software Raid kernel modules found")
+					if not stat.S_ISREG(info[stat.ST_MODE]):
+						mdstat = file("/proc/mdstat", "r")
+						for line in mdstat.readlines():
+							if line.startswith("Personalities :"):
+								cairn.debug("Found: %s" % line)
+								arr = line.split(":")
+								if (len(arr) == 2):
+									raids = arr[1].strip()
+									if len(raids):
+										fail = False
+										break
+								break
+					if fail:
+						raise Exception("No Software Raid kernel modules found")
+				finally:
+					try: mdstat.close()
+					except: pass
+			except Exception, err:
+				cairn.warn("Software Raid will not be handled: %s" % str(err))
+				return
+		sysdef.info.setChild("env/tools/md", "True")
 		return
 
 
 	def checkLVM(self, sysdef):
 		if Options.get("no-lvm"):
 			return
-		# Check for 
+		# Check for lvm tools
 		for tool in Constants.LVM_COPY_TOOLS:
 			if not sysdef.info.get("env/tools/" + tool):
 				cairn.warn(("Failed to find program %s. " +
@@ -70,5 +102,18 @@ class Paths(tmpl.Paths):
 				sysdef.info.setChild("env/tools/lvm", "False")
 				return
 		cairn.debug("lvm tools found")
+		# Check for LVM module if we are copy. Restore should take care of the
+		# module itself.
+		if Options.get("program") == "copy":
+			try:
+				misc = file("/proc/misc", "r")
+				contents = misc.read()
+				misc.close()
+				if (contents.find("device-mapper") < 0):
+					raise Exception("LVM kernel module (dm_mod) is not loaded")
+			except Exception, err:
+				cairn.warn("LVM volumes will not be handled: %s" % str(err))
+				return
+		# Passed everything
 		sysdef.info.setChild("env/tools/lvm", "True")
 		return
