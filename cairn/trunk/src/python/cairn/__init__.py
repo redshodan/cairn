@@ -92,12 +92,18 @@ def getRunTimeStr():
 	mins = delta / 60
 	delta = delta % 60
 	secs = delta
-	return "%d hours, %d minutes, %d seconds" % (hours, mins, secs)
+	hourStr = ""
+	if hours: hourStr = "%d hours, " % hours
+	minStr = ""
+	if mins: minStr = "%d minutes, " % mins
+	return "%s%s%d seconds" % (hourStr, minStr, secs)
 
 
 def logRunTimeStr():
 	global _start_time
 	if not _start_time:
+		return
+	if Options.get("program") == "extract":
 		return
 	displayNL()
 	info("CAIRN ran for %s" % getRunTimeStr())
@@ -177,7 +183,7 @@ def handleException(err):
 	Logging.all.log(Logging.ERROR, "***A FATAL EXCEPTION HAPPENED***")
 	if sysdefs and sysdefs.getInfo():
 		Logging.all.log(Logging.ERROR, "***META DUMP***\n%s" % 
-						sysdefs.getInfo().prettyStr())
+						sysdefs.getInfo().toPrettyStr())
 	else:
 		Logging.all.log(Logging.ERROR, "***META DUMP***\nEmpty meta")
 	logErr(err)

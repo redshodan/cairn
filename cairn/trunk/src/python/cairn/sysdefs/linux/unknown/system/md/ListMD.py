@@ -37,7 +37,6 @@ class ListMD(object):
 
 
 	def defineDevices(self, sysdef, mds):
-		skips = sysdef.info.getSkipDevices()
 		skipped = []
 		fullDevs = mds.keys()
 		fullDevs.sort()
@@ -49,7 +48,7 @@ class ListMD(object):
 			devElem.setChild("device", devFull)
 			devElem.setChild("mapped-device", devFull)
 			devElem.setChild("type", dtype)
-			if Shared.skipDevice(skips, devShort):
+			if sysdef.info.skipDevice(devShort):
 				skipped.append(devShort)
 				devElem.setChild("status", "skipped")
 				continue
@@ -120,8 +119,8 @@ class ListMD(object):
 
 
 	def run(self, sysdef):
-		if Options.get("no-raid") or not sysdef.info.get("env/tools/lvm"):
-			cairn.log("Skipping Software RAID check")
+		if Options.get("no-raid") or not sysdef.info.get("env/tools/md"):
+			cairn.info("Skipping Software RAID check")
 			return True
 		cairn.log("Checking for Software RAIDs")
 		mds = self.listDevices(sysdef)

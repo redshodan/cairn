@@ -32,7 +32,6 @@ class LVMBackup(object):
 
 	def run(self, sysdef):
 		if Options.get("no-lvm") or not sysdef.info.get("env/tools/lvm"):
-			cairn.log("Skipping LVM backup")
 			return True
 		cairn.log("Backing up LVM volumes")
 		try:

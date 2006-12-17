@@ -62,13 +62,6 @@ def getDeviceIndex(device):
 	return re.sub("[\-_a-zA-Z]+", "", dev)
 
 
-def skipDevice(skips, device):
-	for sdev in skips:
-		if sdev == device:
-			return True
-	return False
-
-
 def isRemovable(device):
 	try:
 		removable = file("/sys/block/%s/removable" % device, "r")
@@ -103,7 +96,8 @@ def defineDevice(sysdef, device, devShort, devType):
 		try:
 			pdisk = pdev.diskNew()
 		except Exception, err:
-			if Options.get("program") == "copy":
+			if ((Options.get("program") == "copy") and
+				(str(err).find("unrecognised disk label") < 0)):
 				cairn.displayNL()
 				cairn.error(str(err))
 			else:

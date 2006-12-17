@@ -15,14 +15,13 @@ class ListDrives(object):
 
 	def run(self, sysdef):
 		cairn.log("Checking for drives")
-		skips = sysdef.info.getSkipDevices()
 		skipped = []
 		found = False
 		for devShort in Shared.listDevices():
 			dtype = Shared.getDeviceType(devShort)
 			if (dtype != "drive"):
 				continue
-			if Shared.skipDevice(skips, devShort):
+			if sysdef.info.skipDevice(devShort):
 				skipped.append(devShort)
 				Shared.defineDeviceSkipped(sysdef, "/dev/" + devShort, devShort,
 										   dtype)

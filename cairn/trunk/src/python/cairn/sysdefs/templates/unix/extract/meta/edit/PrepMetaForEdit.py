@@ -28,7 +28,7 @@ class PrepMetaForEdit(object):
 
 	def writeMeta(self, sysdef, metaFile):
 		try:
-			sysdef.readInfo.saveToFile(metaFile, True)
+			metaFile.write(sysdef.readInfo.toStr(True))
 			metaFile.close()
 		except Exception, err:
 			raise cairn.Exception("Failed to write metadata file", err)

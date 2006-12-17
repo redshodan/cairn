@@ -441,19 +441,15 @@ def printXML(self):
 	return
 
 
-def saveToFile(self, file, pretty):
+def toStr(self, pretty = False):
 	if pretty:
-		file.write(self.prettyStr())
+		self.clear("pad")
+		return self.root().toPrettyStr()
 	else:
 		self.unIndent()
 		self.setPad()
-		file.write(self.doc().toxml())
-	return
+		return self.doc().toxml()
 
-
-def prettyStr(self):
-	self.clear("pad")
-	return self.root().toPrettyStr()
 
 
 def printSummary(self):
@@ -510,9 +506,17 @@ def getSkipDevices(self):
 	skips = []
 	if skip:
 		for word in skip.split(","):
-			dev = words.lstrip("/dev/")
+			dev = word.lstrip("/dev/")
 			skips.append(word)
 	return skips
+
+
+def skipDevice(self, device):
+	skips = self.getSkipDevices()
+	for sdev in skips:
+		if sdev == device:
+			return True
+	return False
 
 
 def getDeviceMap(self):
@@ -557,11 +561,11 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, setPad)
 	DOMHelper.inject(doc, verify)
 	DOMHelper.inject(doc, printXML)
-	DOMHelper.inject(doc, saveToFile)
-	DOMHelper.inject(doc, prettyStr)
+	DOMHelper.inject(doc, toStr)
 	DOMHelper.inject(doc, printSummary)
 	DOMHelper.inject(doc, printDevices)
 	DOMHelper.inject(doc, getSkipDevices)
+	DOMHelper.inject(doc, skipDevice)
 	DOMHelper.inject(doc, getDeviceMap)
 	DOMHelper.inject(doc, mapDevice)
 	return

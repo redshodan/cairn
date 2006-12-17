@@ -33,7 +33,7 @@ class WriteMeta(object):
 
 	def writeFile(self, sysdef, metaFile):
 		try:
-			sysdef.info.saveToFile(metaFile, False)
+			metaFile.write(sysdef.info.toStr())
 			metaFile.close()
 		except Exception, err:
 			raise cairn.Exception("Failed to write metadata file", err)

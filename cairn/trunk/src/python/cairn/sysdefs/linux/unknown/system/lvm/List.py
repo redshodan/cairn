@@ -83,7 +83,6 @@ class List(object):
 
 
 	def defineDevices(self, sysdef):
-		skips = sysdef.info.getSkipDevices()
 		skipped = []
 		lvs = sysdef.info.getElems("hardware/lvm-cfg/lvs/lv")
 		for vg in sysdef.info.getElems("hardware/lvm-cfg/vgs/vg"):
@@ -93,7 +92,7 @@ class List(object):
 			devElem.setChild("device", vgdev)
 			devElem.setChild("mapped-device", vgdev)
 			devElem.setChild("type", "lvm")
-			if Shared.skipDevice(skips, vgname):
+			if sysdef.info.skipDevice(vgname):
 				skipped.append(vgname)
 				devElem.setChild("status", "skipped")
 				continue
@@ -128,7 +127,7 @@ class List(object):
 
 	def run(self, sysdef):
 		if Options.get("no-lvm") or not sysdef.info.get("env/tools/lvm"):
-			cairn.log("Skipping LVM check")
+			cairn.info("Skipping LVM check")
 			return True
 		cairn.log("Checking for LVM volumes")
 		pvs = self.scanPVs(sysdef)

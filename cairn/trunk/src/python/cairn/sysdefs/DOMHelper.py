@@ -319,8 +319,9 @@ def toPrettyStr(self, strs=[], indent=""):
 			isText = False
 			break
 	attrstr = ""
-	for attr in self.attributes.items():
-		attrstr = attrstr + " %s=\"%s\"" % (attr[0], attr[1])
+	if self.attributes:
+		for attr in self.attributes.items():
+			attrstr = attrstr + " %s=\"%s\"" % (attr[0], attr[1])
 	str = "%s<%s%s>" % (indent, self.nodeName, attrstr)
 	if isText:
 		for node in self.childNodes:

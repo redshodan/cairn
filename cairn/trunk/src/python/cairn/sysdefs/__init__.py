@@ -84,7 +84,7 @@ def loadPlatform():
 	userSysdef = Options.get("sysdef")
 	if userSysdef:
 		words = userSysdef.split(".")
-		root = ".".join(words[0:len(words)-1])
+		root = "cairn.sysdefs." + ".".join(words[0:len(words)-1])
 		__sysdef = selectPlatform(root, [words[len(words)-1]], True)
 		return
 

@@ -27,7 +27,7 @@ class SaveMeta(object):
 
 	def writeFile(self, sysdef, meta):
 		try:
-			sysdef.readInfo.saveToFile(meta, True)
+			meta.write(sysdef.readInfo.toStr(True))
 			meta.close()
 		except Exception, err:
 			raise cairn.Exception("Failed to write metadata file", err)
