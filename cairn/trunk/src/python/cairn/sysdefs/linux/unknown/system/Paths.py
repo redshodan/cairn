@@ -67,7 +67,7 @@ class Paths(tmpl.Paths):
 						info = os.lstat("/proc/mdstat")
 					except:
 						raise Exception("No Software Raid kernel modules found")
-					if not stat.S_ISREG(info[stat.ST_MODE]):
+					if stat.S_ISREG(info[stat.ST_MODE]):
 						mdstat = file("/proc/mdstat", "r")
 						for line in mdstat.readlines():
 							if line.startswith("Personalities :"):
