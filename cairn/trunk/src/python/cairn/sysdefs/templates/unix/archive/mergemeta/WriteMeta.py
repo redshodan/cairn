@@ -29,22 +29,39 @@ class WriteMeta(object):
 	def writeFile(self, sysdef, archive):
 		try:
 			meta = sysdef.readInfo.toStr()
-			# 12 = len("__ARCHIVE__\n")
-			print "offset", sysdef.info.getInt("archive/shar-offset")
-			offset = int(sysdef.info.getInt("archive/shar-offset")) - 12
-			if offset >= len(meta):
-				archive.write(meta)
-				archive.close()
-			else:
+			# 13 = len("\n__ARCHIVE__\n")
+			offset = sysdef.info.getInt("archive/original-shar-offset")
+			length = len(meta) + 13
+			if offset < length:
 				# Make room for the newer larger meta
-				delta = len(meta) - offset
-				
+				bs = 4096
+				delta = length - offset
+				archive.seek(0, 2)
+				orgLen = archive.tell()
+				total = orgLen - offset
+				count = total / bs
+				remainder = total % bs
+				for index in xrange(count):
+					pos = offset + total - (index + 1) * bs
+					archive.seek(pos, 0)
+					buff = archive.read(bs)
+					archive.seek(pos + delta, 0)
+					archive.write(buff)
+				archive.seek(offset, 0)
+				buff = archive.read(remainder)
+				archive.seek(length, 0)
+				archive.write(buff)
+				archive.seek(0, 0)
+			archive.write(meta)
+			archive.write("\n__ARCHIVE__\n")
+			archive.close()
 		except Exception, err:
 			raise cairn.Exception("Failed to write metadata file", err)
 		return
 
 
 	def run(self, sysdef):
+		cairn.info("Writing new meta file to image")
 		archive = self.openArchive(sysdef)
 		self.writeFile(sysdef, archive)
 		return True

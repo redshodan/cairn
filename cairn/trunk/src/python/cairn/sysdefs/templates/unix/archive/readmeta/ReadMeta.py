@@ -32,4 +32,6 @@ class ReadMeta(object):
 		metafile = self.openFile(sysdef)
 		sysdef.readInfo = SystemInfo.readNew(metafile)
 		metafile.close()
+		sysdef.info.setChild("archive/original-shar-offset",
+							 sysdef.readInfo.get("archive/shar-offset"))
 		return True

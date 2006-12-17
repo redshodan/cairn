@@ -24,7 +24,13 @@ def get(self, path = None):
 # Get this nodes text contents as an int, or by path from this node.
 # Parsing exceptions are possible
 def getInt(self, path = None):
-	return int(self.getText(path))
+	elem = self.root()
+	if path:
+		elem = self.getElem(path)
+	if elem:
+		return int(elem.getText())
+	else:
+		return 0
 
 
 # Get this nodes text contents as a long, or by path from this node.
