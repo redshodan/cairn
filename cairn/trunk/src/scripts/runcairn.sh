@@ -74,6 +74,9 @@ if cmdname.endswith("cairn"):
 	elif (len(sys.argv) >= 2) and (sys.argv[1] == "extract"):
 		action = "extract"
 		sys.argv = sys.argv[1:]
+	elif (len(sys.argv) >= 2) and (sys.argv[1] == "verify"):
+		action = "verify"
+		sys.argv = sys.argv[1:]
 	elif (len(sys.argv) >= 2) and (sys.argv[1] == "--version"):
 		action = "copy"
 	elif ((len(sys.argv) >= 2) and
@@ -85,6 +88,8 @@ elif cmdname.endswith("restore"):
 	action = "restore"
 elif cmdname.endswith("extract"):
 	action = "extract"
+elif cmdname.endswith("verify"):
+	action = "verify"
 
 if action == "copy":
 	from cairn.copy import copy as ccopy
@@ -95,12 +100,19 @@ elif action == "restore":
 elif action == "extract":
 	from cairn.extract import extract
 	extract.run(libname)
+elif action == "verify":
+	from cairn.verify import verify
+	verify.run(libname)
 else:
 	if action != "help":
 		print "Invalid action"
 		print
 	print "Usage: cairn <action> [action args] ..."
-	print "    The action can be 'copy', 'restore' or 'extract'."
+	print "    The action can be one of the following:\n"
+	print "    copy  --  Create an image of this computer"
+	print "    restore  --  Restore an image to this computer"
+	print "    extract  --  Extract files or edit metadata in this image file"
+	print "    verify  --  Verify the integrity of this image file\n"
 	print "    Place a '--help' after the action to get that actions help."
 EOF
 

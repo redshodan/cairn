@@ -16,11 +16,13 @@ INFO = VERBOSE + 10
 WARNING = INFO + 10
 ERROR = WARNING + 10
 CRITICAL = ERROR + 10
+NOLOG = -1
 
 # Log objects
 display = None
 error = None
 all = None
+nolog = None
 
 
 # Defer log messages to other handlers, queueing until handler set
@@ -102,6 +104,8 @@ class Log(object):
 
 
 def init():
+	global display, error, all
+
 	# Redefine levels
 	logging.addLevelName(DEVEL, "DEVEL")
 	logging.addLevelName(DEBUG, "DEBUG")
@@ -112,38 +116,44 @@ def init():
 	logging.addLevelName(CRITICAL, "CRITICAL")
 
 	# all logger, always captures everything (except for devel, by default)
-	cairn.Logging.all = Log("all", DEBUG,
-							"%(asctime)s %(name)s %(levelname)s %(message)s",
-							"%m-%d %H:%M")
+	all = Log("all", DEBUG, "%(asctime)s %(name)s %(levelname)s %(message)s",
+			  "%m-%d %H:%M")
 
 	# display logger
-	cairn.Logging.display = Log("display", INFO)
-	cairn.Logging.display.setRootHandler(logging.StreamHandler(sys.stdout))
-	cairn.Logging.display.setTargetHandler(all.logger, False)
+	display = Log("display", INFO)
+	display.setRootHandler(logging.StreamHandler(sys.stdout))
+	display.setTargetHandler(all.logger, False)
 
 	# error logger
-	cairn.Logging.error = Log("error", WARNING)
-	cairn.Logging.error.setRootHandler(logging.StreamHandler(sys.stderr))
-	cairn.Logging.error.setTargetHandler(all.logger, False)
+	error = Log("error", WARNING)
+	error.setRootHandler(logging.StreamHandler(sys.stderr))
+	error.setTargetHandler(all.logger, False)
 
-	cairn.Logging.all.log(INFO, "---------------------------------------")
-	cairn.Logging.all.log(INFO, "Initialized CAIRN %s" % Version.toString())
+	all.log(INFO, "---------------------------------------")
+	all.log(INFO, "Initialized CAIRN %s" % Version.toString())
 	return
 
 
 def setAllLogFile(filename):
+	global all, nolog
+	if nolog:
+		return
 	handler = logging.FileHandler(filename)
-	cairn.Logging.all.setRootHandler(handler)
-	cairn.Logging.all.setTargetHandler(handler, True)
+	all.setRootHandler(handler)
+	all.setTargetHandler(handler, True)
 	return
 
 
 def setLogLevel(level):
-	cairn.Logging.display.setLevel(level)
-	if level > cairn.Logging.error.level:
-		cairn.Logging.error.setLevel(level)
+	global display, error, all, nolog
+	if level == NOLOG:
+		nolog = True
+		return
+	display.setLevel(level)
+	if level > error.level:
+		error.setLevel(level)
 	if level == DEVEL:
-		cairn.Logging.all.setLevel(level)
+		all.setLevel(level)
 	return
 
 
@@ -162,5 +172,7 @@ def strToLogLevel(str):
 		return DEBUG
 	elif cairn.matchName("devel", str):
 		return DEVEL
+	elif cairn.matchName("none", str):
+		return NOLOG
 	else:
 		return None

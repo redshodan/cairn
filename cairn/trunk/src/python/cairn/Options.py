@@ -37,9 +37,10 @@ copyDesc = "Create a CAIRN image of this machine. The image file name is optiona
 copyUsage = "%prog copy [options] [image file]"
 restoreDesc = "Restore a CAIRN image onto this machine. See the description of '--help' for more advanced help options."
 restoreUsage = "%prog restore [options] <image file>"
-extractDesc = "Extract portions of this archive file. See the description of '--help' for more advanced help options. This is a frontend to the archive tool used to create the image. Any of the options after the -- will be passed on to the archive tool. By default this is 'tar'. This can run the archive tool without having to extract the archive from the CAIRN image file while still exposing virtually all of that archive tools funtionality."
-extractUsage = "%prog extract [options] <image file> [-- [archive tool options]]"
-
+extractDesc = "Extract portions of this image file. See the description of '--help' for more advanced help options. This is a frontend to the image tool used to create the image. Any of the options after the -- will be passed on to the image tool. By default this is 'tar'. This can run the image tool without having to extract the image from the CAIRN image file while still exposing virtually all of that image tools funtionality."
+extractUsage = "%prog extract [options] <image file> [-- [image tool options]]"
+verifyDesc = "Verify the integrity of this image file."
+verifyUsage = "%prog verify [options] <image file>"
 
 class Opt(optparse.Option):
 
@@ -317,6 +318,15 @@ cliExtractOpts = [
 	 "help":"Save the meta file to FILE and exit"}
 ]
 
+cliVerifyOpts = [
+ 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
+ 	 "help":"Archive type to use: tar, star", "level":ADVANCED},
+	{"long":"meta", "short":"m", "action":"store_true", "default":False,
+	 "help":"Verify the metadata only. This will perform basic tests on contents of the metadata."},
+	{"long":"archive", "short":"a", "action":"store_true", "default":False,
+	 "help":"Verify the archive only. This will compare the archive md5sum and size to what the metadata has recorded. It will ignore the rest of the metadata"}
+]
+
 
 def get(name):
 	try:
@@ -365,6 +375,8 @@ def init():
 		buildOptMap(cliRestoreOpts)
 	if get("program") == "extract":
 		buildOptMap(cliExtractOpts)
+	if get("program") == "verify":
+		buildOptMap(cliVerifyOpts)
 	return
 
 
@@ -399,6 +411,9 @@ def parseCmdLineOpts(allowBadOpts):
 	elif get("program") == "extract":
 		desc = extractDesc
 		usage = extractUsage
+	elif get("program") == "verify":
+		desc = verifyDesc
+		usage = verifyUsage
 	parser = optparse. \
 			 OptionParser(usage=usage, option_class=Opt, prog="cairn",
 						  description=desc, title="Common options",

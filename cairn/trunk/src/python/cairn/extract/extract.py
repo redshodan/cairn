@@ -1,4 +1,4 @@
-"""cairn.extract - Extraction frontend for image files"""
+"""cairn.extract.extract - Extraction frontend for image files"""
 
 
 

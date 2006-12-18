@@ -103,7 +103,8 @@ def logRunTimeStr():
 	global _start_time
 	if not _start_time:
 		return
-	if Options.get("program") == "extract":
+	if ((Options.get("program") == "extract") or
+		(Options.get("program") == "verify")):
 		return
 	displayNL()
 	info("CAIRN ran for %s" % getRunTimeStr())

@@ -7,7 +7,8 @@ import exceptions
 
 import cairn
 from cairn import sysdefs
-import cairn.Options as Options
+from cairn import Logging
+from cairn import Options
 
 
 
@@ -43,8 +44,14 @@ class Program(object):
 		return False
 
 
+	def disableLogging(self):
+		return False
+
+
 	def run(self):
 		cairn.init()
+		if self.disableLogging():
+			Logging.setLogLevel(Logging.NOLOG)
 		Options.set("program", self.name())
 		Options.init()
 		self.setDefaults()
