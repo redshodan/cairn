@@ -319,12 +319,12 @@ cliExtractOpts = [
 ]
 
 cliVerifyOpts = [
- 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
- 	 "help":"Archive type to use: tar, star", "level":ADVANCED},
-	{"long":"meta", "short":"m", "action":"store_true", "default":False,
-	 "help":"Verify the metadata only. This will perform basic tests on contents of the metadata."},
-	{"long":"archive", "short":"a", "action":"store_true", "default":False,
-	 "help":"Verify the archive only. This will compare the archive md5sum and size to what the metadata has recorded. It will ignore the rest of the metadata"}
+# 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
+# 	 "help":"Archive type to use: tar, star", "level":ADVANCED},
+#	{"long":"meta", "short":"m", "action":"store_true", "default":False,
+#	 "help":"Verify the metadata only. This will perform basic tests on contents of the metadata."},
+#	{"long":"archive", "short":"a", "action":"store_true", "default":False,
+#	 "help":"Verify the archive only. This will compare the archive md5sum and size to what the metadata has recorded. It will ignore the rest of the metadata"}
 ]
 
 
