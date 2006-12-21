@@ -1,4 +1,4 @@
-"""linux.unknown.system.partitions.ListParted Module"""
+"""linux.unknown.system.partitions.List Module"""
 
 
 import re
@@ -12,10 +12,10 @@ from cairn.sysdefs.linux import Shared
 
 
 def getClass():
-	return ListParted()
+	return List()
 
 
-class ListParted(object):
+class List(object):
 
 	def run(self, sysdef):
 		cairn.log("Checking partitions")

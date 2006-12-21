@@ -14,6 +14,10 @@ from cairn.sysdefs import IModule
 
 class SystemDefinition(object):
 
+	# Base types
+	UNIX = 0
+	WINDOWS = 1
+
 	def __init__(self):
 		self.info = SystemInfo.createNew()
 		self.readInfo = None
@@ -56,3 +60,7 @@ class SystemDefinition(object):
 
 	def setup(self):
 		return True
+
+
+	def getBaseType(self):
+		raise cairn.Exception("Unimplemented function")

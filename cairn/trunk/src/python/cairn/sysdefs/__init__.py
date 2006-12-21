@@ -86,7 +86,6 @@ def loadPlatform():
 		words = userSysdef.split(".")
 		root = "cairn.sysdefs." + ".".join(words[0:len(words)-1])
 		__sysdef = selectPlatform(root, [words[len(words)-1]], True)
-		return
 
 	if not __sysdef:
 		import cairn.sysdefs.linux

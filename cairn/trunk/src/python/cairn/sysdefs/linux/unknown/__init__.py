@@ -3,7 +3,7 @@
 
 
 import cairn
-from cairn import CLoader
+from cairn import cloader
 from cairn import sysdefs
 import cairn.sysdefs.templates.unix as tmpl
 
@@ -30,22 +30,7 @@ class Unknown(tmpl.UNIX):
 
 
 	def setup(self):
-		import os
-		import imp
-		import dl
-		import stat
 		prog = sysdefs.getProgram()
-		#name = CLoader.load(prog.getLibname(), "thirdparty", "libuuid.*so.*")
-		#os.chmod(name, stat.S_IRWXU)
-		#print "name", name
-		#print dl.open(name, dl.RTLD_LAZY | dl.RTLD_GLOBAL)
-		#name = CLoader.load(prog.getLibname(), "thirdparty", "libparted-.*so.*")
-		#os.chmod(name, stat.S_IRWXU)
-		#print "name", name
-		#print dl.open(name, dl.RTLD_LAZY | dl.RTLD_GLOBAL)
-		#name = CLoader.load(prog.getLibname(), "thirdparty", "pylibparted.so")
-		name = CLoader.load(prog.getLibname(), "thirdparty", "pylibparted.so")
-		os.chmod(name, stat.S_IRWXU)
-		#print "name", name
-		imp.load_dynamic("pylibparted", name)
+		cloader.load(sysdefs.getDef(), prog.getLibname(), "thirdparty",
+					 "pylibparted")
 		return True

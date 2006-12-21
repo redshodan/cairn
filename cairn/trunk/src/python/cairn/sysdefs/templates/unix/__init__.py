@@ -25,3 +25,7 @@ class UNIX(SystemDefinition):
 	def __printSummary(self):
 		cairn.log("System definition:  Generic UNIX")
 		return
+
+
+	def getBaseType(self):
+		return self.UNIX
