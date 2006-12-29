@@ -7,6 +7,5 @@ setup(name='klogctl', version='0.1',
       ext_modules=[
       	Extension('klogctl',
 				  ['klogctl.c'],
-				  extra_compile_args=['-Wall', '-g'],
-				  undef_macros=['NDEBUG'])
+				  extra_compile_args=['-Wall'])
       ])

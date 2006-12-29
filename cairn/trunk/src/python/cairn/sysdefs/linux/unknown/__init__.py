@@ -6,6 +6,7 @@ import cairn
 from cairn import cloader
 from cairn import sysdefs
 import cairn.sysdefs.templates.unix as tmpl
+from cairn.sysdefs.linux.unknown.misc import klog
 
 
 
@@ -33,4 +34,8 @@ class Unknown(tmpl.UNIX):
 		prog = sysdefs.getProgram()
 		cloader.load(sysdefs.getDef(), prog.getLibname(), "thirdparty",
 					 "pylibparted")
+		cloader.load(sysdefs.getDef(), prog.getLibname(), "thirdparty",
+					 "klogctl")
+		if not prog.disableLogging():
+			klog.start()
 		return True

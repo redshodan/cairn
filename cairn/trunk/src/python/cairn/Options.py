@@ -218,6 +218,8 @@ cliCommonOpts = [
 	 "level":EXPERT | DEBUG},
 	{"long":"no-cleanup", "action":"store_true", "default":False,
  	 "help":"Do not cleanup temporary files.", "level":DEBUG},
+	{"long":"no-log", "action":"store_true", "default":False,
+ 	 "help":"Do not log anything.", "level":ADVANCED},
 	{"long":"no-verify", "action":"store_true", "default":False,
  	 "help":"Do not verify metadata or image file.", "level":ADVANCED},
  	{"long":"path", "type":"string", "default":"/sbin:/bin:/usr/sbin:/usr/bin",
@@ -269,6 +271,8 @@ cliCopyRestoreCommonOpts = [
  	 "help":"Do not look for or backup LVM volumes."},
 	{"long":"no-raid", "action":"store_true", "default":False, "level":ADVANCED,
  	 "help":"Do not look for or backup software raids."},
+	{"long":"no-klog", "action":"store_true", "default":False, "level":ADVANCED,
+ 	 "help":"Do not log kernel messages."},
 	{"long":"setmeta", "type":"string", "callback":setInfoOpt,
 	 "level":EXPERT | DEBUG, "metavar":"NAME=VAL",
  	 "help":"Set a system metainfo option, overriding discovered value."},
@@ -361,8 +365,8 @@ def setSysInfoOpt(option, value):
 
 
 def init():
-	cairn.allLog("Starting program %s: %s" %
-				 (get("program"), " ".join(sys.argv)))
+	cairn.allLog(Logging.INFO,
+				 "Starting program %s: %s" % (get("program"), " ".join(sys.argv)))
 	__sysInfoOpts["archive/cmdline"] = " ".join(sys.argv)
 	buildOptMap(cliCommonOpts)
 	if get("program") == "copy":
@@ -519,6 +523,9 @@ def matchSection(arg):
 
 
 def setLogFile(name):
+	if get("no-log"):
+		Logging.setLogLevel(Logging.NOLOG)
+		return
 	set("log-file", name)
 	__sysInfoOpts["archive/log-filename"] = name
 	Logging.setAllLogFile(name)

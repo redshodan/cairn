@@ -14,8 +14,9 @@ import time
 
 
 from types import *
-import Logging
 import Options
+import Logging
+from Logging import critical, error, warn, info, verbose, debug, devel, log, allLog, display, displayRaw, displayNL
 
 
 # Error codes
@@ -125,68 +126,15 @@ def initProcessParams():
 	return
 
 
-# Log pass through functions
-def critical(msg, *args):
-	return Logging.error.log(Logging.CRITICAL, "Critical: %s" % msg)
-
-
-def error(msg, *args):
-	return Logging.error.log(Logging.ERROR, "Error: %s" % msg)
-
-
-def warn(msg, *args):
-	return Logging.error.log(Logging.WARNING, "Warning: %s" % msg)
-
-
-def info(msg, *args):
-	return Logging.display.log(Logging.INFO, "%s" % msg)
-
-
-def verbose(msg, *args):
-	return Logging.display.log(Logging.VERBOSE, "%s" % msg)
-
-
-def debug(msg, *args):
-	return Logging.display.log(Logging.DEBUG, "%s" % msg)
-
-def devel(msg, *args):
-	return Logging.display.log(Logging.DEVEL, "%s" % msg)
-
-
-def log(msg, *args):
-	return Logging.display.log(Logging.INFO, "%s" % msg)
-
-
-def allLog(msg):
-	return Logging.all.log(Logging.INFO, "%s" % msg)
-
-
-def display(msg):
-	return Logging.display.log(Logging.INFO, "%s" % msg)
-
-
-def displayRaw(msg, dolog = True):
-	if dolog:
-		Logging.all.log(Logging.INFO, "%s" % msg)
-	print msg,
-	sys.stdout.flush()
-	return
-
-
-def displayNL():
-	print
-	return
-
-
 def handleException(err):
 	import cairn.sysdefs
 	logRunTimeStr()
-	Logging.all.log(Logging.ERROR, "***A FATAL EXCEPTION HAPPENED***")
+	Logging.allLog(Logging.ERROR, "***A FATAL EXCEPTION HAPPENED***")
 	if sysdefs and sysdefs.getInfo():
-		Logging.all.log(Logging.ERROR, "***META DUMP***\n%s" % 
-						sysdefs.getInfo().toPrettyStr())
+		Logging.allLog(Logging.ERROR, "***META DUMP***\n%s" % 
+							 sysdefs.getInfo().toPrettyStr())
 	else:
-		Logging.all.log(Logging.ERROR, "***META DUMP***\nEmpty meta")
+		Logging.allLog(Logging.ERROR, "***META DUMP***\nEmpty meta")
 	logErr(err)
 	sys.exit(1)
 	return
@@ -199,7 +147,7 @@ def logErr(err):
 	msg = msg + traceErr(err)
 	errmsg = strErr(err)
 	msg.append(errmsg)
-	Logging.all.log(Logging.ERROR, "\n".join(msg))
+	Logging.allLog(Logging.ERROR, "\n".join(msg))
 	displayNL()
 	displayNL()
 	error(errmsg)

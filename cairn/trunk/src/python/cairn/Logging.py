@@ -19,10 +19,10 @@ CRITICAL = ERROR + 10
 NOLOG = -1
 
 # Log objects
-display = None
-error = None
-all = None
-nolog = None
+__display = None
+__error = None
+__all = None
+__nolog = False
 
 
 # Defer log messages to other handlers, queueing until handler set
@@ -55,7 +55,8 @@ class DeferHandler(logging.Handler):
 			return
 		if self.__target:
 			return self.__target.handle(record)
-		else:
+		elif enabled():
+			# Only store if we expect to get a log file set
 			self.__buff.append(record)
 		return
 
@@ -100,11 +101,16 @@ class Log(object):
 
 
 	def log(self, level, msg):
-		self.logger.log(level, msg)
+		return self.logger.log(level, msg)
+
+
+def enabled():
+	global __nolog
+	return not __nolog
 
 
 def init():
-	global display, error, all
+	global __display, __error, __all, __nolog
 
 	# Redefine levels
 	logging.addLevelName(DEVEL, "DEVEL")
@@ -116,44 +122,44 @@ def init():
 	logging.addLevelName(CRITICAL, "CRITICAL")
 
 	# all logger, always captures everything (except for devel, by default)
-	all = Log("all", DEBUG, "%(asctime)s %(name)s %(levelname)s %(message)s",
+	__all = Log("all", DEBUG, "%(asctime)s %(name)s %(levelname)s %(message)s",
 			  "%m-%d %H:%M")
 
-	# display logger
-	display = Log("display", INFO)
-	display.setRootHandler(logging.StreamHandler(sys.stdout))
-	display.setTargetHandler(all.logger, False)
+	# __display logger
+	__display = Log("display", INFO)
+	__display.setRootHandler(logging.StreamHandler(sys.stdout))
+	__display.setTargetHandler(__all.logger, False)
 
-	# error logger
-	error = Log("error", WARNING)
-	error.setRootHandler(logging.StreamHandler(sys.stderr))
-	error.setTargetHandler(all.logger, False)
+	# __error logger
+	__error = Log("error", WARNING)
+	__error.setRootHandler(logging.StreamHandler(sys.stderr))
+	__error.setTargetHandler(__all.logger, False)
 
-	all.log(INFO, "---------------------------------------")
-	all.log(INFO, "Initialized CAIRN %s" % Version.toString())
+	__all.log(INFO, "---------------------------------------")
+	__all.log(INFO, "Initialized CAIRN %s" % Version.toString())
 	return
 
 
 def setAllLogFile(filename):
-	global all, nolog
-	if nolog:
+	global __all, __nolog
+	if __nolog:
 		return
 	handler = logging.FileHandler(filename)
-	all.setRootHandler(handler)
-	all.setTargetHandler(handler, True)
+	__all.setRootHandler(handler)
+	__all.setTargetHandler(handler, True)
 	return
 
 
 def setLogLevel(level):
-	global display, error, all, nolog
+	global __display, __error, __all, __nolog
 	if level == NOLOG:
-		nolog = True
+		__nolog = True
 		return
-	display.setLevel(level)
-	if level > error.level:
-		error.setLevel(level)
+	__display.setLevel(level)
+	if level > __error.level:
+		__error.setLevel(level)
 	if level == DEVEL:
-		all.setLevel(level)
+		__all.setLevel(level)
 	return
 
 
@@ -176,3 +182,67 @@ def strToLogLevel(str):
 		return NOLOG
 	else:
 		return None
+
+
+# Log pass through functions
+def critical(msg, *args):
+	global __error
+	return __error.log(CRITICAL, "Critical: %s" % msg)
+
+
+def error(msg, *args):
+	global __error
+	return __error.log(ERROR, "Error: %s" % msg)
+
+
+def warn(msg, *args):
+	global __error
+	return __error.log(WARNING, "Warning: %s" % msg)
+
+
+def info(msg, *args):
+	global __display
+	return __display.log(INFO, "%s" % msg)
+
+
+def verbose(msg, *args):
+	global __display
+	return __display.log(VERBOSE, "%s" % msg)
+
+
+def debug(msg, *args):
+	global __display
+	return __display.log(DEBUG, "%s" % msg)
+
+def devel(msg, *args):
+	global __display
+	return __display.log(DEVEL, "%s" % msg)
+
+
+def log(msg, *args):
+	global __display
+	return __display.log(INFO, "%s" % msg)
+
+
+def allLog(level, msg):
+	global __all
+	return __all.log(level, "%s" % msg)
+
+
+def display(msg):
+	global __display
+	return __display.log(INFO, "%s" % msg)
+
+
+def displayRaw(msg, dolog = True):
+	global __all
+	if dolog:
+		__all.log(INFO, "%s" % msg)
+	print msg,
+	sys.stdout.flush()
+	return
+
+
+def displayNL():
+	print
+	return

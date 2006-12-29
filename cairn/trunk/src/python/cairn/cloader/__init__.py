@@ -9,11 +9,11 @@ import common
 
 
 
-def load(sysdef, libname, path, filename):
-	name = common.load(libname, path, filename)
+def load(sysdef, libname, path, modname):
+	filename = common.load(libname, path, modname)
 	if sysdef.getBaseType() == sysdef.UNIX:
 		import unix
-		unix.prep(name)
+		unix.prep(modname, filename)
 	else:
 		raise cairn.Exception("Unknown system type while trying to import C library")
 	return

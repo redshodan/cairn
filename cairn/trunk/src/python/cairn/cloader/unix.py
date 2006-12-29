@@ -8,7 +8,7 @@ import stat
 
 
 
-def prep(name):
-	os.chmod(name, stat.S_IRWXU)
-	imp.load_dynamic("pylibparted", name)
+def prep(modname, filename):
+	os.chmod(filename, stat.S_IRWXU)
+	imp.load_dynamic(modname, filename)
 	return
