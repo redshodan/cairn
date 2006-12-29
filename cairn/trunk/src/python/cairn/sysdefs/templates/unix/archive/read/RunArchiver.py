@@ -35,3 +35,8 @@ class RunArchiver(tmpl.RunArchiver):
 
 	def direction(self):
 		return self.IN
+
+
+	def run(self, sysdef):
+		cairn.display("Extracting files:")
+		return super(RunArchiver, self).run(sysdef)
