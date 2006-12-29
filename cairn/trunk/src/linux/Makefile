@@ -7,15 +7,19 @@ include $(TOPDIR)/Makefile.vars
 
 include Makefile.vars
 
-LIBS=$(BUILD_LIB)/libparted.a $(BUILD_LIB)/pylibparted.so
+LIBS=$(BUILD_LIB)/libparted.a $(BUILD_LIB)/pylibparted.so $(BUILD_LIB)/klogctl.so
 
 #### Auto dir targs
-DIRS=$(PARTED) $(PYPARTED)
+DIRS=$(PARTED) $(PYPARTED) klogctl
 $(PYPARTED)=$(PYPARTED)/build
 
 
 all: $(LIBS)
 
+
+#### klogctl
+$(BUILD_LIB)/klogctl.so:
+	make -C klogctl
 
 #### pylibparted
 $(PYPARTED):
