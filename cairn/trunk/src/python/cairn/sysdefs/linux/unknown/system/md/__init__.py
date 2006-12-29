@@ -3,4 +3,4 @@
 
 
 def getSubModuleString(sysdef):
-	return "ListMD;"
+	return "List;"
