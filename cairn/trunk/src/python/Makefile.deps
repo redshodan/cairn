@@ -1,2 +1,6 @@
 #### Targets dependencies
-$(BUILD_BIN)/cairn: python $(PYTHON_FILES) scripts/runcairn.sh
+CLIBS=
+ifeq ($(TARGET_OS),Linux)
+CLIBS+=$(BUILD_LIB)/pylibparted.so $(BUILD_LIB)/klogctl.so
+endif
+$(BUILD_BIN)/cairn: python $(CLIBS) $(PYTHON_FILES) scripts/runcairn.sh
