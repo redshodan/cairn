@@ -5,8 +5,8 @@
 import cairn
 from cairn import cloader
 from cairn import sysdefs
+from cairn import Options
 import cairn.sysdefs.templates.unix as tmpl
-from cairn.sysdefs.linux.unknown.misc import klog
 
 
 
@@ -30,12 +30,16 @@ class Unknown(tmpl.UNIX):
 		return
 
 
-	def setup(self):
+	def init(self):
+		super(Unknown, self).init()
 		prog = sysdefs.getProgram()
 		cloader.load(sysdefs.getDef(), prog.getLibname(), "thirdparty",
 					 "pylibparted")
 		cloader.load(sysdefs.getDef(), prog.getLibname(), "thirdparty",
 					 "klogctl")
-		if not prog.disableLogging():
+		if (not prog.disableLogging() and
+			((Options.get("program") == "copy") or
+			 (Options.get("program") == "restore"))):
+			from cairn.sysdefs.linux.unknown.misc import klog
 			klog.start()
 		return True

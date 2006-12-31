@@ -8,7 +8,8 @@ $(BUILD_LIB)/klogctl.so: build/lib*/klogctl.so
 	cp $< $@
 	strip --strip-debug --strip-unneeded $@
 
-build/lib*/klogctl.so:
+build/lib*/klogctl.so: klogctl.c setup.py
+	python setup.py clean
 	python setup.py build
 
 

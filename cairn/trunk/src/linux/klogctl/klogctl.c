@@ -10,7 +10,7 @@ PyDoc_STRVAR(pyklogctl__doc__,
 
 static PyObject *pyklogctl(PyObject *s, PyObject *args)
 {
-    int action=-1, size=-1, ret;
+    int action=-1, size=-1;
 
     if (!PyArg_ParseTuple(args, "ii", &action, &size))
     {
@@ -18,36 +18,54 @@ static PyObject *pyklogctl(PyObject *s, PyObject *args)
         return NULL;
     }
 
-    if ((action < 0) || (action > 9))
+    if ((action < 0) || (action > 10))
     {
         PyErr_SetString(PyExc_TypeError,
                         "parameter action must be a value between 0 and 9");
         return NULL;
     }
-    if ((size < 0) || (size > 4096))
+    // Put a sanity limit on the buffer size
+    if ((size < 0) || (size > 524288))
     {
         PyErr_SetString(PyExc_TypeError,
-                        "parameter size must be a value between 0 and 4096");
+                        "parameter size must be a value between 0 and 524288");
         return NULL;
     }
 
-    char buff[4097];
-    ret = klogctl(action, buff, size);
-    if (ret < 0)
+    PyObject *ret = NULL;
+    char *buff = NULL;
+    int kret;
+
+    if (size)
+    {
+        buff = (char*)malloc(size + 1);
+    }
+    kret = klogctl(action, buff, size);
+    if (kret < 0)
     {
         PyErr_SetString(PyExc_OSError, strerror(errno));
-        return NULL;
     }
-    else if (ret == 0)
+    else if (kret == 0)
     {
         Py_INCREF(Py_None);
-        return Py_None;
+        ret = Py_None;
+    }
+    else if (action == 10)
+    {
+        ret = PyInt_FromLong(kret);
     }
     else
     {
-        buff[ret] = 0;
-        return PyString_FromString(buff);
+        buff[kret] = 0;
+        ret = PyString_FromString(buff);
     }
+
+    if (buff)
+    {
+        free(buff);
+    }
+
+    return ret;
 }
 
 static PyMethodDef klogctlModuleMethods[] =

@@ -28,7 +28,8 @@ ERR_BINARY = 4
 # Module globals
 __file_cleanup = []
 __uiCleanUp = None
-_start_time = 0
+__start_time = 0
+__threads = []
 
 
 
@@ -75,19 +76,20 @@ def init():
 
 
 def deinit():
+	joinThreads()
 	logRunTimeStr()
 	return
 
 
 def stampStartTime():
-	global _start_time
-	_start_time = time.time()
+	global __start_time
+	__start_time = time.time()
 	return
 
 
 def getRunTimeStr():
-	global _start_time
-	delta = int(time.time() - _start_time)
+	global __start_time
+	delta = int(time.time() - __start_time)
 	hours = delta / 3600
 	delta = delta % 3600
 	mins = delta / 60
@@ -101,8 +103,8 @@ def getRunTimeStr():
 
 
 def logRunTimeStr():
-	global _start_time
-	if not _start_time:
+	global __start_time
+	if not __start_time:
 		return
 	if ((Options.get("program") == "extract") or
 		(Options.get("program") == "verify")):
@@ -128,7 +130,7 @@ def initProcessParams():
 
 def handleException(err):
 	import cairn.sysdefs
-	logRunTimeStr()
+	deinit()
 	Logging.allLog(Logging.ERROR, "***A FATAL EXCEPTION HAPPENED***")
 	if sysdefs and sysdefs.getInfo():
 		Logging.allLog(Logging.ERROR, "***META DUMP***\n%s" % 
@@ -188,6 +190,24 @@ def matchName(name, arg):
 		return True
 	else:
 		return False
+
+
+# Thread handling
+def registerThread(thread):
+	global __threads
+	__threads.append(thread)
+	return
+
+
+def joinThreads():
+	global __threads
+	for thr in __threads:
+		debug("Stopping thread %s" % thr.getName())
+		thr.stop()
+		debug("Joining on thread %s" % thr.getName())
+		thr.join()
+	debug("All threads exited")
+	return
 
 
 # Sub process running

@@ -98,8 +98,8 @@ def loadPlatform():
 	if not __sysdef:
 		raise cairn.Exception("Unable to determine the system definition for this machine.")
 
-	if not __sysdef.setup():
-		raise cairn.Exception("Unable to setup the system definition.")
+	if not __sysdef.init():
+		raise cairn.Exception("Unable to initialize the system definition.")
 	return
 
 

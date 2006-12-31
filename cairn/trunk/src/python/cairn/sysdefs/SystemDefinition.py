@@ -58,7 +58,7 @@ class SystemDefinition(object):
 		return
 
 
-	def setup(self):
+	def init(self):
 		return True
 
 
