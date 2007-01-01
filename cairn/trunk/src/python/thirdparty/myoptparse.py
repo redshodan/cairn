@@ -296,7 +296,7 @@ class HelpFormatter:
 
     def format_option_strings(self, option):
         """Return a comma-separated list of option strings & metavariables."""
-        if option.takes_value():
+        if option.takes_value() or option.metavar:
             metavar = option.metavar or option.dest.upper()
             short_opts = [self._short_opt_fmt % (sopt, metavar)
                           for sopt in option._short_opts]

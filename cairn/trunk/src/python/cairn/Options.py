@@ -312,7 +312,7 @@ cliExtractOpts = [
  	{"long":"archive", "short":"A", "type":"string", "default":"tar",
  	 "help":"Archive type to use: tar, star", "level":ADVANCED},
 	{"long":"edit-meta", "short":"e", "action":"callback",
-	 "callback":editMetaOpt, "metavar":"EDITOR",
+	 "callback":editMetaOpt, "metavar":"[EDITOR]",
 	 "help":"Run an editor and edit the metadata. After the editor exits the metadata will be saved back to the image. Default editor is $EDITOR."},
 	{"long":"preserve", "short":"p", "action":"store_true", "default":False,
 	 "help":"Use the same options to the archiver that CAIRN restore would use. These are a number of options for preserving files as faithfully as possible."},
