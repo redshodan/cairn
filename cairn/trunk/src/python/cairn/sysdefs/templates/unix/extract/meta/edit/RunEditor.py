@@ -42,7 +42,7 @@ class RunEditor(object):
 
 	def runEditor(self, sysdef, meta, editor):
 		if os.system("%s %s" % (editor, meta)) != 0:
-			raise cairn.Exception("Editor returned error when editing meta file. Image file not modified.")
+			raise cairn.Exception("Editor returned error when editing metadata file. Image file not modified.")
 		return
 
 
@@ -53,6 +53,6 @@ class RunEditor(object):
 		self.runEditor(sysdef, meta, editor)
 		newMD5 = self.md5Meta(sysdef, meta)
 		if orgMD5 == newMD5:
-			cairn.info("The meta file was not changed. Image file not modified.")
+			cairn.info("The metadata file was not changed. Image file not modified.")
 			sysdef.quit()
 		return True

@@ -61,7 +61,7 @@ class WriteMeta(object):
 
 
 	def run(self, sysdef):
-		cairn.info("Writing new meta file to image")
+		cairn.info("Writing new metadata to image")
 		archive = self.openArchive(sysdef)
 		self.writeFile(sysdef, archive)
 		return True

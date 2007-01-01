@@ -1,4 +1,4 @@
-"""templates.unix.extract.meta.SaveMeta Module"""
+"""templates.unix.extract.meta.Save Module"""
 
 
 
@@ -10,11 +10,11 @@ from cairn import Options
 
 
 def getClass():
-	return SaveMeta()
+	return Save()
 
 
 
-class SaveMeta(object):
+class Save(object):
 
 	def openMeta(self, filename):
 		try:
@@ -36,10 +36,8 @@ class SaveMeta(object):
 
 	def run(self, sysdef):
 		saveMeta = Options.get("save-meta")
-		if saveMeta:
-			saveMeta = os.path.abspath(saveMeta)
-			meta = self.openMeta(saveMeta)
-			self.writeFile(sysdef, meta)
-			cairn.display("Saved meta file to: %s" % saveMeta)
-			sysdef.quit()
+		saveMeta = os.path.abspath(saveMeta)
+		meta = self.openMeta(saveMeta)
+		self.writeFile(sysdef, meta)
+		cairn.display("Saved metadata to: %s" % saveMeta)
 		return True

@@ -5,7 +5,4 @@ from cairn import Options
 
 
 def getSubModuleString(sysdef):
-	if Options.get("edit-meta"):
-		return "PrepMetaForEdit; RunEditor; ReReadMeta; ..archive.mergemeta;"
-	else:
-		return None
+	return "PrepMetaForEdit; RunEditor; ReReadMeta; ..archive.mergemeta;"

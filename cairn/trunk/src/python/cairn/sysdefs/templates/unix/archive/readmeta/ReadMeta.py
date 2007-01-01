@@ -23,7 +23,7 @@ class ReadMeta(object):
 		try:
 			archive = file(filename, "rb")
 		except Exception, err:
-			raise cairn.Exception("Unable to open meta file %s: %s" % \
+			raise cairn.Exception("Unable to open metadata file %s: %s" % \
 								  (filename, err))
 		return archive
 

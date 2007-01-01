@@ -51,7 +51,7 @@ class ExtractMetaFromShar(object):
 			os.close(metaFile[0])
 			archive.close()
 		except Exception, err:
-			raise cairn.Exception("Unable to write meta file %s: %s" % \
+			raise cairn.Exception("Unable to write metadata file %s: %s" % \
 								  (metaFile[1], err))
 		return
 

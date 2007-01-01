@@ -275,7 +275,7 @@ cliCopyRestoreCommonOpts = [
  	 "help":"Do not log kernel messages."},
 	{"long":"setmeta", "type":"string", "callback":setInfoOpt,
 	 "level":EXPERT | DEBUG, "metavar":"NAME=VAL",
- 	 "help":"Set a system metainfo option, overriding discovered value."},
+ 	 "help":"Set a system metadata option, overriding discovered value."},
 	{"long":"skip", "type":"string", "callback":setSkipDeviceOpt,
 	 "level":ADVANCED, "metavar":"device[,device]",
 	 "help":"Do not include specified device where device is a full path, '/dev/hda' or device name 'md0'. Automatically excludes mounts from this device."}
@@ -313,11 +313,13 @@ cliExtractOpts = [
  	 "help":"Archive type to use: tar, star", "level":ADVANCED},
 	{"long":"edit-meta", "short":"e", "action":"callback",
 	 "callback":editMetaOpt, "metavar":"EDITOR",
-	 "help":"Run an editor and edit the meta file. After the editor exits the meta file will be saved back to the image. Default editor is $EDITOR."},
-	{"long":"restore-opts", "short":"r", "action":"store_true", "default":False,
+	 "help":"Run an editor and edit the metadata. After the editor exits the metadata will be saved back to the image. Default editor is $EDITOR."},
+	{"long":"preserve", "short":"p", "action":"store_true", "default":False,
 	 "help":"Use the same options to the archiver that CAIRN restore would use. These are a number of options for preserving files as faithfully as possible."},
+	{"long":"replace-meta", "short":"r", "type":"string", "metavar":"FILE",
+	 "help":"Replace the metadata in the image with FILE."},
 	{"long":"save-meta", "short":"s", "type":"string", "metavar":"FILE",
-	 "help":"Save the meta file to FILE and exit"}
+	 "help":"Save the metadata to FILE and exit"}
 ]
 
 cliVerifyOpts = [

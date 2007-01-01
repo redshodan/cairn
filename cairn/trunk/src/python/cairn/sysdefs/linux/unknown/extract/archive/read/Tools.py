@@ -12,7 +12,7 @@ def getClass():
 class Tools(tmpl.Tools):
 
 	def setTarCmd(self, sysdef):
-		if Options.get("restore-opts"):
+		if Options.get("preserve"):
 			cmd = "%s --preserve --numeric-owner -X %s -C %s -Sxpf -" % \
 				  (sysdef.info.get("env/tools/tar"),
 				   sysdef.info.get("archive/excludes-file"),

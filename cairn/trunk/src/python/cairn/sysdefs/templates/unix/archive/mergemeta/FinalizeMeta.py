@@ -19,6 +19,5 @@ class FinalizeMeta(tmpl.FinalizeMeta):
 
 	def run(self, sysdef):
 		tmpl.FinalizeMeta.run(self, sysdef)
-		cairn.log("Meta data saved to image file")
-		sysdef.quit()
+		cairn.log("Metadata saved to image file")
 		return True

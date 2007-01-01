@@ -63,57 +63,57 @@ lib.close()
 
 sys.path.append(libname)
 
-action = "unknown"
+command = "unknown"
 if cmdname.endswith("cairn"):
 	if (len(sys.argv) >= 2) and (sys.argv[1] == "copy"):
-		action = "copy"
+		command = "copy"
 		sys.argv = sys.argv[1:]
 	elif (len(sys.argv) >= 2) and (sys.argv[1] == "restore"):
-		action = "restore"
+		command = "restore"
 		sys.argv = sys.argv[1:]
 	elif (len(sys.argv) >= 2) and (sys.argv[1] == "extract"):
-		action = "extract"
+		command = "extract"
 		sys.argv = sys.argv[1:]
 	elif (len(sys.argv) >= 2) and (sys.argv[1] == "verify"):
-		action = "verify"
+		command = "verify"
 		sys.argv = sys.argv[1:]
 	elif (len(sys.argv) >= 2) and (sys.argv[1] == "--version"):
-		action = "copy"
+		command = "copy"
 	elif ((len(sys.argv) >= 2) and
           ((sys.argv[1] == "--help") or (sys.argv[1] == "-h"))):
-		action = "help"
+		command = "help"
 elif cmdname.endswith("copy"):
-	action = "copy"
+	command = "copy"
 elif cmdname.endswith("restore"):
-	action = "restore"
+	command = "restore"
 elif cmdname.endswith("extract"):
-	action = "extract"
+	command = "extract"
 elif cmdname.endswith("verify"):
-	action = "verify"
+	command = "verify"
 
-if action == "copy":
+if command == "copy":
 	from cairn.copy import copy as ccopy
 	ccopy.run(libname)
-elif action == "restore":
+elif command == "restore":
 	from cairn.restore import restore
 	restore.run(libname)
-elif action == "extract":
+elif command == "extract":
 	from cairn.extract import extract
 	extract.run(libname)
-elif action == "verify":
+elif command == "verify":
 	from cairn.verify import verify
 	verify.run(libname)
 else:
-	if action != "help":
-		print "Invalid action"
+	if command != "help":
+		print "Invalid command"
 		print
-	print "Usage: cairn <action> [action args] ..."
-	print "    The action can be one of the following:\n"
+	print "Usage: cairn <command> [command args] ..."
+	print "    The command can be one of the following:\n"
 	print "    copy  --  Create an image of this computer"
 	print "    restore  --  Restore an image to this computer"
 	print "    extract  --  Extract files or edit metadata in this image file"
 	print "    verify  --  Verify the integrity of this image file\n"
-	print "    Place a '--help' after the action to get that actions help."
+	print "    Place a '--help' after the command to get that commands help."
 EOF
 
 python ${FILE} ${FILE} ${0} ${*}

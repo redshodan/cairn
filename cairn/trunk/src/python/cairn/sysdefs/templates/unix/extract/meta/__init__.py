@@ -2,4 +2,4 @@
 
 
 def getSubModuleString(sysdef):
-	return "SaveMeta; edit;"
+	return ""
