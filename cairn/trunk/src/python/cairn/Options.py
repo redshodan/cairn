@@ -319,7 +319,9 @@ cliExtractOpts = [
 	{"long":"replace-meta", "short":"r", "type":"string", "metavar":"FILE",
 	 "help":"Replace the metadata in the image with FILE."},
 	{"long":"save-meta", "short":"s", "type":"string", "metavar":"FILE",
-	 "help":"Save the metadata to FILE and exit"}
+	 "help":"Save the metadata to FILE"},
+	{"long":"unshar", "short":"u", "type":"string", "metavar":"FILE",
+	 "help":"Unshar the image. Removes the metadata placing it in FILE and leaves the bare underlying archive in the image file."}
 ]
 
 cliVerifyOpts = [

@@ -14,6 +14,8 @@ def getSubModuleString(sysdef):
 		return str + "meta.Replace; ..archive.mergemeta;"
 	elif Options.get("save-meta"):
 		return str + "meta.Save;"
+	elif Options.get("unshar"):
+		return str + "meta.unshar;"
 	else:
 		# extract files
 		return "..archive.read;"
