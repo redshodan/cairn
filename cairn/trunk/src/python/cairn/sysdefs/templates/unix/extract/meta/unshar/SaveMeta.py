@@ -17,23 +17,12 @@ def getClass():
 class SaveMeta(object):
 
 	def createFile(self, sysdef):
-		metaFileName = Options.get("unshar")
-		try:
-			path = re.split("/[^/]*$", metaFileName)
-			os.makedirs(path[0], 0700)
-		except:
-			pass
-		try:
-			metaFile = file(metaFileName, "w+")
-			return metaFile
-		except Exception, err:
-			raise cairn.Exception("Failed to open metadata file", err)
-		return
+		return cairn.createFile(Options.get("unshar"), "w+", "metadata")
 
 
 	def writeFile(self, sysdef, metaFile):
 		try:
-			metaFile.write(sysdef.info.toStr())
+			metaFile.write(sysdef.readInfo.toStr(True))
 			metaFile.close()
 		except Exception, err:
 			raise cairn.Exception("Failed to write metadata file", err)
@@ -41,6 +30,7 @@ class SaveMeta(object):
 
 
 	def run(self, sysdef):
+		cairn.info("Extracting metadata")
 		metaFile = self.createFile(sysdef)
 		self.writeFile(sysdef, metaFile)
 		return True

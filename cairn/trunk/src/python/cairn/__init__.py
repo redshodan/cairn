@@ -11,6 +11,7 @@ import traceback
 import tempfile
 import commands
 import time
+import re
 
 
 from types import *
@@ -222,6 +223,27 @@ def run(cmd, errmsg = None):
 			errmsg = "Could not run '%s'" % cmd
 		raise Exception("%s: %s" % (errmsg, output))
 	return output
+
+
+# Create path to the file if needed
+def createFile(filename, mode, desc):
+	try:
+		path = re.split("/[^/]*$", filename)
+		if len(path) > 1:
+			info = None
+			try:
+				info = os.stat(path)
+			except:
+				pass
+			if not info:
+				os.makedirs(path[0], 0700)
+			elif not stat.S_ISDIR(info[stat.ST_MODE]):
+				raise os.error("Path to file %s exists and is not a directory" %
+							   filename)
+		return file(filename, mode)
+	except Exception, err:
+		raise cairn.Exception("Failed to open %s file" % desc, err)
+	return
 
 
 # Temp files

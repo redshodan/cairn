@@ -133,6 +133,7 @@ Hardware
 
 Archive
    <archive>
+     <comment/>
 	 <cmdline/>               - command line used to create the image
      <filename/>
      <md5sum/>
@@ -372,6 +373,8 @@ def createPartitionFSSpaceElem(self, part):
 
 def createArchiveElem(self):
 	archive = self.createElem("archive")
+	elem = archive.createElem("comment")
+	elem = archive.createElem("cmdline")
 	elem = archive.createElem("filename")
 	elem = archive.createPaddedElem("md5sum", PADDING_MD5)
 	elem = archive.createPaddedElem("size", PADDING_INT)

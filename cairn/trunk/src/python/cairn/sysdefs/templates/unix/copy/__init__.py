@@ -3,4 +3,4 @@
 
 
 def getSubModuleString(sysdef):
-	return "..archive.write; DisplayDone;"
+	return "Comment; ..archive.write; DisplayDone;"

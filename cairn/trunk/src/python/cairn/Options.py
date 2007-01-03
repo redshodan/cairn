@@ -247,7 +247,7 @@ cliCommonOpts = [
 	 "default":False, "callback":setVerboseOpt,
  	 "help":"Verbose operation. Multiple flags will increase verboseness."},
 	{"long":"yes", "short":"y", "action":"store_true", "default":False,
-	 "level":ADVANCED | DEBUG, "help":"Automatically answer yes to all questions"}
+	 "level":ADVANCED | DEBUG, "help":"Automatically answer all questions"}
 ]
 
 cliCopyRestoreCommonOpts = [
@@ -284,6 +284,9 @@ cliCopyRestoreCommonOpts = [
 cliCopyOpts = [
 # 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
 # 	 "help":"Archive type to use: tar, star", "level":ADVANCED},
+ 	{"long":"comment", "type":"string", "default":None,
+ 	 "help":"Add this comment string to the archive file so it can be viewed "
+	 "later"},
 #	{"long":"noshar", "action":"store_true", "default":False,
 #	 "info":"archive/shar", "level":ADVANCED,
 # 	 "help":"Create a plain archive without the metadata prepended."},
