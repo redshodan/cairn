@@ -31,22 +31,21 @@ class Comment(object):
 					break
 				else:
 					comment.append(line)
-			print "comment arr", comment
+			cairn.displayNL()
 			return "\n".join(comment)
 		else:
 			return None
 
 
 	def setComment(self, sysdef, comment):
-		print "comment", comment
-		sysdef.info.set("comment", comment)
+		sysdef.info.setChild("archive/comment", comment)
 		return
 
 
 	def run(self, sysdef):
 		if Options.get("comment"):
 			self.setComment(sysdef, Options.get("comment"))
-		else not Options.get("yes"):
+		elif not Options.get("yes"):
 			comment = self.askComment()
 			if comment:
 				self.setComment(sysdef, comment)
