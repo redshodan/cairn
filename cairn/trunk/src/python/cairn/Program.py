@@ -64,12 +64,12 @@ class Program(object):
 
 
 def run(klass, libname):
-	#try:
-	inst = klass(libname)
-	inst.run()
-	#except Exception, err:
-	#	# The one true catch point for all errors
-	#	if not isinstance(err, exceptions.SystemExit):
-	#		cairn.handleException(err)
+	try:
+		inst = klass(libname)
+		inst.run()
+	except Exception, err:
+		# The one true catch point for all errors
+		if not isinstance(err, exceptions.SystemExit):
+			cairn.handleException(err)
 	sys.exit(0)
 	return
