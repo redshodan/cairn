@@ -7,6 +7,7 @@ from statvfs import *
 
 import cairn
 import cairn.sysdefs.templates.unix.system.partitions.DiskUsage as tmpl
+from cairn.sysdefs.linux import Shared
 
 
 
@@ -16,12 +17,10 @@ def getClass():
 
 
 class DiskUsage(tmpl.DiskUsage):
-	def run(self, sysdef):
-		cairn.verbose("Sizing partitions")
-		for device in sysdef.info.getElems("hardware/device"):
-			for partition in device.getElems("disk-label/partition"):
-				self.findPartitionDiskUsage(sysdef, partition)
-		return True
+
+	def mount(self, sysdef, partition):
+		Shared.mount(sysdef, partition.get("device"), partition.get("mount"))
+		return
 
 
 	def findPartitionDiskUsage(self, sysdef, partition):
@@ -29,7 +28,8 @@ class DiskUsage(tmpl.DiskUsage):
 			return
 		mount = partition.get("mount")
 		if not os.path.ismount(mount):
-			raise cairn.Exception("Mount '%s' is not mounted." % mount)
+			if not self.askMount(sysdef, partition):
+				return
 		info = os.statvfs(mount)
 		total = "%d" % ((info[F_BLOCKS] * 4) / 1024)
 		used = "%d" % (((info[F_BLOCKS] - info[F_BAVAIL]) * 4) / 1024)
@@ -42,3 +42,11 @@ class DiskUsage(tmpl.DiskUsage):
 		cairn.verbose("  %s: space: total=%sM used=%sM free=%sM" % \
 					  (device, total, used, free))
 		return
+
+
+	def run(self, sysdef):
+		cairn.verbose("Sizing partitions")
+		for device in sysdef.info.getElems("hardware/device"):
+			for partition in device.getElems("disk-label/partition"):
+				self.findPartitionDiskUsage(sysdef, partition)
+		return True

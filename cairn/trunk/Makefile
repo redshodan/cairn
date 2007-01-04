@@ -1,7 +1,14 @@
-
 ####
 #### CAIRN top level makefile
 ####
+
+#### Notes
+#
+# You can build in a cross platform fashion by setting the make variable
+# TARGET_OS. Current values can be Linux or Darwin. C code will not be compiled
+# so prebuilt libraries must be manually copied into build/lib before making
+# the final cairn binary.
+
 
 TOPDIR=.
 include $(TOPDIR)/Makefile.vars
