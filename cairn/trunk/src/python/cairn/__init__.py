@@ -12,12 +12,14 @@ import tempfile
 import commands
 import time
 import re
+import types
 
 
 from types import *
 import Options
 import Logging
 from Logging import critical, error, warn, info, verbose, debug, devel, log, allLog, display, displayRaw, displayNL
+import ExceptionReporter
 
 
 # Error codes
@@ -38,19 +40,20 @@ __threads = []
 # differentiate between std lib errors and CAIRN errors.
 class Exception(exceptions.Exception):
 
-	def __init__(self, msg, err = None):
+	def __init__(self, msg, prevex = None):
 		exceptions.Exception.__init__(self, msg)
+		self.__reportable = True
 		self.traces = []
-		if err:
-			if isinstance(err, Exception):
-				self.msgs = [msg] + err.msgs
-				self.traces = err.traces
+		if prevex:
+			if isinstance(prevex, Exception):
+				self.msgs = [msg] + prevex.msgs
+				self.traces = prevex.traces
 			else:
-				self.msgs = [msg, strErr(err)]
+				self.msgs = [msg, strErr(prevex)]
 			self.traces.append("Traceback (most recent call last):")
 			for entry in traceback.format_tb(sys.exc_info()[2]):
 				self.traces.append(entry.rstrip())
-			self.traces.append(strErr(err))
+			self.traces.append(strErr(prevex))
 		else:
 			self.msgs = [msg]
 		return
@@ -60,8 +63,35 @@ class Exception(exceptions.Exception):
 		return " ".join(self.msgs)
 
 
-	def subErrStr(self):
+	def subExStr(self):
 		return self.traces
+
+
+	def reportable(self):
+		return self.__reportable
+
+
+
+# Derived exceptions
+class UserEx(Exception):
+	def __init__(self, msg, prevex = None):
+		super(UserEx, self).__init__(msg, prevex)
+		self.__reportable = False
+		return
+
+
+
+class CodeEx(Exception):
+	def __init__(self, msg, prevex = None):
+		super(CodeEx, self).__init__(msg, prevex)
+		return
+
+
+
+class EnvEx(Exception):
+	def __init__(self, msg, prevex = None):
+		super(CodeEx, self).__init__(msg, prevex)
+		return
 
 
 
@@ -118,7 +148,7 @@ def logRunTimeStr():
 def checkPythonVer():
 	if ((sys.version_info[0] < 2) or
 		((sys.version_info[0] == 2) and (sys.version_info[1] < 3))):
-		print "This version of Python is too old. CAIRN requires version 2.3 or greater to run."
+		print "This version of Python is too old:\n\n%s\n\nCAIRN requires version 2.3 or greater to run." % sys.version
 		sys.exit(-1)
 	return
 
@@ -139,22 +169,48 @@ def handleException(err):
 	else:
 		Logging.allLog(Logging.ERROR, "***META DUMP***\nEmpty meta")
 	logErr(err)
+	if err.reportable():
+		askUserReportError(err)
 	sys.exit(1)
 	return
 
 
+def askUserReportError(err):
+	displayRaw("Do you wish to report this error and send the logfile to cairn-project.org? [y/N]: ")
+	line = sys.stdin.readline()
+	displayNL()
+	if re.match("[yY]", line):
+		display("Sending report...")
+		msg = strCairnErr(err)
+		ret = ExceptionReporter.report(msg)
+		if type(ret) is types.StringType:
+			display("Failed to send report: %s" % ret)
+		elif ret[0] != 200:
+			display("Failed to send report: %d %s" % ret)
+		else:
+			display("Report sent.")
+	else:
+		display("Report not sent.")
+	return
+
+
 def logErr(err):
+	msg = strCairnErr(err)
+	Logging.allLog(Logging.ERROR, msg)
+	displayNL()
+	displayNL()
+	error(strErr(err))
+	return
+
+
+def strCairnErr(err):
 	msg = ["***EXCEPTION***"]
 	if isinstance(err, Exception):
-		msg = msg + err.subErrStr()
+		msg = msg + err.subExStr()
 	msg = msg + traceErr(err)
 	errmsg = strErr(err)
 	msg.append(errmsg)
-	Logging.allLog(Logging.ERROR, "\n".join(msg))
-	displayNL()
-	displayNL()
-	error(errmsg)
-	return
+	return "\n".join(msg)
 
 
 def traceErr(err):

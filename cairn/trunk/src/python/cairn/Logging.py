@@ -23,6 +23,8 @@ __display = None
 __error = None
 __all = None
 __nolog = False
+__isShutdown = False
+__filename = None
 
 
 # Defer log messages to other handlers, queueing until handler set
@@ -101,12 +103,22 @@ class Log(object):
 
 
 	def log(self, level, msg):
-		return self.logger.log(level, msg)
+		if isShutdown():
+			if level >= INFO:
+				print logging.getLevelName(level), msg
+			return
+		else:
+			return self.logger.log(level, msg)
 
 
 def enabled():
 	global __nolog
 	return not __nolog
+
+
+def isShutdown():
+	global __isShutdown
+	return __isShutdown
 
 
 def init():
@@ -140,10 +152,26 @@ def init():
 	return
 
 
+def shutdown():
+	global __isShutdown
+	__isShutdown = True
+	logging.shutdown()
+	return
+
+
+def getAllLogFile():
+	global __nolog, __filename
+	if __nolog:
+		return None
+	else:
+		return __filename
+
+
 def setAllLogFile(filename):
-	global __all, __nolog
+	global __all, __nolog, __filename
 	if __nolog:
 		return
+	__filename = filename
 	handler = logging.FileHandler(filename)
 	__all.setRootHandler(handler)
 	__all.setTargetHandler(handler, True)
