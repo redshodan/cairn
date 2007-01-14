@@ -1,4 +1,4 @@
-"""linux.unknown.system.md.ListMD Module"""
+"""linux.unknown.system.md.List Module"""
 
 
 ###
@@ -18,10 +18,10 @@ from cairn.sysdefs.linux import Shared
 
 
 def getClass():
-	return ListMD()
+	return List()
 
 
-class ListMD(object):
+class List(object):
 
 	def listDevices(self, sysdef):
 		cmd = "%s -Ds" % sysdef.info.get("env/tools/mdadm")

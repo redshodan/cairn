@@ -22,7 +22,6 @@ class SystemDefinition(object):
 		self.info = SystemInfo.createNew()
 		self.readInfo = None
 		self.moduleList = None
-		self.programModuleStr = None
 		return
 
 

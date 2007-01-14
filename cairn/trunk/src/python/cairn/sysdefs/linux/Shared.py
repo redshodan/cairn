@@ -96,7 +96,7 @@ def defineDevice(sysdef, device, devShort, devType):
 		try:
 			pdisk = pdev.diskNew()
 		except Exception, err:
-			if ((Options.get("program") == "copy") and
+			if ((Options.get("command") == "copy") and
 				(str(err).find("unrecognised disk label") < 0)):
 				cairn.displayNL()
 				cairn.error(str(err))

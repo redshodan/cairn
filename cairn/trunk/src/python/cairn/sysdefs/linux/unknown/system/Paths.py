@@ -59,7 +59,7 @@ class Paths(tmpl.Paths):
 		cairn.debug("mdadm found")
 		# Check for md module if we are copy. Restore should take care of the
 		# module itself.
-		if Options.get("program") == "copy":
+		if Options.get("command") == "copy":
 			fail = True
 			try:
 				try:
@@ -104,7 +104,7 @@ class Paths(tmpl.Paths):
 		cairn.debug("lvm tools found")
 		# Check for LVM module if we are copy. Restore should take care of the
 		# module itself.
-		if Options.get("program") == "copy":
+		if Options.get("command") == "copy":
 			try:
 				misc = file("/proc/misc", "r")
 				contents = misc.read()

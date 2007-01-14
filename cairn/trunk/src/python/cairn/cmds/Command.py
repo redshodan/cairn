@@ -1,4 +1,4 @@
-"""cairn.Program - Base program class"""
+"""cairn.cmds.Command"""
 
 
 
@@ -12,11 +12,12 @@ from cairn import Options
 
 
 
-class Program(object):
+class Command(object):
 
-	def __init__(self, libname):
+	def __init__(self, libname, fullCmdLine):
 		self._defaults = {}
 		self._libname = libname
+		self._fullCmdLine = fullCmdLine
 		return
 
 
@@ -36,8 +37,24 @@ class Program(object):
 		return self._libname
 
 
+	def getFullCmdLine(self):
+		return self._fullCmdLine
+
+
 	def name(self):
 		return ""
+
+
+	def getHelpOptMaps(self):
+		return None
+
+
+	def getHelpDesc(self):
+		return None
+
+
+	def getHelpUsage(self):
+		return None
 
 
 	def allowBadOpts(self):
@@ -52,20 +69,20 @@ class Program(object):
 		cairn.init()
 		if self.disableLogging():
 			Logging.setLogLevel(Logging.NOLOG)
-		Options.set("program", self.name())
-		Options.init()
+		Options.init(self)
 		self.setDefaults()
 		Options.parseCmdLineOpts(self.allowBadOpts())
-		sysdefs.setProgram(self)
+		sysdefs.setCommand(self)
 		sysdefs.load()
 		sysdefs.run()
 		cairn.deinit()
 		return
 
 
-def run(klass, libname):
+
+def run(klass, libname, fullCmdLine):
 	try:
-		inst = klass(libname)
+		inst = klass(libname, fullCmdLine)
 		inst.run()
 	except Exception, err:
 		# The one true catch point for all errors

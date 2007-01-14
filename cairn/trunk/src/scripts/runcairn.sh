@@ -35,10 +35,9 @@ def cleanup():
 
 atexit.register(cleanup)
 
-srcfile = os.path.abspath(sys.argv[1])
+srcfile = os.path.abspath(sys.argv[0])
 sys.argv = sys.argv[1:]
-cmdname = os.path.abspath(sys.argv[1])
-sys.argv = sys.argv[1:]
+cmdname = os.path.abspath(sys.argv[0])
 if "--no-cleanup" in sys.argv:
 	nocleanup = True
 else:
@@ -63,60 +62,11 @@ lib.close()
 
 sys.path.append(libname)
 
-command = "unknown"
-if cmdname.endswith("cairn"):
-	if (len(sys.argv) >= 2) and (sys.argv[1] == "copy"):
-		command = "copy"
-		sys.argv = sys.argv[1:]
-	elif (len(sys.argv) >= 2) and (sys.argv[1] == "restore"):
-		command = "restore"
-		sys.argv = sys.argv[1:]
-	elif (len(sys.argv) >= 2) and (sys.argv[1] == "extract"):
-		command = "extract"
-		sys.argv = sys.argv[1:]
-	elif (len(sys.argv) >= 2) and (sys.argv[1] == "verify"):
-		command = "verify"
-		sys.argv = sys.argv[1:]
-	elif (len(sys.argv) >= 2) and (sys.argv[1] == "--version"):
-		command = "copy"
-	elif ((len(sys.argv) >= 2) and
-          ((sys.argv[1] == "--help") or (sys.argv[1] == "-h"))):
-		command = "help"
-elif cmdname.endswith("copy"):
-	command = "copy"
-elif cmdname.endswith("restore"):
-	command = "restore"
-elif cmdname.endswith("extract"):
-	command = "extract"
-elif cmdname.endswith("verify"):
-	command = "verify"
-
-if command == "copy":
-	from cairn.copy import copy as ccopy
-	ccopy.run(libname)
-elif command == "restore":
-	from cairn.restore import restore
-	restore.run(libname)
-elif command == "extract":
-	from cairn.extract import extract
-	extract.run(libname)
-elif command == "verify":
-	from cairn.verify import verify
-	verify.run(libname)
-else:
-	if command != "help":
-		print "Invalid command"
-		print
-	print "Usage: cairn <command> [command args] ..."
-	print "    The command can be one of the following:\n"
-	print "    copy  --  Create an image of this computer"
-	print "    restore  --  Restore an image to this computer"
-	print "    extract  --  Extract files or edit metadata in this image file"
-	print "    verify  --  Verify the integrity of this image file\n"
-	print "    Place a '--help' after the command to get that commands help."
+from cairn import cmds
+cmds.run(libname)
 EOF
 
-python ${FILE} ${FILE} ${0} ${*}
+python ${FILE} ${0} ${*}
 
 exit ${?}
 

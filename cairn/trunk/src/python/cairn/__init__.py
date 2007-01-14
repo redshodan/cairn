@@ -45,6 +45,7 @@ class Exception(exceptions.Exception):
 		self.__reportable = True
 		self.traces = []
 		if prevex:
+			self.__reportable = reportableEx(prevex)
 			if isinstance(prevex, Exception):
 				self.msgs = [msg] + prevex.msgs
 				self.traces = prevex.traces
@@ -71,11 +72,10 @@ class Exception(exceptions.Exception):
 		return self.__reportable
 
 
-
 # Derived exceptions
 class UserEx(Exception):
 	def __init__(self, msg, prevex = None):
-		super(UserEx, self).__init__(msg, prevex)
+		Exception.__init__(self, msg, prevex)
 		self.__reportable = False
 		return
 
@@ -83,14 +83,14 @@ class UserEx(Exception):
 
 class CodeEx(Exception):
 	def __init__(self, msg, prevex = None):
-		super(CodeEx, self).__init__(msg, prevex)
+		Exception.__init__(self, msg, prevex)
 		return
 
 
 
 class EnvEx(Exception):
 	def __init__(self, msg, prevex = None):
-		super(CodeEx, self).__init__(msg, prevex)
+		Exception.__init__(self, msg, prevex)
 		return
 
 
@@ -137,8 +137,8 @@ def logRunTimeStr():
 	global __start_time
 	if not __start_time:
 		return
-	if ((Options.get("program") == "extract") or
-		(Options.get("program") == "verify")):
+	if ((Options.get("command") == "extract") or
+		(Options.get("command") == "verify")):
 		return
 	displayNL()
 	info("CAIRN ran for %s" % getRunTimeStr())
@@ -160,19 +160,31 @@ def initProcessParams():
 
 
 def handleException(err):
-	import cairn.sysdefs
-	deinit()
-	Logging.allLog(Logging.ERROR, "***A FATAL EXCEPTION HAPPENED***")
-	if sysdefs and sysdefs.getInfo():
-		Logging.allLog(Logging.ERROR, "***META DUMP***\n%s" % 
-							 sysdefs.getInfo().toPrettyStr())
-	else:
-		Logging.allLog(Logging.ERROR, "***META DUMP***\nEmpty meta")
-	logErr(err)
-	if err.reportable():
-		askUserReportError(err)
-	sys.exit(1)
+	try:
+		import cairn.sysdefs
+		deinit()
+		Logging.allLog(Logging.ERROR, "***A FATAL EXCEPTION HAPPENED***")
+		if sysdefs and sysdefs.getInfo():
+			Logging.allLog(Logging.ERROR, "***META DUMP***\n%s" % 
+						   sysdefs.getInfo().toPrettyStr())
+		else:
+			Logging.allLog(Logging.ERROR, "***META DUMP***\nEmpty meta")
+		logErr(err)
+		if reportableEx(err):
+			askUserReportError(err)
+			sys.exit(1)
+	except exceptions.KeyboardInterrupt, err:
+		pass
 	return
+
+
+def reportableEx(err):
+	if isinstance(err, Exception):
+		return err.reportable()
+	elif isinstance(err, exceptions.KeyboardInterrupt):
+		return False
+	else:
+		return True
 
 
 def askUserReportError(err):

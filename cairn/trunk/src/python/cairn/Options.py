@@ -22,6 +22,8 @@ __optMap = {}
 __optGroups = {}
 __sysInfoOpts = {}
 __extraOpts = []
+__desc = ""
+__usage = ""
 
 
 # Opt help levels
@@ -33,14 +35,6 @@ ALL = COMMON | ADVANCED | EXPERT | DEBUG
 
 helpLevels = [COMMON, ADVANCED, EXPERT, DEBUG]
 
-copyDesc = "Create a CAIRN image of this machine. The image file name is optional. If not specified it will be automatically generated using the machines hostname and todays date. See the description of '--help' for more advanced help options."
-copyUsage = "%prog copy [options] [image file]"
-restoreDesc = "Restore a CAIRN image onto this machine. See the description of '--help' for more advanced help options."
-restoreUsage = "%prog restore [options] <image file>"
-extractDesc = "Extract portions of this image file. See the description of '--help' for more advanced help options. This is a frontend to the image tool used to create the image. Any of the options after the -- will be passed on to the image tool. By default this is 'tar'. This can run the image tool without having to extract the image from the CAIRN image file while still exposing virtually all of that image tools funtionality."
-extractUsage = "%prog extract [options] <image file> [-- [image tool options]]"
-verifyDesc = "Verify the integrity of this image file."
-verifyUsage = "%prog verify [options] <image file>"
 
 class Opt(optparse.Option):
 
@@ -148,9 +142,11 @@ def setSkipDeviceOpt(option, opt, value, parser):
 
 
 def help(option, opt, value, parser):
-	parser.setHelpLevel(COMMON)
 	if parser.rargs and len(parser.rargs):
 		parser.setHelpLevel(matchSection(parser.rargs[0]))
+	else:
+		parser.setHelpLevel(COMMON)
+	parser.level = COMMON
 	parser.print_help()
 	sys.exit(0)
 	return
@@ -371,21 +367,17 @@ def setSysInfoOpt(option, value):
 	return
 
 
-def init():
+def init(cmd):
+	global __desc, __usage
+	set("command", cmd.name())
+	__desc = cmd.getHelpDesc()
+	__usage = cmd.getHelpUsage()
 	cairn.allLog(Logging.INFO,
-				 "Starting program %s: %s" % (get("program"), " ".join(sys.argv)))
-	__sysInfoOpts["archive/cmdline"] = " ".join(sys.argv)
+				 "Starting command %s: %s" % (cmd.name(), cmd.getFullCmdLine()))
+	__sysInfoOpts["archive/cmdline"] = cmd.getFullCmdLine()
 	buildOptMap(cliCommonOpts)
-	if get("program") == "copy":
-		buildOptMap(cliCopyRestoreCommonOpts)
-		buildOptMap(cliCopyOpts)
-	if get("program") == "restore":
-		buildOptMap(cliCopyRestoreCommonOpts)
-		buildOptMap(cliRestoreOpts)
-	if get("program") == "extract":
-		buildOptMap(cliExtractOpts)
-	if get("program") == "verify":
-		buildOptMap(cliVerifyOpts)
+	for optmap in cmd.getOptMaps():
+		buildOptMap(optmap)
 	return
 
 
@@ -411,25 +403,14 @@ def printAll():
 
 
 def parseCmdLineOpts(allowBadOpts):
-	if get("program") == "copy":
-		desc = copyDesc
-		usage = copyUsage
-	elif get("program") == "restore":
-		desc = restoreDesc
-		usage = restoreUsage
-	elif get("program") == "extract":
-		desc = extractDesc
-		usage = extractUsage
-	elif get("program") == "verify":
-		desc = verifyDesc
-		usage = verifyUsage
+	global __desc, __usage
 	parser = optparse. \
-			 OptionParser(usage=usage, option_class=Opt, prog="cairn",
-						  description=desc, title="Common options",
+			 OptionParser(usage=__usage, option_class=Opt, prog="cairn",
+						  description=__desc, title="Common options",
 						  conflict_handler="error", add_help_option=False,
-						  version=Version.toString(), level=0,
+						  version=Version.toPrettyStr(), level=0,
 						  error_help="Try 'cairn %s --help'.\n" % \
-						  get("program"))
+						  get("command"))
 	__optGroups[COMMON] = parser
 	__optGroups[ADVANCED] = (parser.
 		add_option_group("Advanced options", None, ADVANCED))
@@ -462,7 +443,7 @@ def handleArgs(parser, args, allowBadOpts):
 	if len(args) == 1:
 		filename = checkFileName(args[0])
 	elif len(args) == 0:
-		if get("program") == "copy":
+		if get("command") == "copy":
 			filename = checkFileName(generateImageName())
 		else:
 			parser.error("Missing image filename")

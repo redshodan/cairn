@@ -32,14 +32,14 @@ class Unknown(tmpl.UNIX):
 
 	def init(self):
 		super(Unknown, self).init()
-		prog = sysdefs.getProgram()
+		prog = sysdefs.getCommand()
 		cloader.load(sysdefs.getDef(), prog.getLibname(), "thirdparty",
 					 "pylibparted")
 		cloader.load(sysdefs.getDef(), prog.getLibname(), "thirdparty",
 					 "klogctl")
 		if (not prog.disableLogging() and
-			((Options.get("program") == "copy") or
-			 (Options.get("program") == "restore"))):
+			((Options.get("command") == "copy") or
+			 (Options.get("command") == "restore"))):
 			from cairn.sysdefs.linux.unknown.misc import klog
 			klog.start()
 		return True

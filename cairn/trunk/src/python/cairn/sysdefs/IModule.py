@@ -24,7 +24,7 @@ def loadList(sysdef, moduleSpec, userModuleSpec, moduleList, prefix):
 
 def loadModulesByInst(sysdef, moduleInfos, userModuleSpec, moduleList):
 	"""Find corresponding modules following the module 'hierarchy'. For each try
-	   the program version then the main module."""
+	   the command version then the main module."""
 	for modInfo in moduleInfos:
 		if modInfo.type == ModuleSpec.USER_MOD_SHELL:
 			createUserShellModule(sysdef, modInfo.getValue(), moduleList)
@@ -42,7 +42,7 @@ def loadModulesByInst(sysdef, moduleInfos, userModuleSpec, moduleList):
 				for curRoot in sysdef.__class__.__mro__:
 					foundModule = loadAModule("%s.%s.%s" %
 											  (curRoot.__module__,
-											   Options.get("program"),
+											   Options.get("command"),
 											   info.name))
 					if foundModule:
 						break

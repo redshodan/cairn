@@ -18,7 +18,11 @@ def toString():
 		return str
 
 
+def toPrettyStr():
+	return "CAIRN version: %s" % toString()
+
+
 def printVer():
 	from cairn import Logging
-	Logging.display.log(Logging.INFO, "CAIRN version: %s" % toString())
+	Logging.display.log(Logging.INFO, toPrettyStr())
 	return

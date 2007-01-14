@@ -55,7 +55,7 @@ def start():
 
 def init():
 	global __prevLines
-	if Options.get("program") == "restore":
+	if Options.get("command") == "restore":
 		disableConsoleMsgs()
 	__prevLines = getLogLines()
 	return
