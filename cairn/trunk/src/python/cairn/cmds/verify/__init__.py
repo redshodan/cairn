@@ -29,6 +29,10 @@ class Verify(Command):
 		return "Verify the integrity of this image file."
 
 
+	def getHelpShortDesc(self):
+		return "Verify the integrity of this image file"
+
+
 	def getHelpUsage(self):
 		return "%prog verify [options] <image file>"
 

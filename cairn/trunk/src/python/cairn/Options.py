@@ -249,7 +249,7 @@ cliCommonOpts = [
 cliCopyRestoreCommonOpts = [
 	{"long":"all-files", "type":"string", "level":ADVANCED,
 	 "callback":setAllFiles, "metavar":"DIR",
-	 "help":"Set the location of all outputed files: temp files, the logfile, and the image file. This is equivalent to calling --tmp, --log-file, --destination with the same directory."},
+	 "help":"Set the location of all outputed files: temp files, the logfile, and the image file. This is equivalent to calling --tmpdir, --log-file, --destination with the same directory."},
 	{"long":"boot", "short":"B", "type":"string", "level":ADVANCED,
 	 "help":"Force this bootloader to be used. Currently supported: grub"},
 #	{"long":"configfile", "short":"c", "type":"string", "level":ADVANCED,

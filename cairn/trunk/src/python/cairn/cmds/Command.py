@@ -42,7 +42,7 @@ class Command(object):
 
 
 	def name(self):
-		return ""
+		return None
 
 
 	def getHelpOptMaps(self):
@@ -50,6 +50,10 @@ class Command(object):
 
 
 	def getHelpDesc(self):
+		return None
+
+
+	def getHelpShortdesc(self):
 		return None
 
 
@@ -77,16 +81,3 @@ class Command(object):
 		sysdefs.run()
 		cairn.deinit()
 		return
-
-
-
-def run(klass, libname, fullCmdLine):
-	try:
-		inst = klass(libname, fullCmdLine)
-		inst.run()
-	except Exception, err:
-		# The one true catch point for all errors
-		if not isinstance(err, exceptions.SystemExit):
-			cairn.handleException(err)
-	sys.exit(0)
-	return

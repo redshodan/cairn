@@ -30,6 +30,10 @@ class Restore(Command):
 		return "Restore a CAIRN image onto this machine. See the description of '--help' for more advanced help options."
 
 
+	def getHelpShortDesc(self):
+		return "Restore an image to this computer"
+
+
 	def getHelpUsage(self):
 		return "%prog restore [options] <image file>"
 

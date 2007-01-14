@@ -29,6 +29,10 @@ class Extract(Command):
 		return "Extract portions of this image file. See the description of '--help' for more advanced help options. This is a frontend to the image tool used to create the image. Any of the options after the -- will be passed on to the image tool. By default this is 'tar'. This can run the image tool without having to extract the image from the CAIRN image file while still exposing virtually all of that image tools funtionality."
 
 
+	def getHelpShortDesc(self):
+		return "Extract files or edit metadata in this image file"
+
+
 	def getHelpUsage(self):
 		return "%prog extract [options] <image file> [-- [image tool options]]"
 
