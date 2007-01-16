@@ -1,4 +1,4 @@
-"""templates.unix.extract.meta.unshar"""
+"""templates.unix.meta.unshar"""
 
 
 def getSubModuleString(sysdef):

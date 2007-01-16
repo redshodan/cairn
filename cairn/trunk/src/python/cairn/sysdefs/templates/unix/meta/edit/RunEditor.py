@@ -1,4 +1,4 @@
-"""templates.unix.extract.meta.edit.RunEditor Module"""
+"""templates.unix.meta.edit.RunEditor Module"""
 
 
 
@@ -32,8 +32,8 @@ class RunEditor(object):
 
 
 	def chooseEditor(self, sysdef):
-		if type(Options.get("edit-meta")) == types.StringType:
-			return Options.get("edit-meta")
+		if type(Options.get("editor")) == types.StringType:
+			return Options.get("editor")
 		elif "EDITOR" in os.environ:
 			return os.environ["EDITOR"]
 		else:
@@ -42,7 +42,7 @@ class RunEditor(object):
 
 	def runEditor(self, sysdef, meta, editor):
 		if os.system("%s %s" % (editor, meta)) != 0:
-			raise cairn.Exception("Editor returned error when editing metadata file. Image file not modified.")
+			raise cairn.UserEx("Editor returned error when editing metadata file. Image file not modified.")
 		return
 
 

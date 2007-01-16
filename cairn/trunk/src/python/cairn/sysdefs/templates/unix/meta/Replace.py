@@ -1,4 +1,4 @@
-"""templates.unix.extract.meta.Replace Module"""
+"""templates.unix.meta.Replace Module"""
 
 
 
@@ -17,8 +17,15 @@ def getClass():
 
 class Replace(object):
 
+	def findFilename(self, sysdef):
+		if Options.getExtraOpts():
+			return Options.getExtraOpts()[0]
+		else:
+			raise cairn.UserEx("Missing meta filename")
+
+
 	def run(self, sysdef):
-		meta = Options.get("replace-meta")
+		meta = self.findFilename(sysdef)
 		meta = os.path.abspath(meta)
 		sysdef.readInfo = SystemInfo.readNew(meta)
 		return True

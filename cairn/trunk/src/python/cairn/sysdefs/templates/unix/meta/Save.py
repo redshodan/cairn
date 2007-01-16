@@ -1,8 +1,9 @@
-"""templates.unix.extract.meta.Save Module"""
+"""templates.unix.meta.Save Module"""
 
 
 
 import os.path
+import re
 
 import cairn
 from cairn import Options
@@ -15,6 +16,17 @@ def getClass():
 
 
 class Save(object):
+
+	def findFilename(self, sysdef):
+		if Options.getExtraOpts():
+			return Options.getExtraOpts()[0]
+		else:
+			filename = Options.get("filename")
+			if re.match("\.cimg$", filename):
+				return re.sub("\.cimg$", ".meta", filename)
+			else:
+				return filename + ".meta"
+
 
 	def openMeta(self, filename):
 		try:
@@ -35,7 +47,7 @@ class Save(object):
 
 
 	def run(self, sysdef):
-		saveMeta = Options.get("save-meta")
+		saveMeta = self.findFilename(sysdef)
 		saveMeta = os.path.abspath(saveMeta)
 		meta = self.openMeta(saveMeta)
 		self.writeFile(sysdef, meta)

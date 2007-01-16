@@ -1,4 +1,4 @@
-"""templates.unix.archive.extract.meta.unshar.ShrinkMeta Module"""
+"""templates.unix.archive.meta.unshar.ShrinkMeta Module"""
 
 
 

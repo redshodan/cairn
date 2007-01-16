@@ -42,10 +42,10 @@ class Exception(exceptions.Exception):
 
 	def __init__(self, msg, prevex = None):
 		exceptions.Exception.__init__(self, msg)
-		self.__reportable = True
+		self.reportable = True
 		self.traces = []
 		if prevex:
-			self.__reportable = reportableEx(prevex)
+			self.reportable = reportableEx(prevex)
 			if isinstance(prevex, Exception):
 				self.msgs = [msg] + prevex.msgs
 				self.traces = prevex.traces
@@ -68,15 +68,12 @@ class Exception(exceptions.Exception):
 		return self.traces
 
 
-	def reportable(self):
-		return self.__reportable
-
 
 # Derived exceptions
 class UserEx(Exception):
 	def __init__(self, msg, prevex = None):
 		Exception.__init__(self, msg, prevex)
-		self.__reportable = False
+		self.reportable = False
 		return
 
 
@@ -180,7 +177,7 @@ def handleException(err):
 
 def reportableEx(err):
 	if isinstance(err, Exception):
-		return err.reportable()
+		return err.reportable
 	elif isinstance(err, exceptions.KeyboardInterrupt):
 		return False
 	else:
@@ -300,7 +297,7 @@ def createFile(filename, mode, desc):
 		if len(path) > 1:
 			info = None
 			try:
-				info = os.stat(path)
+				info = os.stat(path[0])
 			except:
 				pass
 			if not info:

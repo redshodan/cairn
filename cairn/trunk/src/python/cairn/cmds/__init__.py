@@ -29,27 +29,46 @@ def findCommand():
 	command = None
 	if cmdname.endswith("cairn"):
 		if (len(sys.argv) >= 2) and (sys.argv[1] in __builtCmds.keys()):
-			command = sys.argv[1]
+			command = __builtCmds[sys.argv[1]]
 			del sys.argv[1]
 		elif (len(sys.argv) >= 2) and (sys.argv[1] == "--version"):
-			command = "copy"
+			command = __buildCmds["copy"]
 		elif ((len(sys.argv) >= 2) and
 			  ((sys.argv[1] == "--help") or (sys.argv[1] == "-h"))):
-			command = "help"
+			return None
 	else:
 		for key in __builtCmds.keys():
 			if cmdname.endswith(key):
-				command = key
+				command = __builtCmds[key]
 				break
+	if not command:
+		return None
+	subCmds = command.getSubCmds()
+	if subCmds and (len(sys.argv) >= 2) and (sys.argv[1] in subCmds.keys()):
+			command = subCmds[sys.argv[1]]
+			del sys.argv[1]
 	return command
 
 
 def printHelp():
 	print "Usage: cairn <command> [command args] ..."
 	print "    The command can be one of the following:\n"
-	cmds = __builtCmds.values()
+	cmds = __builtCmds.keys()
 	cmds.sort()
-	for cmd in cmds:
+	for key in cmds:
+		cmd = __builtCmds[key]
+		print "    %s -- %s" % (cmd.name(), cmd.getHelpShortDesc())
+	print "\n    Place a '--help' after the command to get that commands help."
+	return
+
+
+def printCmdHelp(command):
+	print "Usage: %s" % command.getHelpUsage()
+	print "    The sub-command can be one of the following:\n"
+	cmds = command.getSubCmds().keys()
+	cmds.sort()
+	for key in cmds:
+		cmd = command.getSubCmds()[key]
 		print "    %s -- %s" % (cmd.name(), cmd.getHelpShortDesc())
 	print "\n    Place a '--help' after the command to get that commands help."
 	return
@@ -58,14 +77,17 @@ def printHelp():
 def run(libname):
 	buildCmds(libname)
 	command = findCommand()
-	if command and (command != "help"):
-		try:
-			__builtCmds[command].run()
-		except Exception, err:
-			# The one true catch point for all errors
-			if not isinstance(err, exceptions.SystemExit):
-				cairn.handleException(err)
-		sys.exit(0)
+	if command:
+		if command.getModuleString():
+			try:
+				command.run()
+			except Exception, err:
+				# The one true catch point for all errors
+				if not isinstance(err, exceptions.SystemExit):
+					cairn.handleException(err)
+			sys.exit(0)
+		else:
+			printCmdHelp(command)
 	else:
 		if command != "help":
 			print "Invalid command"

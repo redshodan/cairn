@@ -20,6 +20,29 @@ class Command(object):
 		self._fullCmdLine = fullCmdLine
 		return
 
+	###
+	### Help related functions
+	###
+
+	def getHelpOptMaps(self):
+		return None
+
+
+	def getHelpDesc(self):
+		return None
+
+
+	def getHelpShortdesc(self):
+		return None
+
+
+	def getHelpUsage(self):
+		return None
+
+
+	###
+	### Runtime related functions
+	###
 
 	def getDefaults(self):
 		return self._defaults
@@ -41,32 +64,41 @@ class Command(object):
 		return self._fullCmdLine
 
 
+	def disableLogging(self):
+		return False
+
+
 	def name(self):
 		return None
 
 
-	def getHelpOptMaps(self):
+	def fullName(self):
+		name = self.name()
+		cmd = self
+		while cmd.parent():
+			cmd = cmd.parent()
+			name = "%s %s" % (cmd.name(), name)
+		return name
+
+
+	def parent(self):
 		return None
 
 
-	def getHelpDesc(self):
-		return None
-
-
-	def getHelpShortdesc(self):
-		return None
-
-
-	def getHelpUsage(self):
-		return None
-
+	###
+	### Command line parsing functions
+	###
 
 	def allowBadOpts(self):
 		return False
 
 
-	def disableLogging(self):
-		return False
+	def getOptMaps(self):
+		return ()
+
+
+	def getSubCmds(self):
+		return None
 
 
 	def run(self):

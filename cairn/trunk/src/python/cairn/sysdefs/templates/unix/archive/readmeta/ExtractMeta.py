@@ -38,6 +38,7 @@ class ExtractMeta(object):
 			sysdef.info.setChild("archive/shar", "True")
 			sysdef.moduleList.insertAfterMe("archive.readmeta.ExtractMetaFromShar")
 		else:
-			sysdef.moduleList.insertAfterMe("archive.readmeta.ExtractMetaFromAR")
+			#sysdef.moduleList.insertAfterMe("archive.readmeta.ExtractMetaFromAR")
 			sysdef.info.setChild("archive/shar", "False")
+			raise cairn.UserEx("This is not a CAIRN cimg file")
 		return True

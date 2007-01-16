@@ -1,4 +1,4 @@
-"""templates.unix.extract.meta.edit.ReReadMeta Module"""
+"""templates.unix.meta.edit.ReReadMeta Module"""
 
 
 

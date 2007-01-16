@@ -4,25 +4,26 @@
 
 from cairn import Options
 from cairn.cmds.Command import Command
+from cairn.cmds.meta.Edit import Edit
+from cairn.cmds.meta.Extract import Extract
+from cairn.cmds.meta.Replace import Replace
+from cairn.cmds.meta.Unshar import Unshar
 
 
 
 class Meta(Command):
 
-	def getModuleString(self):
-		return "system.OS; system.Arch; system.Machine; system.Paths; extract;"
+	def __init__(self, libname, fullCmdLine):
+		super(Meta, self).__init__(libname, fullCmdLine)
+		self._subCmds = {"edit":Edit(libname, fullCmdLine, self),
+						 "extract":Extract(libname, fullCmdLine, self),
+						 "replace":Replace(libname, fullCmdLine, self),
+						 "unshar":Unshar(libname, fullCmdLine, self)}
+		return
 
 
 	def name(self):
 		return "meta"
-
-
-	def allowBadOpts(self):
-		return True
-
-
-	def getOptMaps(self):
-		return (Options.cliExtractOpts,)
 
 
 	def getHelpDesc(self):
@@ -34,7 +35,11 @@ class Meta(Command):
 
 
 	def getHelpUsage(self):
-		return "%prog extract [options] <image file> [-- [image tool options]]"
+		return "cairn meta <subcmd> [options] <image file>"
+
+
+	def getSubCmds(self):
+		return self._subCmds
 
 
 

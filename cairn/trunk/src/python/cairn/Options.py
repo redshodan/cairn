@@ -176,20 +176,14 @@ def setAllFiles(option, opt, value, parser):
 	return
 
 
-def editMetaOpt(option, opt, value, parser):
-	arg = nextArgNotOptNotFile(parser)
-	if arg:
-		set("edit-meta", arg)
-	else:
-		set("edit-meta", True)
-	return
-
 
 # Options contains the long form, the short form, its type, its default value,
 # a system info tag for it to set, a callback function for more complex
 # behavior, a help string and a help section. The long name will be used
 # for access through set() and get() in this module.
 cliCommonOpts = [
+# 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
+# 	 "help":"Archive type to use: tar, star", "level":ADVANCED},
 	{"long":"dumpenv", "type":"string", "info":"archive/metafilename",
 	 "level":EXPERT | DEBUG, "metavar":"ENV-FILE",
 	 "help":"Dump the discovered environment information and exit."},
@@ -243,7 +237,9 @@ cliCommonOpts = [
 	 "default":False, "callback":setVerboseOpt,
  	 "help":"Verbose operation. Multiple flags will increase verboseness."},
 	{"long":"yes", "short":"y", "action":"store_true", "default":False,
-	 "level":ADVANCED | DEBUG, "help":"Automatically answer all questions"}
+	 "level":ADVANCED | DEBUG, "help":"Automatically answer all questions"},
+ 	{"long":"zip", "short":"Z", "type":"string", "default":"gzip",
+ 	 "help":"Zip type to use: bzip2, gzip", "level":ADVANCED}
 ]
 
 cliCopyRestoreCommonOpts = [
@@ -278,8 +274,6 @@ cliCopyRestoreCommonOpts = [
 ]
 
 cliCopyOpts = [
-# 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
-# 	 "help":"Archive type to use: tar, star", "level":ADVANCED},
  	{"long":"comment", "type":"string", "default":None,
  	 "help":"Add this comment string to the archive file so it can be viewed "
 	 "later"},
@@ -288,44 +282,30 @@ cliCopyOpts = [
 # 	 "help":"Create a plain archive without the metadata prepended."},
 	{"long":"quick", "short":"q", "action":"store_true", "default":False,
  	 "help":"Skip time consuming steps that are not absolutly needed, eg:" + \
- 	 " precise progress meter"},
- 	{"long":"zip", "short":"Z", "type":"string", "default":"gzip",
- 	 "help":"Zip type to use: bzip2, gzip", "level":ADVANCED}
+ 	 " precise progress meter"}
 ]
 
 cliRestoreOpts = [
-# 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
-# 	 "help":"Archive type to use: tar, star", "level":ADVANCED},
  	{"long":"mountdir", "type":"string", "info":"env/mountdir",
  	 "help":"Set the directory to mount restore partitions.", "level":ADVANCED},
 	{"long":"pretend", "short":"p", "action":"store_true", "default":False,
 	 "help":"Do not do restore, print what actions would happen if restore were to happen."},
 	{"long":"quick", "short":"q", "action":"store_true", "default":False,
  	 "help":"Skip time consuming steps that are not absolutly needed, eg:" + \
- 	 " precise progress meter"},
- 	{"long":"zip", "short":"Z", "type":"string", "default":"gzip",
- 	 "help":"Zip type to use: bzip2, gzip", "level":ADVANCED}
+ 	 " precise progress meter"}
 ]
 
 cliExtractOpts = [
- 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
- 	 "help":"Archive type to use: tar, star", "level":ADVANCED},
-	{"long":"edit-meta", "short":"e", "action":"callback",
-	 "callback":editMetaOpt, "metavar":"[EDITOR]",
-	 "help":"Run an editor and edit the metadata. After the editor exits the metadata will be saved back to the image. Default editor is $EDITOR."},
 	{"long":"preserve", "short":"p", "action":"store_true", "default":False,
-	 "help":"Use the same options to the archiver that CAIRN restore would use. These are a number of options for preserving files as faithfully as possible."},
-	{"long":"replace-meta", "short":"r", "type":"string", "metavar":"FILE",
-	 "help":"Replace the metadata in the image with FILE."},
-	{"long":"save-meta", "short":"s", "type":"string", "metavar":"FILE",
-	 "help":"Save the metadata to FILE"},
-	{"long":"unshar", "short":"u", "type":"string", "metavar":"FILE",
-	 "help":"Unshar the image. Removes the metadata placing it in FILE and leaves the bare underlying archive in the image file."}
+	 "help":"Use the same options to the archiver that CAIRN restore would use. These are a number of options for preserving files as faithfully as possible."}
+]
+
+cliMetaEditOpts = [
+	{"long":"editor", "short":"e", "type":"string", "metavar":"[EDITOR]",
+	 "help":"Run EDITOR and edit the metadata. After the editor exits the metadata will be saved back to the image. Default editor is $EDITOR."}
 ]
 
 cliVerifyOpts = [
-# 	{"long":"archive", "short":"A", "type":"string", "default":"tar",
-# 	 "help":"Archive type to use: tar, star", "level":ADVANCED},
 #	{"long":"meta", "short":"m", "action":"store_true", "default":False,
 #	 "help":"Verify the metadata only. This will perform basic tests on contents of the metadata."},
 #	{"long":"archive", "short":"a", "action":"store_true", "default":False,
@@ -369,7 +349,7 @@ def setSysInfoOpt(option, value):
 
 def init(cmd):
 	global __desc, __usage
-	set("command", cmd.name())
+	set("command", cmd.fullName())
 	__desc = cmd.getHelpDesc()
 	__usage = cmd.getHelpUsage()
 	cairn.allLog(Logging.INFO,

@@ -1,4 +1,4 @@
-"""templates.unix.extract.meta.edit"""
+"""templates.unix.meta.edit"""
 
 
 from cairn import Options

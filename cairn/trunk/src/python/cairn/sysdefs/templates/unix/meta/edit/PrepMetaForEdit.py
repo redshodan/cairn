@@ -1,4 +1,4 @@
-"""templates.unix.extract.meta.edit.PrepMetaForEdit Module"""
+"""templates.unix.meta.edit.PrepMetaForEdit Module"""
 
 
 
