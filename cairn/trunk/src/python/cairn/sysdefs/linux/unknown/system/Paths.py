@@ -99,7 +99,6 @@ class Paths(tmpl.Paths):
 			if not sysdef.info.get("env/tools/" + tool):
 				cairn.warn(("Failed to find program %s. " +
 							"LVM volumes will not be handled") % tool)
-				sysdef.info.setChild("env/tools/lvm", "False")
 				return
 		cairn.debug("lvm tools found")
 		# Check for LVM module if we are copy. Restore should take care of the
