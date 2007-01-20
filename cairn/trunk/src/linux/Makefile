@@ -40,8 +40,10 @@ $(PARTED)/Makefile:
 	(cd $(PARTED); ./configure --prefix=`pwd`/../$(BUILD) --without-readline --disable-dependency-tracking --enable-shared=no --disable-nls)
 
 $(BUILD_LIB)/libparted.a: $(PARTED)/Makefile
-	make -C $(PARTED)
-	make -C $(PARTED) install
+	sed -e "s/SUBDIRS = po libparted parted partprobe include doc debug/SUBDIRS = po libparted parted partprobe include debug/" $(PARTED)/Makefile > $(PARTED)/Makefile.tmp
+	mv $(PARTED)/Makefile.tmp $(PARTED)/Makefile
+	make -C $(PARTED) 
+	make -C $(PARTED) install-exec install-data
 
 clean:
 	for a in $(DIRS); do make -C $$a distclean; make -C $$a clean; done
