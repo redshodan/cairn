@@ -10,7 +10,7 @@ from cairn.cmds.Command import Command
 class Copy(Command):
 
 	def getModuleString(self):
-		return "ui; system; copy; ui.Shutdown"
+		return "system.CheckRoot; system; copy; ui.Shutdown"
 
 
 	def name(self):

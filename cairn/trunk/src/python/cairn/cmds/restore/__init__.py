@@ -15,7 +15,7 @@ class Restore(Command):
 
 
 	def getModuleString(self):
-		return "system; restore;"
+		return "system.CheckRoot; system; restore;"
 
 
 	def name(self):

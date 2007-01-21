@@ -37,9 +37,4 @@ class Unknown(tmpl.UNIX):
 					 "pylibparted")
 		cloader.load(sysdefs.getDef(), prog.getLibname(), "thirdparty",
 					 "klogctl")
-		if (not prog.disableLogging() and
-			((Options.get("command") == "copy") or
-			 (Options.get("command") == "restore"))):
-			from cairn.sysdefs.linux.unknown.misc import klog
-			klog.start()
 		return True
