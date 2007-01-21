@@ -103,6 +103,11 @@ def init():
 	return
 
 
+def initPostOpts():
+	initTmpDir()
+	return
+
+
 def deinit():
 	joinThreads()
 	logRunTimeStr()
@@ -312,6 +317,24 @@ def createFile(filename, mode, desc):
 
 
 # Temp files
+def initTmpDir():
+	tmpdir = Options.get("tmpdir")
+	if not tmpdir:
+		return
+	try:
+		info = os.stat(tmpdir)
+		if stat.S_ISDIR(info[stat.ST_MODE]):
+			return
+	except:
+		pass
+	cairn.debug("Creating tmpdir: %s" % tmpdir)
+	try:
+		os.makedirs(tmpdir, 0700)
+	except Exception, err:
+		raise cairn.Exception("Specified temp directory, %s, did not exist. Failed to create directory" % tmpdir, err)
+	return
+
+
 def mktemp(filename):
 	tmpdir = Options.get("tmpdir")
 	file = tempfile.mkstemp("", filename, tmpdir)

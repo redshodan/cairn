@@ -101,6 +101,7 @@ class Command(object):
 		return None
 
 
+	# This is the real 'main()' of CAIRN.
 	def run(self):
 		cairn.init()
 		if self.disableLogging():
@@ -108,6 +109,7 @@ class Command(object):
 		Options.init(self)
 		self.setDefaults()
 		Options.parseCmdLineOpts(self.allowBadOpts())
+		cairn.initPostOpts()
 		sysdefs.setCommand(self)
 		sysdefs.load()
 		sysdefs.run()

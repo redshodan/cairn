@@ -31,9 +31,6 @@ endif
 $(BUILD_BIN)/cairn: $(BUILD_LIB)/cairn.zip $(SCRIPTS)/runcairn.sh
 	cat $(SCRIPTS)/runcairn.sh $(BUILD_LIB)/cairn.zip > $(BUILD_BIN)/cairn
 	chmod +x $(BUILD_BIN)/cairn
-	ln -s cairn $(BUILD_BIN)/ccopy
-	ln -s cairn $(BUILD_BIN)/crestore
-	ln -s cairn $(BUILD_BIN)/cextract
 
 clean:
 	find . -name '*.pyc' | xargs rm -f
