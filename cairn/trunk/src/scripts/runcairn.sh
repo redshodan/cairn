@@ -7,28 +7,12 @@ if [ -z "${PYTHON}" ]; then
 	exit 1
 fi
 
-# mktemp cross platform varies too much. this certainly is not terribly secure,
-# but hopefully it wont matter
-ALPHA="a b c d e f g h i j k l m n o p q r s t u v w x y z"
-for L1 in ${ALPHA}; do
-	for L2 in ${ALPHA}; do
-		for L3 in ${ALPHA}; do
-			if [ ! -f "/tmp/cairn-run-${L1}${L2}${L3}" ]; then break; fi
-		done
-		if [ ! -f "/tmp/cairn-run-${L1}${L2}${L3}" ]; then break; fi
-	done
-	if [ ! -f "/tmp/cairn-run-${L1}${L2}${L3}" ]; then break; fi
-done
-FILE="/tmp/cairn-run-${L1}${L2}${L3}"
-
 # src file is not piped to python so it does not mess with STDIN and user input
-cat > ${FILE} <<EOF
+python - ${0} ${*} 4<&0 <<EOF
 import os, os.path, sys, tempfile, atexit
 
 def cleanup():
 	if not nocleanup:
-		try: os.unlink(srcfile)
-		except: pass
 		try: os.unlink(libname)
 		except: pass
 		try: os.rmdir(libdir)
@@ -60,9 +44,11 @@ def initTemp():
 #### Start
 atexit.register(cleanup)
 
+#### Close up stdin since this script has been read and switch to the tty stdin
+os.dup2(4, 0)
+
 #### Command line handling
-srcfile = os.path.abspath(sys.argv[0])
-sys.argv = sys.argv[1:]
+del sys.argv[0]
 cmdname = os.path.abspath(sys.argv[0])
 if "--no-cleanup" in sys.argv:
 	nocleanup = True
@@ -98,8 +84,6 @@ sys.path.append(libname)
 from cairn import cmds
 cmds.run(libname)
 EOF
-
-python ${FILE} ${0} ${*}
 
 exit ${?}
 
