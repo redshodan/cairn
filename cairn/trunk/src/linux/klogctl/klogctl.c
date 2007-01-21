@@ -1,8 +1,41 @@
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 #include <sys/klog.h>
 #include <errno.h>
 #include <string.h>
 #include <Python.h>
 
+
+PyDoc_STRVAR(pyfileMajorMinor__doc__,
+"Receives: filename\n"
+"Returns: major and minor of file. (0,0) on non-device files.\n");
+
+// python's os.stat() doesnt seem to support st_rdev and decoding the major
+// and minor. So do that here.
+static PyObject *pyfileMajorMinor(PyObject *s, PyObject *args)
+{
+    const char* filename=NULL;
+    int fmajor=0, fminor=0;
+    struct stat sbuf;
+
+    if (!PyArg_ParseTuple(args, "s", &filename))
+    {
+        PyErr_SetString(PyExc_TypeError, "parameters must be a string");
+        return NULL;
+    }
+
+    if (stat(filename, &sbuf) != 0)
+    {
+        PyErr_SetString(PyExc_OSError, strerror(errno));
+        return NULL;
+    }
+
+    fmajor=major(sbuf.st_rdev);
+    fminor=minor(sbuf.st_rdev);
+
+    return Py_BuildValue("(ii)", fmajor, fminor);
+}
 
 PyDoc_STRVAR(pyklogctl__doc__,
 "Receives: action, size\n"
@@ -71,6 +104,8 @@ static PyObject *pyklogctl(PyObject *s, PyObject *args)
 static PyMethodDef klogctlModuleMethods[] =
 {
     {"klogctl", (PyCFunction)pyklogctl, METH_VARARGS, pyklogctl__doc__},
+    {"fileMajorMinor", (PyCFunction)pyfileMajorMinor, METH_VARARGS,
+     pyfileMajorMinor__doc__},
     {NULL}
 };
 

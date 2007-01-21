@@ -2,6 +2,7 @@
 
 
 
+import os
 import re
 import time
 import threading
@@ -33,7 +34,6 @@ class KlogThread(threading.Thread):
 
 
 	def run(self):
-		init()
 		self.__lock.acquire()
 		while self.__running:
 			self.__lock.release()
@@ -47,6 +47,7 @@ class KlogThread(threading.Thread):
 
 # Main entry point
 def start():
+	init()
 	thread = KlogThread()
 	cairn.registerThread(thread)
 	thread.start()
@@ -55,6 +56,7 @@ def start():
 
 def init():
 	global __prevLines
+	cairn.debug("Starting KlogThread")
 	if Options.get("command") == "restore":
 		disableConsoleMsgs()
 	__prevLines = getLogLines()
@@ -66,16 +68,31 @@ def deinit():
 	return
 
 
+def isConsole():
+	# Make sure we are on a console and not a ptty
+	tty = os.readlink("/proc/self/fd/0")
+	major, minor = klogctl.fileMajorMinor(tty)
+	ret = False
+	if ((major == 4) or ((major == 5) and ((minor == 0) or (minor == 1)))):
+		ret = True
+	cairn.debug("Program tty: %s : (%d,%d) : isConsole=%d" %
+				(tty, major, minor, ret))
+	return ret
+
+
 def disableConsoleMsgs():
-	global __consoleDisabled
-	__consoleDisabled = True
-	klogctl.klogctl(6, 0)
+	if isConsole():
+		cairn.debug("Disabling console kernel logs")
+		global __consoleDisabled
+		__consoleDisabled = True
+		klogctl.klogctl(6, 0)
 	return
 
 
 def enableConsoleMsgs():
 	global __consoleDisabled
 	if __consoleDisabled:
+		cairn.debug("Enabling console kernel logs")
 		__consoleDisabled = False
 		klogctl.klogctl(7, 0)
 	return
