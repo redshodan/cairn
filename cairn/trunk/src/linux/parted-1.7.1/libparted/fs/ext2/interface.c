@@ -116,6 +116,8 @@ _ext2_open (PedGeometry* geom)
 	fs->type = &_ext2_type;
 	fs->geom = ped_geometry_duplicate (geom);
 	fs->checked = 1;
+	fs->label = NULL;
+	fs->uuid = NULL;
 
 	handle = ext2_make_dev_handle_from_parted_geometry(fs->geom);
 	if (!handle) goto error_free_fs;

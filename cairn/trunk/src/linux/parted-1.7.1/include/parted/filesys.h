@@ -75,6 +75,8 @@ struct _PedFileSystem {
 	PedGeometry*		geom;		/**< where the file system actually is */
 	int			checked;	/**< 1 if the file system has been checked.
 						      0 otherwise. */
+    char* label; /**< the file system label, if exists */
+	char* uuid; /**< the file system UUID, if exists */
 
 	void*			type_specific;
 
