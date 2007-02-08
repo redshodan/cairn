@@ -7,7 +7,11 @@ include $(TOPDIR)/Makefile.vars
 
 include Makefile.vars
 
-LIBS=$(BUILD_LIB)/libparted.a $(BUILD_LIB)/pylibparted.so $(BUILD_LIB)/klogctl.so
+LIBS=\
+	$(BUILD_LIB)/libparted.a \
+	$(BUILD_LIB)/pylibparted.so \
+	$(BUILD_LIB)/klogctl.so \
+	$(BUILD_LIB)/pyvolumeid.so
 
 #### Auto dir targs
 DIRS=$(PARTED) $(PYPARTED) klogctl
@@ -20,6 +24,10 @@ all: $(LIBS)
 #### klogctl
 $(BUILD_LIB)/klogctl.so:
 	make -C klogctl
+
+#### pyvolumeid
+$(BUILD_LIB)/pyvolumeid.so:
+	make -C pyvolumeid
 
 #### pylibparted
 $(PYPARTED):
