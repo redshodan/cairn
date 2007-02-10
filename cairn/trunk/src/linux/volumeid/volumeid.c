@@ -1,7 +1,10 @@
 #define _GNU_SOURCE
 
+#include <stdlib.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/ioctl.h>
+#include <sys/mount.h>
 #include <unistd.h>
 #include <errno.h>
 #include <string.h>
@@ -36,11 +39,6 @@ static void set_str(char *to, const char *from, size_t count)
 				i++;
 			to[j++] = '_';
 		}
-		/* skip chars */
-		if (from[i] == '/') {
-			i++;
-			continue;
-		}
 		to[j++] = from[i++];
 	}
 	to[j] = '\0';
@@ -56,6 +54,7 @@ static PyObject *pyprobe(PyObject *s, PyObject *args)
 	static char label_safe[VOLUME_ID_LABEL_SIZE];
     const char* filename = NULL;
 	struct volume_id *vid = NULL;
+	uint64_t size;
 
     if (!PyArg_ParseTuple(args, "s", &filename))
     {
@@ -70,10 +69,23 @@ static PyObject *pyprobe(PyObject *s, PyObject *args)
         return NULL;
     }
 
+	if (ioctl(vid->fd, BLKGETSIZE64, &size) != 0)
+    {
+        PyErr_SetString(PyExc_OSError, strerror(errno));
+        return NULL;
+    }
+
+	if (volume_id_probe_all(vid, 0, size) != 0)
+    {
+        PyErr_SetString(PyExc_OSError, strerror(errno));
+        return NULL;
+    }
+
+    memset(label_safe, 0, sizeof(label_safe));
 	set_str(label_safe, vid->label, sizeof(vid->label));
 	replace_untrusted_chars(label_safe);
 
-    return Py_BuildValue("(ssssss)", vid->usage, vid->type, vid->type_version,
+    return Py_BuildValue("(sssss)", vid->usage, vid->type, vid->type_version,
                          vid->uuid, label_safe);
 }
 
