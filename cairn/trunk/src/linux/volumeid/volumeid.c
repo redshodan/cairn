@@ -17,34 +17,6 @@
 extern int replace_untrusted_chars(char *str);
 
 
-static void set_str(char *to, const char *from, size_t count)
-{
-	size_t i, j, len;
-
-	/* strip trailing whitespace */
-	len = strnlen(from, count);
-	while (len && isspace(from[len-1]))
-		len--;
-
-	/* strip leading whitespace */
-	i = 0;
-	while (isspace(from[i]) && (i < len))
-		i++;
-
-	j = 0;
-	while (i < len) {
-		/* substitute multiple whitespace */
-		if (isspace(from[i])) {
-			while (isspace(from[i]))
-				i++;
-			to[j++] = '_';
-		}
-		to[j++] = from[i++];
-	}
-	to[j] = '\0';
-}
-
-
 PyDoc_STRVAR(pyprobe__doc__,
 "Receives: filename\n"
 "Returns: (usage, type, version, uuid, label, label_safe) or tuple of None values.\n");
@@ -82,7 +54,7 @@ static PyObject *pyprobe(PyObject *s, PyObject *args)
     }
 
     memset(label_safe, 0, sizeof(label_safe));
-	set_str(label_safe, vid->label, sizeof(vid->label));
+	volume_id_set_str(label_safe, vid->label, sizeof(vid->label));
 	replace_untrusted_chars(label_safe);
 
     return Py_BuildValue("(sssss)", vid->usage, vid->type, vid->type_version,

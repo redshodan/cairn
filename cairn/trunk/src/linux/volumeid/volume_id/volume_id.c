@@ -28,6 +28,34 @@
 #include "libvolume_id.h"
 #include "util.h"
 
+void volume_id_set_str(char *to, const char *from, size_t count)
+{
+	size_t i, j, len;
+
+	/* strip trailing whitespace */
+	len = strnlen(from, count);
+	while (len && isspace(from[len-1]))
+		len--;
+
+	/* strip leading whitespace */
+	i = 0;
+	while (isspace(from[i]) && (i < len))
+		i++;
+
+	j = 0;
+	while (i < len) {
+		/* substitute multiple whitespace */
+		if (isspace(from[i])) {
+			while (isspace(from[i]))
+				i++;
+			to[j++] = '_';
+		}
+		to[j++] = from[i++];
+	}
+	to[j] = '\0';
+}
+
+
 /* the user can overwrite this log function */
 static void default_log(int priority, const char *file, int line, const char *format, ...)
 {

@@ -112,5 +112,6 @@ extern int volume_id_probe_silicon_medley_raid(struct volume_id *id, uint64_t of
 extern int volume_id_probe_via_raid(struct volume_id *id, uint64_t off, uint64_t size);
 extern int volume_id_probe_adaptec_raid(struct volume_id *id, uint64_t off, uint64_t size);
 extern int volume_id_probe_jmicron_raid(struct volume_id *id, uint64_t off, uint64_t size);
+extern void volume_id_set_str(char *to, const char *from, size_t count);
 
 #endif
