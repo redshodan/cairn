@@ -131,8 +131,8 @@ class RunArchiver(object):
 			err = "\nError running archive tool: %s" % archiveTool.err
 		if zipTool.err:
 			err = err + "\nError running zip tool: %s" % zipTool.err
-		if not self.verifyExit(archiveTool, zipTool):
-			raise cairn.Exception("Error running a tool: archiver exited with %d, zipper exited with %d: %s" % (archiveTool.exit(), zipTool.exit(), err))
+		#if not self.verifyExit(archiveTool, zipTool):
+		#	raise cairn.UserEx("Error running a tool: archiver exited with %d, zipper exited with %d: %s" % (archiveTool.exit(), zipTool.exit(), err))
 		return
 
 

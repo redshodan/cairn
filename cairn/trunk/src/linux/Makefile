@@ -11,10 +11,10 @@ LIBS=\
 	$(BUILD_LIB)/libparted.a \
 	$(BUILD_LIB)/pylibparted.so \
 	$(BUILD_LIB)/klogctl.so \
-	$(BUILD_LIB)/pyvolumeid.so
+	$(BUILD_LIB)/volumeid.so
 
 #### Auto dir targs
-DIRS=$(PARTED) $(PYPARTED) klogctl
+DIRS=$(PARTED) $(PYPARTED) klogctl volumeid
 $(PYPARTED)=$(PYPARTED)/build
 
 
@@ -25,9 +25,9 @@ all: $(LIBS)
 $(BUILD_LIB)/klogctl.so:
 	make -C klogctl
 
-#### pyvolumeid
-$(BUILD_LIB)/pyvolumeid.so:
-	make -C pyvolumeid
+#### volumeid
+$(BUILD_LIB)/volumeid.so:
+	make -C volumeid
 
 #### pylibparted
 $(PYPARTED):

@@ -19,14 +19,14 @@ def getClass():
 class DiskUsage(tmpl.DiskUsage):
 
 	def mount(self, sysdef, partition):
-		Shared.mount(sysdef, partition.get("device"), partition.get("mount"))
+		Shared.mount(sysdef, partition.get("device"), partition.get("fs/mount"))
 		return
 
 
 	def findPartitionDiskUsage(self, sysdef, partition):
-		if not partition.get("mount") or (partition.get("mount") == "none"):
+		mount = partition.get("fs/mount")
+		if not mount or (mount == "none"):
 			return
-		mount = partition.get("mount")
 		if not os.path.ismount(mount):
 			if not self.askMount(sysdef, partition):
 				return
@@ -35,10 +35,10 @@ class DiskUsage(tmpl.DiskUsage):
 		used = "%d" % (((info[F_BLOCKS] - info[F_BAVAIL]) * 4) / 1024)
 		free = "%d" % ((info[F_BAVAIL] * 4) / 1024)
 		device = partition.get("device")
-		space = sysdef.info.createPartitionFSSpaceElem(partition)
-		space.setChild("total", total)
-		space.setChild("used", used)
-		space.setChild("free", free)
+		fs = partition.getElem("fs")
+		fs.setChild("total", total)
+		fs.setChild("used", used)
+		fs.setChild("free", free)
 		cairn.verbose("  %s: space: total=%sM used=%sM free=%sM" % \
 					  (device, total, used, free))
 		return

@@ -3,4 +3,4 @@
 
 
 def getSubModuleString(sysdef):
-	return "..archive.readmeta; resolve; setup; ..archive.read; bootloader; cleanup; DisplayDone;"
+	return "..archive.readmeta; resolve; setup; ..archive.read; adjust; bootloader; cleanup; DisplayDone;"

@@ -37,6 +37,10 @@ PART_TYPE_MAP = \
 	"primary":parted.PARTITION_NORMAL, "free":parted.PARTITION_FREESPACE
 }
 
+FSTAB_UUID_RE = re.compile("\s*UUID=[\-a-fA-F0-9]+\s+/[^\s]*\s+[a-zA-Z0-9]+\s+[=,\-a-zA-Z0-9]+\s+[0-9]+\s+[0-9]+")
+FSTAB_LABEL_RE = re.compile("\s*LABEL=[^\s]+\s+/[^\s]*\s+[a-zA-Z0-9]+\s+[=,\-a-zA-Z0-9]+\s+[0-9]+\s+[0-9]+")
+
+
 MD_RE = [re.compile("md[0-9]+")]
 MDP_RE = [re.compile("md_d[0-9]+"), re.compile("mdp[0-9]+")]
 LVM_RE = [re.compile("dm[0-9]")]

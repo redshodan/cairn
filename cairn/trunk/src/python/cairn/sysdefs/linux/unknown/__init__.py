@@ -37,4 +37,6 @@ class Unknown(tmpl.UNIX):
 					 "pylibparted")
 		cloader.load(sysdefs.getDef(), prog.getLibname(), "thirdparty",
 					 "klogctl")
+		cloader.load(sysdefs.getDef(), prog.getLibname(), "thirdparty",
+					 "volumeid")
 		return True

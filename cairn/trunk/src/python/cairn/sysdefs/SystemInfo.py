@@ -95,14 +95,20 @@ Hardware
            <label/>
            <type/>
            <active/>
-           <fs-type/>
-           <mount/>
            <flags/>
-           <fs-space>
+		   <fs>
+             <type/>
+			 <is-normal/>
+			 <version/>
+			 <uuid/>
+			 <label/>
+			 <label_safe/>
+			 <mount/>
+			 <mount-source/>
              <total/>
-             <used/>
-             <free/>
-           </fs-space>
+			 <used/>
+			 <free/>
+		   </fs>
          </partition>
        </disk-label>
 	   <md-cfg>
@@ -357,18 +363,24 @@ def createPartitionElem(self, device, name):
 	elem = part.createElem("label")
 	elem = part.createElem("type")
 	elem = part.createElem("active")
-	elem = part.createElem("fs-type")
-	elem = part.createElem("mount")
 	elem = part.createElem("flags")
+	self.createPartitionFSElem(part)
 	return part
 
 
-def createPartitionFSSpaceElem(self, part):
-	space = part.createElem("fs-space")
-	elem = space.createElem("total")
-	elem = space.createElem("used")
-	elem = space.createElem("free")
-	return space
+def createPartitionFSElem(self, part):
+	fs = part.createElem("fs")
+	elem = fs.createElem("type")
+	elem = fs.createElem("is-normal")
+	elem = fs.createElem("version")
+	elem = fs.createElem("uuid")
+	elem = fs.createElem("label")
+	elem = fs.createElem("label_safe")
+	elem = fs.createElem("mount")
+	elem = fs.createElem("total")
+	elem = fs.createElem("used")
+	elem = fs.createElem("free")
+	return fs
 
 
 def createArchiveElem(self):
@@ -492,11 +504,10 @@ def printDevices(self):
 		elif device.get("status") == "skipped":
 			cairn.display("      skipped")
 		for part in device.getElems("disk-label/partition"):
-			msg = "      part %s: device=%s label=%s type=%s fs-type=%s mount=%s" % (part.instName(), part.get("device"), part.get("label"), part.get("type"), part.get("fs-type"), part.get("mount"))
-			space = part.getElem("fs-space")
-			if space:
-				msg = msg + " (fs-space: total=%s used=%s free=%s)" % (space.get("total"), space.get("used"), space.get("free"))
-			cairn.display(msg)
+			cairn.display("      part %s: device=%s label=%s type=%s" % (part.instName(), part.get("device"), part.get("label"), part.get("type")))
+			fs = part.getElem("fs")
+			if fs:
+				cairn.display("        fs: type=%s label=%s uuid=%s mount=%s total=%s used=%s free=%s" % (fs.get("type"), fs.get("label"), fs.get("uuid"), fs.get("mount"), fs.get("total"), fs.get("used"), fs.get("free")))
 	return
 
 
@@ -557,7 +568,7 @@ def injectDocFuncs(doc):
 	DOMHelper.inject(doc, createDeviceMDConfigElem)
 	DOMHelper.inject(doc, createDeviceMDDeviceElem)
 	DOMHelper.inject(doc, createPartitionElem)
-	DOMHelper.inject(doc, createPartitionFSSpaceElem)
+	DOMHelper.inject(doc, createPartitionFSElem)
 	DOMHelper.inject(doc, createArchiveElem)
 	DOMHelper.inject(doc, createArchiveExcludesElem)
 	DOMHelper.inject(doc, createPadElem)

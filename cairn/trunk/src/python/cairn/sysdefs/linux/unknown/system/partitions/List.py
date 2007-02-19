@@ -7,6 +7,7 @@ import os
 import pylibparted as parted
 
 import cairn
+import cairn.sysdefs.templates.unix.system.partitions.List as tmpl
 from cairn.sysdefs.linux import Shared
 
 
@@ -15,7 +16,8 @@ def getClass():
 	return List()
 
 
-class List(object):
+
+class List(tmpl.List):
 
 	def run(self, sysdef):
 		cairn.log("Checking partitions")

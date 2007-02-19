@@ -14,8 +14,11 @@ def getClass():
 class MakeFS(tmpl.MakeFS):
 
 	def makeFS(self, sysdef, part):
-		fsType = part.get("fs-type")
-		if not len(fsType):
+		fsType = part.get("fs/type")
+		if not len(fsType) or not part.get("fs/is-normal"):
+			return
+		if not fsType in Constants.FS_MAP:
+			cairn.warn("Skipping unknown filesystem: %s" % fsType)
 			return
 		tool = sysdef.info.get(Constants.FS_MAP[fsType])
 		device = part.get("mapped-device")

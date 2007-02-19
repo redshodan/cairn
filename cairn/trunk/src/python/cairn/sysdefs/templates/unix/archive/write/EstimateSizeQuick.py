@@ -18,8 +18,9 @@ class EstimateSizeQuick(tmpl.EstimateSize):
 		totalSize = long(0)
 		for device in sysdef.info.getElems("hardware/device"):
 			for partition in device.getElems("disk-label/partition"):
-				space = partition.getElem("fs-space")
-				if space:
-					used = space.get("used")
-					totalSize = totalSize + long(used)
+				fs = partition.getElem("fs")
+				if fs:
+					used = fs.get("used")
+					if used:
+						totalSize = totalSize + long(used)
 		return totalSize * 1048576

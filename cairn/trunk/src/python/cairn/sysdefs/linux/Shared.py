@@ -140,9 +140,6 @@ def definePartition(sysdef, part, ppart):
 	part.setChild("type", ppart.getTypeName())
 	if ppart.isActive():
 		part.setChild("active", "true")
-	fstype = ppart.getFsType()
-	if fstype:
-		part.setChild("fs-type", fstype.getName())
 	flags = part.getElem("flags")
 	for flag in ppart.getFlagsNames():
 		flags.createElem("flag", flag)

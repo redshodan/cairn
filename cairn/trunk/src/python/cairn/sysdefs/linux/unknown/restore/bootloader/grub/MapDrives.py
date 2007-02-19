@@ -2,7 +2,6 @@
 
 
 import os.path
-import shutil
 
 import cairn
 
@@ -18,10 +17,7 @@ class MapDrives(object):
 		mdir = sysdef.info.get("env/mountdir")
 		mapFileName = os.path.join(mdir, "boot/grub/device.map")
 		mapFile = None
-		try:
-			shutil.move(mapFileName, mapFileName + ".org")
-		except Exception, err:
-			pass
+		cairn.backupFileDir(mapFileName)
 		try:
 			mapFile = file(mapFileName, "w+")
 		except Exception, err:
@@ -29,7 +25,7 @@ class MapDrives(object):
 		id = 0
 		for disk in sysdef.readInfo.getElems("hardware/device"):
 			if (disk.get("type") == "drive"):
-				mapFile.write("(hd%d)  %s" % (id, disk.get("device")))
+				mapFile.write("(hd%d)  %s\n" % (id, disk.get("device")))
 		mapFile.close()
 		return
 
@@ -55,8 +51,8 @@ class MapDrives(object):
 						continue
 					#partID = partID + 1
 					partID = int(part.get("number")) - 1
-					mountList.append(part.get("mount"))
-					fsMap[part.get("mount")] = [device, driveID, part, partID]
+					mountList.append(part.get("fs/mount"))
+					fsMap[part.get("fs/mount")] = [device, driveID, part, partID]
 		if "/boot" in mountList:
 			tuple = fsMap["/boot"]
 		elif "/" in mountList:

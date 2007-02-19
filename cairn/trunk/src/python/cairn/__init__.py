@@ -13,6 +13,7 @@ import commands
 import time
 import re
 import types
+import shutil
 
 
 from types import *
@@ -313,6 +314,26 @@ def createFile(filename, mode, desc):
 		return file(filename, mode)
 	except Exception, err:
 		raise cairn.Exception("Failed to open %s file" % desc, err)
+	return
+
+
+# Create a backup of this file in a common cairn way
+def backupFileDir(filename):
+	# Puke if src doesnt exist
+	try:
+		os.stat(filename)
+		index = 1
+		while True:
+			dest = "%s.cairn.%d" % (filename, index)
+			try:
+				info = os.stat(dest)
+				index = index + 1
+			except:
+				verbose("Backing up %s -> %s" % (filename, dest))
+				shutil.move(filename, dest)
+				return dest
+	except Exception, err:
+		raise cairn.Exception("Failed to backup %s: %s" % (filename, err))
 	return
 
 

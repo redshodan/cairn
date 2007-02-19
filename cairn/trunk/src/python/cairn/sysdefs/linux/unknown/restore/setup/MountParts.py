@@ -22,9 +22,9 @@ class MountParts(tmpl.MountParts):
 		self.mkdir(sysdef, mdir)
 		for mount in mountList:
 			part = fsMap[mount]
-			if (not len(part.get("fs-type")) or
-				(part.get("fs-type") == "swap") or
-				(part.get("fs-type") == "linux-swap")):
+			if (not len(part.get("fs/type")) or
+				(part.get("fs/type") == "swap") or
+				(part.get("fs/type") == "linux-swap")):
 				continue
 			fullDir = os.path.join(mdir, mount.lstrip("/"))
 			self.mkdir(sysdef, fullDir)

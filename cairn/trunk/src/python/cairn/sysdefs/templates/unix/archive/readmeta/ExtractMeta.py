@@ -19,8 +19,8 @@ class ExtractMeta(object):
 		try:
 			archive = file(filename, "rb")
 		except Exception, err:
-			raise cairn.Exception("Unable to open archive file %s: %s" % \
-								  (filename, err))
+			raise cairn.UserEx("Unable to open archive file %s: %s" % \
+							   (filename, err))
 		return archive
 
 

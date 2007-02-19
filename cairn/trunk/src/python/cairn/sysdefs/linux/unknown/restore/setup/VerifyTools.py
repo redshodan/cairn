@@ -15,8 +15,8 @@ class VerifyTools(tmpl.VerifyTools):
 	def run(self, sysdef):
 		for device in sysdef.readInfo.getElems("hardware/device"):
 			for part in device.getElems("disk-label/partition"):
-				fsType = part.get("fs-type")
-				if not len(fsType):
+				fsType = part.get("fs/type")
+				if not len(fsType) or not part.get("fs/is-normal"):
 					continue
 				if fsType not in Constants.FS_MAP:
 					raise cairn.Exception("Unknown filesystem type %s for %s found in archive" % (fsType, part.get("device")))

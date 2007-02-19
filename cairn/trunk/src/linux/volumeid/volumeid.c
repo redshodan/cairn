@@ -23,10 +23,12 @@ PyDoc_STRVAR(pyprobe__doc__,
 
 static PyObject *pyprobe(PyObject *s, PyObject *args)
 {
+    char buff[1024];
 	static char label_safe[VOLUME_ID_LABEL_SIZE];
     const char* filename = NULL;
 	struct volume_id *vid = NULL;
 	uint64_t size;
+    PyObject* ret = NULL;
 
     if (!PyArg_ParseTuple(args, "s", &filename))
     {
@@ -37,19 +39,22 @@ static PyObject *pyprobe(PyObject *s, PyObject *args)
 	vid = volume_id_open_node(filename);
     if (!vid)
     {
-        PyErr_SetString(PyExc_OSError, strerror(errno));
+        sprintf(buff, "volume_id_open_node: %s", strerror(errno));
+        PyErr_SetString(PyExc_OSError, buff);
         return NULL;
     }
 
 	if (ioctl(vid->fd, BLKGETSIZE64, &size) != 0)
     {
-        PyErr_SetString(PyExc_OSError, strerror(errno));
+        sprintf(buff, "ioctl(BLKGETSIZE64): %s", strerror(errno));
+        PyErr_SetString(PyExc_OSError, buff);
         return NULL;
     }
 
 	if (volume_id_probe_all(vid, 0, size) != 0)
     {
-        PyErr_SetString(PyExc_OSError, strerror(errno));
+        sprintf(buff, "volume_id_probe_all: %s", strerror(errno));
+        PyErr_SetString(PyExc_OSError, buff);
         return NULL;
     }
 
@@ -57,8 +62,12 @@ static PyObject *pyprobe(PyObject *s, PyObject *args)
 	volume_id_set_str(label_safe, vid->label, sizeof(vid->label));
 	replace_untrusted_chars(label_safe);
 
-    return Py_BuildValue("(sssss)", vid->usage, vid->type, vid->type_version,
-                         vid->uuid, label_safe);
+    ret = Py_BuildValue("(ssssss)", vid->usage, vid->type, vid->type_version,
+                        vid->uuid, vid->label, label_safe);
+
+    volume_id_close(vid);
+
+    return ret;
 }
 
 static PyMethodDef volumeidModuleMethods[] =

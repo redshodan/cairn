@@ -8,5 +8,5 @@ setup(name='volumeid', version='0.1',
       	Extension('volumeid',
 				  ['volumeid.c'],
 				  extra_link_args=['../../../build/lib/libvolumeid.a'],
-				  extra_compile_args=['-g', '-Wall', "-Ivolume_id"])
+				  extra_compile_args=['-Wall', "-Ivolume_id"])
       ])

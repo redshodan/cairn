@@ -9,7 +9,7 @@ PYDIRS=cairn thirdparty
 PYTHON_FILES=$(shell find $(PYDIRS) -name '*.py')
 CLIBS=
 ifeq ($(TARGET_OS),Linux)
-CLIBS+=$(BUILD_LIB)/pylibparted.so $(BUILD_LIB)/klogctl.so
+CLIBS+=$(BUILD_LIB)/pylibparted.so $(BUILD_LIB)/klogctl.so $(BUILD_LIB)/volumeid.so
 endif
 
 
@@ -23,8 +23,7 @@ $(BUILD_LIB)/cairn.zip: $(PYTHON_FILES) $(CLIBS)
 	sed -e 's/^SVNREV = .*/SVNREV = $(SVNREV)/' $(BUILD_SRC)/cairn/Version.py > $(BUILD_SRC)/cairn/Version.py.tmp
 	mv -f $(BUILD_SRC)/cairn/Version.py.tmp $(BUILD_SRC)/cairn/Version.py
 ifeq ($(TARGET_OS),Linux)
-	cp $(BUILD_LIB)/pylibparted.so $(BUILD_SRC)/thirdparty
-	cp $(BUILD_LIB)/klogctl.so $(BUILD_SRC)/thirdparty
+	cp $(CLIBS) $(BUILD_SRC)/thirdparty
 endif
 	(cd $(BUILD_SRC); zip -qr ../lib/cairn.zip $(PYDIRS))
 

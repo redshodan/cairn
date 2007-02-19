@@ -20,7 +20,7 @@ class DiskUsage(object):
 
 
 	def askMount(self, sysdef, partition):
-		mount = partition.get("mount")
+		mount = partition.get("fs/mount")
 		cairn.displayRaw("Mount %s is not mounted. Do you wish to have it mounted now so its included in the backup? [Y/n]" % mount)
 		line = sys.stdin.readline()
 		line = line.strip()
@@ -29,7 +29,7 @@ class DiskUsage(object):
 			self.mount(sysdef, partition)
 			return True
 		else:
-			cairn.display("Skipping mount point %s", partition.get("mount"))
+			cairn.display("Skipping mount point %s", partition.get("fs/mount"))
 			return False
 
 
