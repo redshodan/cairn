@@ -7,6 +7,7 @@ from cairn.sysdefs.linux import Constants
 import cairn.sysdefs.templates.unix.restore.setup.MakeFS as tmpl
 
 
+
 def getClass():
 	return MakeFS()
 
@@ -15,6 +16,7 @@ class MakeFS(tmpl.MakeFS):
 
 	def makeFS(self, sysdef, part):
 		fsType = part.get("fs/type")
+		fsLabel = part.get("fs/label")
 		if not len(fsType) or not part.get("fs/is-normal"):
 			return
 		if not fsType in Constants.FS_MAP:
@@ -26,7 +28,9 @@ class MakeFS(tmpl.MakeFS):
 		cairn.log("  %s: %s" % (device, fsType))
 		args = ""
 		if fsType == "reiserfs":
-			args = "-ff"
+			args = "%s -ff" % (args)
+		if fsLabel and (fsType in Constants.FS_LABEL_MAP):
+			args = "%s %s %s" % (args, Constants.FS_LABEL_MAP[fsType], fsLabel)
 		cmd = "%s %s %s" % (tool, args, device)
 		cairn.run(cmd, "Failed to run %s on %s" % (tool, device))
 		return

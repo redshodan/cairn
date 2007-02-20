@@ -30,6 +30,16 @@ FS_MAP = {
 	"vfat" : "env/tools/mkfs.vfat"
 }
 
+FS_LABEL_MAP = {
+	"ext2" : "-L",
+	"ext3" : "-L",
+	"xfs" : "-L",
+	"reiserfs" : "-l",
+	"jfs" : "-L",
+	"fat16" : "-n",
+	"vfat" : "-n"
+}
+
 PART_TYPE_MAP = \
 {
 	"extended":parted.PARTITION_EXTENDED, "logical":parted.PARTITION_LOGICAL,
