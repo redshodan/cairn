@@ -29,7 +29,8 @@ class DiskUsage(object):
 			self.mount(sysdef, partition)
 			return True
 		else:
-			cairn.display("Skipping mount point %s", partition.get("fs/mount"))
+			cairn.display("Skipping mount point %s" %
+						  partition.get("fs/mount"))
 			return False
 
 
