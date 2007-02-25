@@ -1,7 +1,0 @@
-CAIRN Copy requirements:
-  Base:  python 2.3
-  Linux:
-    Required:
-      basic system tools like mount, mkfs.*, etc
-      libuuid from e2fsprogs. Around version 1.38 should work fine.
-    Optional: LVM2 tools, mdadm

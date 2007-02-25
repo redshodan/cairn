@@ -1,6 +1,6 @@
-In an effort to keep the code for CAIRN clean and readable these coding standards
-have been laid out. It pretty much boils down to keep your code neat and try to
-follow the existing code's style if you are modifying something.
+In an effort to keep the code for CAIRN clean and readable these coding
+standards have been laid out. It pretty much boils down to keep your code neat
+and try to follow the existing code's style if you are modifying something.
 
 General guidelines:
 
@@ -8,7 +8,7 @@ General guidelines:
   Directories containing different C/C++ code are the same. One exception is
   for python packages that are to replace a particular python module in the
   sysdef structure of code. Do not mix the same words with different cases
-  due to different filesystem case handling.
+  due to case handling on different filesystems on different operating systems.
 
 - Python module names start with a capitalized letter and use camel case for
   words, no underscores. C/C++ modules are the same.
@@ -45,7 +45,7 @@ across scrolling bounderies. Colorization of keywords (eg return) helps a lot.
 - Set your editor to use TABs when indenting Python code. This way the person
 viewing the code can set their TAB stops to what ever size they wish and it
 will always work out to be correct visually. It also prevents a mixture of
-tabs and spaces which can confuse the Python interpreter.
+tabs and spaces which will confuse the Python interpreter.
 
 A couple of C/C++ requirements:
 - All C functions are prefix with a namespace-like prefix (not a new thing

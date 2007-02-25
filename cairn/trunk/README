@@ -3,8 +3,8 @@ CAIRN - Copy And Intelligently Restore via Network
 
 CAIRN is a modular computer image copy and restore program.  It can copy 
 every file on a computer and gather information on how to recreate it from
-bare metal. CAIRN is primarily a network oriented restore program, but is
-also flexible enough to boot from any possible method.
+bare metal. CAIRN is meant to be primarily a network oriented restore program,
+but is flexible enough to boot from any possible method.
 
 
 Licensing
@@ -30,17 +30,49 @@ file located with this distribution.
 
 About
 -----
+CAIRN is a modular copy and restore program for the imaging of a
+computer.  It can copy every file on a computer and gather information
+on how to recreate it from bare metal. CAIRN is meant to be primarily a
+network oriented restore program, but is also flexible enough to boot
+from any possible method.
 
-CAIRN is a highly flexable program that allows for onsite tweaking of its code.
-Custom modules of code can be created on the fly. These can be used to perform
-custom setup that your machine or image needs. The CAIRN framework allows for 
-easily inserting your custom code into the right spot in the order of
-operations.
+CAIRN can also be used to clone one machine to many. It has the
+intelligence to adjust the image to fit the machine being restored. It 
+can adjust partition sizes, device types of drives and all the internal
+configuration of the operating system to match up with the changes.
 
-But having such flexability does not compromise the ease of use of CAIRN. The
-majority of situations can be handled automatically by CAIRN. The most common
-need for intervention is making sure the correct drive is when restoring an
-image to a different machine than where it came from.
+CAIRN is built on a highly modular system to accomodate the varying
+requirements of different operating systems. Every single step of the
+process is a separate module. The order of steps can be varied or
+rearranged as needed to fit the environment of the machine being restored. 
+
+CAIRN's highly flexable nature also allows for onsite tweaking of 
+its code. Custom modules of code can be created on the fly. These can
+be used to perform custom setup that your machine or image needs. The
+CAIRN framework allows for easily inserting your custom code into the
+right spot in the order of operations. A 'module of code' can either be
+a full python module file or a few lines of shell scripting. The benefit
+of this flexability is that you can run those two commands that are
+required for your particular hardware in the exact right spot within
+the copy or restore procedure.
+
+But having such flexability does not compromise the ease of use of CAIRN.
+CAIRN is organized around a multi-level interface. Each level increasing
+the complexity exposed to the user. The user is free to use parts of any
+of the interfaces in any mixture. The simplest level relies on CAIRN
+choosing the correct course of action. While the most complex level of
+the interface is only useful for debugging the program itself.
+
+The core operating systems that are planned to be supported are Linux,
+Mac OS/X, Microsoft Windows, and Solaris. Other operating systems can be
+added as time and desire permits. Currently only Linux is supported, but
+the other operating systems are under development.
+
+Besides having a copy and restore program, CAIRN also has a utility
+program that the user can control multiple CAIRN restores from. 
+DHCP and PXE are used to network boot a machine into a small boot
+environment and from there CAIRN will restore the machine. This is also
+how a user will easily customize the behavior of the CAIRN restore program.
 
 
 Status
@@ -49,19 +81,21 @@ CAIRN is in BETA stage right now. Do not be surprised if this release makes
 your computer sprout legs and run off into the forest never to be seen again.
 It is possible. Seriously though this is the first release of CAIRN and is 
 very beta. We are confident it will work with simple setups, but there is NO
-guarantee. This is mainly a testing release for anyone who is inclined to test
-it. If you have a spare machine and would like to test CAIRN please let us
-know. Any help will be greatly appreciated. The nature of a project like CAIRN 
-is such that there simply can never be enough testing on enough different
-setups.
+guarantee. Please do not rely on this release to backup anything important.
+
+This is mainly a testing release for anyone who is inclined to test it. If
+you have a spare machine and would like to test CAIRN please let us know. Any
+help will be greatly appreciated. The nature of a project like CAIRN is such
+that there simply can never be enough testing on enough different setups.
 
 Vist http://trac.cairn-project.org to file bugs or enhancement requests. Since
 CAIRN is pretty new there is a lot left to be done. If you have a great idea
-get it in quick.
+we would love to hear about it.
 
 Currently CAIRN supports imaging a computer and restoring it exactly as it was
-originally. The next release of CAIRN will focus on being able to adjust how
-the image is restored and to account for changes in hardware.
+on the original hardware it was copied from. The next release of CAIRN will
+focus on being able to adjust how the image is restored and to account for
+changes in hardware or for cloning one machine to others.
 
 
 
@@ -73,15 +107,18 @@ releases.
 Copying:
 1) On the machine that is to be backed up copy the 'cairn' program file over.
 2) Run it like:
-      cairn copy <filename>
-3) Copy <filename> off to a different machine.
+      cairn copy
+3) This creates a filename like hostname-data.cimg. Copy this file off to a
+   different machine.
 
 Restoring:
 1) Boot the target machine into a Linux environment that has Python. One of the
    recent versions of Knoppix works very well.
-2) Copy the 'cairn' program file over.
-3) Copy the image file created in the copying stage onto this machine. Or use
-   a network filesystem so CAIRN has access to it.
+2) Copy the 'cairn' program file over to the boot environment.
+3) Get access to the image file. CAIRN currently requires normal file level
+   access to the image file. The easiest way to accomplish this is export a NFS
+   share with the image file in it. Later versions will make this easier and not
+   require something like NFS.
 3) Run it like:
       cairn restore <filename>
 
@@ -91,6 +128,9 @@ Documentation
 
 Currently there is not a large amount of documentation. Running CAIRN with no
 arguments will invoke the help. This is the best documentation right now.
+
+There are some documents in the doc directory, but are mainly related to
+developers needs.
 
 
 To Do
