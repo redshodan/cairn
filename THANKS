@@ -1,0 +1,12 @@
+CAIRN was originally written by James Newton, <baron@codepunks.org>.
+
+These people, in no particular order, have all contributed to the project:
+
+
+
+CAIRN makes use of the following projects. Without their work, our work would
+have been quite a bit harder:
+
+GNU parted: http://www.gnu.org/software/parted/
+pylibparted: http://pylibparted.tigris.org/
+volume_id from udev: http://www.kernel.org/pub/linux/utils/kernel/hotplug/udev.html

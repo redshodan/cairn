@@ -1,0 +1,86 @@
+This is a general overview of the process of a CAIRN copy and restore. For
+a more in depth view look at the documentation in the doc/devel directory.
+
+
+Basic Idea
+==========
+
+CAIRN is designed for copying all the information on a computer so it can be
+restored at a later date. This holistic approach differs from other backup
+systems. It is not an incrementing backup manager. There are plenty of backup
+managers available that backup your data files on a schedule.
+
+CAIRN is more of a disaster recovery or computer cloning system. A good practice
+is to make a 'golden image' of a machine once it is installed and customized.
+This will give you a good starting point for restoring the machine when it
+crashes.
+
+Having said that CAIRN does not enforce that the entire machine be backed up
+at once. You can choose to exclude files or directories when copying a machine.
+With improper excludes it is quite easy to obtain a CAIRN image that when
+restored will result in an unbootable machine.
+
+
+Startup
+=======
+
+CAIRN goes through a bootstrap process to get started. All CAIRN commands
+go through this process. This mainly consists of:
+
+    - setting up Python
+    - initializing the framework
+    - managing the module list
+    - gathering system information
+    - backing up the files
+    - finalizing the image file
+
+
+Setting up Python
+--------------------
+On UNIX systems CAIRN is distributed as a shar file, a SHell ARchive. This
+consists of shell script that is prepended to a zip file. The shell script
+contains a python script which has the smarts to extract the zip file. The zip
+file contains the CAIRN code, both python and compiled C code. Python has the 
+ability to execute python code directly from a zipfile. This is essentially a
+library and is very similiar to a Java jar file.
+
+The job of the python bootstrap script contained in the shar script is to
+extract the zip file and add it to the running Python interpreters PYTHONPATH.
+This tells Python to look into the file for finding Python modules.
+
+
+Initializing the Framework
+--------------------------
+The CAIRN framework contains the worker code that facilitates things like
+logging and the modular nature of CAIRN.
+
+Each CAIRN command is just a Python module and class that define how this
+running instance of CAIRN is to be setup and run. The command class contains
+basic startup preferences and the ordered list of modules that it wishes to be
+run. Each command is located in its own module in cairn.cmds and must be derived
+from the Command class located in cairn.cmds.Command. To let CAIRN know about
+the commands they must be added to the array cairn.cmds.__cmds.
+
+The rest of the initialization is command independent. This includes processing
+the command line args, setting up the logger, and executing the chain of modules.
+
+The equivalent of the C main() function is cairn.cmds.Command.Command.run().
+This is where all of the initialization starts.
+
+
+Managing the Module List
+------------------------
+The code located in cairn.sysdefs is repsonsible for managing the module list.
+CAIRN modules are a little more than normal Python modules. Some trickery is
+used to make the modules 'inheritable' like classes in an object oriented
+program. What this means is that a particular command or platform can 'derive
+and override' a given module with its own. This is useful for sharing code
+between platforms where it makes sense to and having specific code where
+required.
+
+
+The Copy Process
+================
+
+The first step for using CAIRN is to make an image of your computer. This is
+accomplished

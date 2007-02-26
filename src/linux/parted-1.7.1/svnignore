@@ -1,0 +1,7 @@
+config.log
+config.h
+Makefile
+config.status
+stamp-h1
+libtool
+parted.spec

@@ -1,0 +1,95 @@
+First of all, be extremely careful with plptest.py and runtests.sh because
+they might eat your partition table. :-) You've been warned.
+
+Description
+-----------
+
+runtests.sh actually runs all test cases available in the tests/ directory in
+alphabetical order. After running each test case, runtests.sh verifies if the
+right thing was done using the diff and parted commands. In order to add a new
+test case, you must write a test<number>.in file and a test<number>.out file
+and place them under tests/. The test<number>.out file is used for verifying
+the results of running the test<number>.in with plptest.py.
+
+plptest.py reads its input data from the file received on the command line. It
+executes every command in that file and aborts on errors.
+
+How can I make my own test case?
+--------------------------------
+
+You have to write a test<number>.in file containing one command per line to be
+executed by plptest.py. The commands available and their options are:
+
+device <dev>
+
+  Sets that all following commands must be executed on <dev>. The first line
+  of every input file for plptest.py must have a "device" command.
+  i.e.
+  device /dev/hda
+
+mkpt <disk type>
+
+  Creates a partition table (or disk label) of type <disk type>.
+  i.e.
+  mkpt msdos
+
+addpart <type> <start sector> <end sector>
+
+  Adds a partition of type <type> from sector <start sector> to
+  sector <end sector>. <type> must be one of { primary, logical, extended }.
+  i.e.
+  addpart primary 63 208844
+
+delpart <num>
+
+  Deletes the <num>th partition.
+  i.e.
+  delpart 1
+
+resize <num> <start sector> <end sector>
+
+  Resizes the geometry of the <num>th partition to be a region from sector
+  <start sector> to sector <end sector>.
+  i.e.
+  resize 1 63 104422
+
+mkfs <num> <filesystem type>
+
+  Creates a <filesystem type> filesystem on the <num>th partition.
+  i.e.
+  mkfs 1 linux-swap
+
+cpfs [from device] <from num> <to num>
+
+  Copies the filesystem from the <from num>th partition on the [from device]
+  to the <to num>th partition. The [from device] argument is optional, and if
+  not given, the <from num>th and <to num>th partitions are assumed to be on
+  the same device (the <dev> argument for the "device" command).
+  i.e.
+  cpfs /dev/hdc 1 2
+
+resizefs <num> <start sector> <end sector>
+
+  Resizes the filesystem on the <num>th partition to range from sector
+  <start sector> to sector <end sector>.
+  i.e.
+  resizefs 1 63 52211
+
+set <num> <flag> <value>
+
+  Sets the flag <flag> of the <num>th partition to <value>.
+  i.e.
+  set 1 boot 1
+
+After creating your test<number>.in, a test<number>.out file must be created
+with the output of 'parted <dev> print' after executing all the commands in
+the test<number>.in file with the parted program. After that, you can place
+your test files under tests/ and runtests.sh will be able to run and verify it.
+You can also run your test case using plptest.py with:
+
+  # plptest.py test<number>.in
+
+This test framework is far from complete, so all kinds of feedback are welcome.
+Thus, if you have any suggestion or bug to report, please use the issue tracker
+or the proper mailing list to do so. All pylibparted related information can be
+found on http://pylibparted.tigris.org.

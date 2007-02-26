@@ -1,0 +1,2 @@
+device /dev/hda
+set 1 boot 1

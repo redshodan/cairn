@@ -1,0 +1,3 @@
+# Auto dir targs
+DIRS+=linux
+linux=$(BUILD_LIB)/pylibparted.so

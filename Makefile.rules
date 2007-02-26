@@ -1,0 +1,26 @@
+#### Auto Dir Targets
+$(DIR_TARGS):
+	make -C $<
+
+
+#### recursion
+recurse: $(DO)
+	if [ -n "$(DIRS)" ]; then for a in $(DIRS); do cd $$a; make $(DO); cd ..; done; fi
+
+rdep:
+	if [ -n "$(DIRS)" ]; then for a in $(DIRS); do cd $$a; make dep; cd ..; done; fi
+
+rclean:
+	make clean
+	if [ -n "$(DIRS)" ]; then for a in $(DIRS); do cd $$a; make clean rclean; cd ..; done; fi
+
+dep:
+clean:
+
+
+#### subversion
+svnignore:
+	$(TOPDIR)/misc/svnignore-update.sh
+
+
+.PHONY: svnignore

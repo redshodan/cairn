@@ -1,0 +1,38 @@
+CAIRN is largely dependent on external tools for gathering particulars about
+the machine that is run on and restoring it. These tools vary depending on
+the operating system.
+
+For all systems Python version 2.3 or greater is required.
+
+       
+Linux
+-----
+
+Some of the very basic system tools that any Linux system must have to be
+functional are required. They are:
+
+    for copy and restore: tar, gzip
+    for restore: mount, umount, chroot, sync
+
+During the restore the bootloader must be restored. The installer for the boot
+loader must be available in the image itself. Currently grub is the supported
+boot loader
+
+Also the mkfs programs are required. If your archive does not contain a
+filesystem of the particular type then the corresponding mkfs is not required.
+This includes mkswap. The full list is:
+
+    mkfs.ext2, mkfs.ext3, mkfs.xfs, mkfs.jfs, mkfs.resiserfs, mkfs.msdos,
+    mkfs.vfat, mkswap
+
+LVM2 is supported and is optional. If no LVM2 tools are found or the archive
+does not have any LVM volumes then it is not required. Currently only LVM2
+is supported. LVM1 support is in the roadmap. The list is as follows:
+
+    for copy and restore: pvscan, vgscan, lvscan, vgcfgbackup
+    for restore: pvcreate, vgcfgrestore, vgchange
+
+Software RAID via mdadm is supported and also is also optional. There is only
+one program for mdadm and that is:
+
+    for copy and restore: mdadm

@@ -1,0 +1,84 @@
+#!/bin/bash
+
+###
+###
+### !!!! DO NOT RUN THIS EXCEPT ON A TEST MACHINE THAT WILL BE WIPED CLEAN !!!!
+###
+###
+
+function stopAll
+{
+    MOUNTS=`mount | awk '/on \/mnt\/cairn-restore/{print $3;}' | sort -r`
+    for MOUNT in $MOUNTS; do
+        umount $MOUNT
+        if [ $? != 0 ]; then
+            exit $?
+        fi
+    done
+
+    vgchange -an
+    if [ $? != 0 ]; then
+        exit $?
+    fi
+
+    MDS=`mdadm -Ds | awk '/^ARRAY*/{print $2;}'`
+    for MD in $MDS; do
+        mdadm --stop $MD
+        if [ $? != 0 ]; then
+            exit $?
+        fi
+    done
+}
+
+function destroyItAll
+{
+    for DIR in `find /sys/block -maxdepth 1 -type d -name '[hs]d*'`; do
+        DEV=`basename $DIR`
+        for PDIR in `find $DIR -maxdepth 1 -type d -name "${DEV}*"`; do
+	        PART=`basename $PDIR`
+	        if [ "$PART" == "$DEV" ]; then
+                continue;
+            fi
+	        CMD="dd if=/dev/zero of=/dev/$PART bs=1024 count=1024"
+	        echo
+	        echo $CMD
+	        $CMD
+        done
+        CMD="dd if=/dev/zero of=/dev/$DEV bs=1024 count=1024"
+        echo
+        echo $CMD
+        $CMD
+        sfdisk -R /dev/$DEV
+    done
+}
+
+
+echo
+echo
+echo
+echo "***************************************************************************"
+echo "!!!!  WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING  !!!!"
+echo "!!!!  WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING  !!!!"
+echo "!!!!                                                                   !!!!"
+echo "!!!!                                                                   !!!!"
+echo "!!!! DO NOT RUN THIS EXCEPT ON A TEST MACHINE THAT WILL BE WIPED CLEAN !!!!"
+echo "!!!!           THIS WILL COMPLETELY DESTROY YOUR MACHINE               !!!!"
+echo "!!!!                                                                   !!!!"
+echo "!!!!                                                                   !!!!"
+echo "!!!!  WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING  !!!!"
+echo "!!!!  WARNING WARNING WARNING WARNING WARNING WARNING WARNING WARNING  !!!!"
+echo "***************************************************************************"
+echo
+echo
+echo
+
+
+read -p "Type 'destroy' to continue: " DESTROY
+
+if [ "$DESTROY" == "destroy" ]; then
+    stopAll
+    destroyItAll
+else
+    echo
+    echo "Total self destruction canceled. Have a nice day."
+fi

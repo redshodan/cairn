@@ -1,0 +1,50 @@
+CAIRN is mainly written in Python but some parts are C. The main CAIRN
+binary must be compiled then both the C and the Python parts must be packaged
+into one binary.
+
+Getting the source
+------------------
+To obtain the source download a release sourceball or download via subversion.
+See the http://code.google.com/p/cairn project page for downloads. To check
+via subversion use the following command:
+
+   svn co http://code.google.com/svn/cairn/trunk cairn
+
+If you wish to contribute to CAIRN you must use svk instead of subversion. The
+homepage for svk is http://svk.bestbits.com. svk is required for submitting
+changes to subversion. Please see the documentation in the developers
+directory for more information.
+
+Requirements
+------------
+To compile CAIRN correctly you must have header files or devel packages
+installed for Python. The rest of CAIRN depends on the operating system. Please
+see the correct section for details.
+
+All operating systems:
+
+   Python: 2.3 or greater is required. Tested on 2.3 and 2.4, should work on
+           2.5 correctly.
+
+Linux:
+   Devel packages for the following:
+
+       glibc: version 2.3 or greater
+              Any modern version of glibc should work fine. glibc 2.3 or
+              greater is known to work. If you wish to compile on a newer
+              version of glibc and then run the program on a machine with
+              an older version you will have problems. Because of versioning
+              in glibc this will cause problems. It is generally safe to
+              compile on the older version of glibc and run on newer versions.
+
+       libuuid: Around version 1.38 or greater
+              libuuid is from e2fsprogs project.
+
+Compiling
+---------
+
+1) Run make from the top level. This will compile all the third party packages
+   and the CAIRN binary itself. The resulting binary will be named
+   build/bin/cairn. This program contains all the funcionality of CAIRN.
+
+   If something fails to compile please let use know.
