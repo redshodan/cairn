@@ -1,8 +1,6 @@
 #summary The project roadmap.
 #labels Roadmap
 
-= Roadmap =
-
 The current milestone is the 0.1 release.
 
 == Release 0.1 ==
