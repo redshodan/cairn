@@ -1,4 +1,5 @@
 #summary How to use SVK with CAIRN
+#labels Phase-Implementation,SVK
 
 Even though code.google uses subversion for source code control, anyone who submits changes to CAIRN must use [http://svk.bestpractical.com svk] instead of subversion. There a few reasons as to why svk is used.
 
