@@ -1,0 +1,12 @@
+#summary The project roadmap.
+#labels Roadmap
+
+= Roadmap =
+
+The current milestone is the 0.1 release.
+
+== Release 0.1 ==
+
+Initial version. Will have basic functionality, but not all the features that will be generally needed.
+
+[Release0_1]
