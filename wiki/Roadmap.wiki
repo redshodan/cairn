@@ -3,8 +3,8 @@
 
 The current milestone is the 0.1 release.
 
-== Release 0.1 ==
+== Milestones ==
 
-Initial version. Will have basic functionality, but not all the features that will be generally needed.
-
-[Release0_1]
+  * [Milestone_0_1 Milestone 0.1]
+  * [Milestone_0_2 Milestone 0.2]
+  * [Milestone_0_3 Milestone 0.3]
