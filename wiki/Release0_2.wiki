@@ -1,0 +1,13 @@
+#summary Release 0.2
+
+More general functionality added.
+
+
+  * Multi-boot support
+  * Dynamic adjustment to the restore machine
+  *Linux
+    * Boot environment for restoring
+  * Windows: ?
+  * Darwin: ?
+
+
