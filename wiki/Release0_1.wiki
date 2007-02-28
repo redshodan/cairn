@@ -1,7 +1,6 @@
 #summary Release 0.1
 #labels Release-0.1,Roadmap
 
-= Release 0.1 =
 
 Initial version. Will have basic functionality, but not all the features that will be generally needed.
 
