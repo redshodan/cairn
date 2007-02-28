@@ -1,5 +1,5 @@
 #summary Release 0.2
-#labels Roadmap,Release-0.2
+#labels Roadmap,Milestone-0.2
 
 More general functionality added.
 
