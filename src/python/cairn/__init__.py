@@ -182,6 +182,8 @@ def handleException(err):
 
 
 def reportableEx(err):
+	# Disable it for this release
+	return False
 	if isinstance(err, Exception):
 		return err.reportable
 	elif isinstance(err, exceptions.KeyboardInterrupt):
