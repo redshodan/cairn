@@ -18,6 +18,7 @@ all: cairn
 cairn: $(BUILD_BIN)/cairn
 
 $(BUILD_LIB)/cairn.zip: $(PYTHON_FILES) $(CLIBS)
+	echo $(SCM)
 	make clean
 	tar --exclude .svn -cf - $(PYDIRS) | tar -C $(BUILD_SRC) -xf -
 	sed -e 's/^SVNREV = .*/SVNREV = $(SVNREV)/' $(BUILD_SRC)/cairn/Version.py > $(BUILD_SRC)/cairn/Version.py.tmp
