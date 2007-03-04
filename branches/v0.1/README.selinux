@@ -1,0 +1,32 @@
+SELinux
+-------
+
+SELinux is a set of security changes meant to improve the security of Linux.
+The current release of CAIRN, v0.1, does not support SELinux, how ever the
+next version of CAIRN will support SELinux.
+
+SELinux stores its permission information using extended file attributes. These
+are stored in the inode itself. The normal GNU tar does not know about extended
+attributes and will not back them up. Since this release of CAIRN is based on
+tar there is no chance for selinux to be backed up or restored correctly.
+
+The next version of CAIRN will be changed to use the xar archiver. xar correctly
+handles extended attributes in Linux. The use of xar and a couple of other
+changes will enable CAIRN to fully support SELinux, ACLs and other forms of
+extended atrributes.
+
+
+
+Working Around SELinux
+----------------------
+
+If you wish to backup a selinux enabled box you can but all of the selinux
+permissions will be lost. You will have to disable SELinux before making the
+copy. Any restore made with this image will have to leave SELinux disabled.
+
+To disable SELinux on a Fedora Core box edit your /etc/sysconfig/selinux file
+and set the SELINUX= line to be:
+
+      SELINUX=disabled
+
+After changing that file reboot and perform the CAIRN copy of your machine.
