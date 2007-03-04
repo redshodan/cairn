@@ -1,3 +1,4 @@
+#labels Featured
 CAIRN is a modular copy and restore program for the imaging of a
 computer.  It can copy every file on a computer and gather information
 on how to recreate it from bare metal. CAIRN is meant to be primarily a
