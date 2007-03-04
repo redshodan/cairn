@@ -75,6 +75,8 @@ Or specify the local repository path:
 svk pull //cairn/mybranch/trunk
 }}}
 
+See also [http://svk.bestpractical.com/view/SVKUsage SVKUsage].
+
 == Generating Patches ==
 
 The svk push command can generate a patch instead of trying to directly commit the changes. To do this run from your working copy:
