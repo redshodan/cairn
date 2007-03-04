@@ -12,7 +12,7 @@ From [http://svk.bestpractical.com SVK's website]:
 
 SVK is designed to be a decentralized version control system but the usage for the CAIRN project is mainly local mirrors of the central repository. SVK allows you to mirror a repository, make a series of local changes and commits, then push those commits back up onto the repository. It also has a smart merging tool akin to GNUArch and svnmerge.py.
 
-Another great feature of SVK is that someone who does not have commit access can download the code and do a series of changes and commits. Then they can ask SVK to generate a patch file containing those changes and commits and submit that patch file for review.
+Another great feature of SVK is that someone who does not have commit access can download the code and do a series of changes and commits. Then they can ask SVK to generate a patch file containing those changes and commits and submit that patch file for review. A secondary reason is that since every developer will be mirroring the central repository on google we get that many backups of the full repository.
 
 The general usage pattern is:
   * mirror the CAIRN subversion repository to your local machine with svk
