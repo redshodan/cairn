@@ -1,5 +1,5 @@
 #summary The project roadmap.
-#labels Roadmap
+#labels Roadmap,Featured
 
 The current milestone is the 0.1 release.
 
