@@ -1,0 +1,32 @@
+#!/bin/bash
+
+TODO="$1"
+
+TRAC_MILESTONES="v0.1 v0.2 v0.3 Future"
+TRAC_MILESTONE_QUERY="http://trac.cairn-project.org/query?status=new&status=assigned&status=reopened&order=priority&format=tab&milestone="
+TRAC_TICKET_QUERY_START="http://trac.cairn-project.org/ticket/"
+TRAC_TICKET_QUERY_END="?format=csv"
+
+
+rm -f ${TODO}
+(
+for MSTONE in ${TRAC_MILESTONES}; do
+    TICKETS=`wget -nv -O - "${TRAC_MILESTONE_QUERY}${MSTONE}" | awk '/^[0-9]+/{print $1;}'`
+    echo "####################"
+    echo "Milestone: ${MSTONE}"
+    echo "####################"
+    echo
+    echo
+    for TKT in $TICKETS; do
+        echo "---------"
+        wget -nv -O - "${TRAC_TICKET_QUERY_START}${TKT}${TRAC_TICKET_QUERY_END}" |\
+            awk -F, '/^[0-9]+/{desc=$5; printf("Issue: %s\nID: %s   Owner: %s   Status: %s   Severity: %s\n%s\n", $2, $1, $4, $7, $12, desc);}' | sed -e 's/\\r\\n/\n/g'
+        echo "---------"
+        echo
+        echo
+    done
+    echo
+    echo
+    echo
+done
+) > TODO

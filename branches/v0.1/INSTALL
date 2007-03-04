@@ -1,0 +1,59 @@
+CAIRN - Copy And Intelligently Restore via Network
+--------------------------------------------------
+
+CAIRN is a modular computer image copy and restore program.  It can copy 
+every file on a computer and gather information on how to recreate it from
+bare metal. CAIRN is primarily a network oriented restore program, but is
+also flexible enough to boot from any possible method.
+
+
+Licensing
+---------
+
+CAIRN is licensed under the GNU GPL license. Please read the LICENSE file
+located with this distribution.
+
+   This program is free software; you can redistribute it and/or modify
+   it under the terms of the GNU General Public License as published by
+   the Free Software Foundation; either version 2 of the License, or
+   (at your option) any later version.
+
+   This program is distributed in the hope that it will be useful,
+   but WITHOUT ANY WARRANTY; without even the implied warranty of
+   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+   GNU General Public License for more details.
+
+   You should have received a copy of the GNU General Public License
+   along with this program; if not, write to the Free Software
+   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+Building
+--------
+
+Quick build instructions. In the top level run:
+
+1) make
+2) copy build/bin/cairn to the target machine
+
+
+
+Supported Platforms
+-------------------
+
+Linux on the x86 platform currently has the best support. CAIRN is largely
+developed on x86 linux. Linux PPC support is partially done and should be more
+complete in the next release.
+
+Mac OS/X is very slightly supported. Meaning that a small amount of development
+went into OS/X at the start of the project but has lagged behind greatly and is
+essentially unusable currently. Contributions to the OS/X effort would be greatly
+appreciated.
+
+Microsoft Windows has some prototype work being done and is in progress.
+
+Solaris support is planned in future revisions.
+
+Other operating systems currently have not been explicitly planned for but as
+always contributions are welcome. If you have that itch to add support for a
+particular platform please contact us and discuss it.

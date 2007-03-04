@@ -1,0 +1,5 @@
+#### Targets
+DIRS+=python
+python=$(BUILD_BIN)/cairn
+
+PYTHON_FILES=$(shell find python -name '*.py')

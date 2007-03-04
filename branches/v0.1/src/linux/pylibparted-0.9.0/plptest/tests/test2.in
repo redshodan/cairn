@@ -1,0 +1,3 @@
+device /dev/hda
+mkfs 1 linux-swap
+resizefs 1 63 104422

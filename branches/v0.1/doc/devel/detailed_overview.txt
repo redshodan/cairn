@@ -1,0 +1,100 @@
+Please read the how-it-works.txt file before this. It gives an overview of the
+general process. This document describes how the code itself works and is meant
+for someone with a programming inclination.
+
+
+Setting up Python
+--------------------
+On UNIX systems CAIRN is distributed as a shar file, a SHell ARchive. This
+consists of shell script that is prepended to a zip file. The shell script
+contains a python script which has the smarts to extract the zip file. The zip
+file contains the CAIRN code, both python and compiled C code. Python has the 
+ability to execute python code directly from a zipfile. This is essentially a
+library and is very similiar to a Java jar file.
+
+The job of the python bootstrap script contained in the shar script is to
+extract the zip file and add it to the running Python interpreters PYTHONPATH.
+This tells Python to look into the file for finding Python modules.
+
+
+Initializing the Framework
+--------------------------
+The CAIRN framework contains the worker code that facilitates things like
+logging and the modular nature of CAIRN.
+
+Each CAIRN command is just a Python module and class that define how this
+running instance of CAIRN is to be setup and run. The command class contains
+basic startup preferences and the ordered list of modules that it wishes to be
+run. Each command is located in its own module in cairn.cmds and must be derived
+from the Command class located in cairn.cmds.Command. To let CAIRN know about
+the commands they must be added to the array cairn.cmds.__cmds.
+
+The rest of the initialization is command independent. This includes processing
+the command line args, setting up the logger, and executing the chain of
+modules.
+
+The equivalent of the C main() function is cairn.cmds.Command.Command.run().
+This is where all of the initialization starts. The next step is initializing
+the platform.
+
+
+Platforms
+---------
+Each platform that CAIRN supports has a class that inherits from
+cairn.sysdefs.SystemDefinition.SystemDefinition. This contains the code for
+matching a platform to the machine CAIRN is running on. A platform contains
+sub-platforms that map to flavors of the platform. For example there is the
+Linux platform and the Redhat sub-platform.
+
+Each sub-platform must be located in a sub directory of the parent platform.
+The sub-platforms SystemDefinition class must inherit from the parent platforms
+SystemDefinition class. This inheritance path defines how CAIRN will look for
+modules when it comes time to run the command.
+
+The platform matching is started
+in cairn.sysdefs.loadPlatform(). Each platform has a matchPartial() and
+matchExact() function. If no platforms claim they match exactly then one of the
+partial matches will be chosen. If no platforms claim to partially match then
+the default platform named 'unknown' will be chosen. The parent platform is
+responsible for knowing the child platforms too check against.
+
+
+
+CAIRN Modules
+-------------
+CAIRN modules are more than normal Python modules. Some trickery is used to 
+make the modules 'inheritable' like classes in an object oriented program. 
+What this means is that a particular command or platform can 'derive
+and override' a given module with its own. This is useful for sharing code
+between platforms where it makes sense to and having specific code where
+required.
+
+A CAIRN module consists of a Python module, an accessor function for getting an
+instance of that modules class, and a class containing the code. The
+inheritance of the CAIRN module is defined by the inheritance of this class
+instance. This is the pseudo-inheritable nature of CAIRN modules.
+
+
+
+
+Once a platform is chosen CAIRN will switch to using this SystemDefinition class
+as the base model for the module hierarchy.
+
+When the sysdefs framework needs to find a named module it will walk down the
+inheritance path of the platforms SystemDefinition and look for existing python
+modules that match it. In addition to the modules being broken out by
+platform, they can also be broken out by command name. 
+
+
+The general hierarchy looks like this:
+
+cairn/sysdefs/templates/unix
+cairn/sysdefs/templates/unix/system
+
+If it finds a module it will load it and look for the
+accessor function. If that function exists it will
+
+
+The Module List
+------------------------
+The code located in cairn.sysdefs is repsonsible for managing the module list.
