@@ -1,0 +1,43 @@
+CAIRN is a modular copy and restore program for the imaging of a
+computer.  It can copy every file on a computer and gather information
+on how to recreate it from bare metal. CAIRN is meant to be primarily a
+network oriented restore program, but is also flexible enough to boot
+from any possible method.
+
+CAIRN can also be used to clone one machine to many. It has the
+intelligence to adjust the image to fit the machine being restored. It 
+can adjust partition sizes, device types of drives and all the internal
+configuration of the operating system to match up with the changes.
+
+CAIRN is built on a highly modular system to accomodate the varying
+requirements of different operating systems. Every single step of the
+process is a separate module. The order of steps can be varied or
+rearranged as needed to fit the environment of the machine being restored. 
+
+CAIRN's highly flexable nature also allows for onsite tweaking of 
+its code. Custom modules of code can be created on the fly. These can
+be used to perform custom setup that your machine or image needs. The
+CAIRN framework allows for easily inserting your custom code into the
+right spot in the order of operations. A 'module of code' can either be
+a full python module file or a few lines of shell scripting. The benefit
+of this flexability is that you can run those two commands that are
+required for your particular hardware in the exact right spot within
+the copy or restore procedure.
+
+But having such flexability does not compromise the ease of use of CAIRN.
+CAIRN is organized around a multi-level interface. Each level increasing
+the complexity exposed to the user. The user is free to use parts of any
+of the interfaces in any mixture. The simplest level relies on CAIRN
+choosing the correct course of action. While the most complex level of
+the interface is only useful for debugging the program itself.
+
+The core operating systems that are planned to be supported are Linux,
+Mac OS/X, Microsoft Windows, and Solaris. Other operating systems can be
+added as time and desire permits. Currently only Linux is supported, but
+the other operating systems are under development.
+
+Besides having a copy and restore program, CAIRN also has a utility
+program that the user can control multiple CAIRN restores from. 
+DHCP and PXE are used to network boot a machine into a small boot
+environment and from there CAIRN will restore the machine. This is also
+how a user will easily customize the behavior of the CAIRN restore program.
