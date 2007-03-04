@@ -54,6 +54,7 @@ $(BUILD_LIB)/libparted.a: $(PARTED)/Makefile
 	make -C $(PARTED) install-exec install-data
 
 clean:
+	rm -rf $(PARTED)/autom4te.cache
 	for a in $(DIRS); do make -C $$a distclean; make -C $$a clean; done
 	rm -f $(LIBS)
 

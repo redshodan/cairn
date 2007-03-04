@@ -245,12 +245,12 @@ cliCommonOpts = [
 cliCopyRestoreCommonOpts = [
 	{"long":"all-files", "type":"string", "level":ADVANCED,
 	 "callback":setAllFiles, "metavar":"DIR",
-	 "help":"Set the location of all outputed files: temp files, the logfile, and the image file. This is equivalent to calling --tmpdir, --log-file, --destination with the same directory."},
+	 "help":"Set the location of all outputed files: temp files, the logfile, and the image file. This is equivalent to calling --tmpdir, --log-file, --dest with the same directory."},
 	{"long":"boot", "short":"B", "type":"string", "level":ADVANCED,
 	 "help":"Force this bootloader to be used. Currently supported: grub"},
 #	{"long":"configfile", "short":"c", "type":"string", "level":ADVANCED,
 #	 "help":"Config file to load."},
-	{"long":"destination", "type":"string", "level":ADVANCED, "metavar":"DIR",
+	{"long":"dest", "type":"string", "level":ADVANCED, "metavar":"DIR",
 	 "action":"callback", "callback":setDestinationOpt,
 	 "help":"Set the destination directory for the image file. If no filename was specified then this directory will be used to auto-generate a filename."},
 	{"long":"exclude", "short":"x", "type":"string", "action":"callback",
@@ -451,7 +451,7 @@ def handleArgs(parser, args, allowBadOpts):
 def checkFileName(filename):
 	dest = get("destination")
 	if (filename.find("/") >= 0) and dest:
-		parser.error("Can not specify --destination and an image file name that is has any directory components in it")
+		parser.error("Can not specify --dest and an image file name that is has any directory components in it")
 	elif dest:
 		filename = os.path.join(dest, filename)
 	else:
