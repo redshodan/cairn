@@ -3,6 +3,7 @@
 
 import os
 import re
+import stat
 
 import cairn
 
@@ -41,6 +42,17 @@ class FSTab(object):
 			return (None, None)
 
 
+	def matchMount(self, pmount, fmount):
+		info = None
+		try:
+			info = os.lstat(fmount)
+		except:
+			pass
+		if info and stat.S_ISLNK(info[stat.ST_MODE]):
+			return pmount == os.readlink(fmount)
+		return pmount == fmount
+
+
 	def run(self, sysdef):
 		partitions = []
 		devices = sysdef.info.getElems("hardware/device")
@@ -58,7 +70,7 @@ class FSTab(object):
 			if elemName and word:
 				arr = line.split()
 				for part in partitions:
-					if part.get(elemName) == word:
+					if self.matchMount(part.get(elemName), word):
 						part.setChild("fs/mount", arr[MNT])
 						part.setChild("fs/mount-source", elemName)
 		return True
