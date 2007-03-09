@@ -3,7 +3,7 @@
 
 
 import cairn
-from cairn.sysdefs.utils import GNUTools
+from cairn.sysdefs.util import GNUTools
 import cairn.sysdefs.templates.unix.archive.read.RunArchiver as tmpl
 
 
