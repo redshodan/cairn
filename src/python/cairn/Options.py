@@ -421,15 +421,15 @@ def parseCmdLineOpts(allowBadOpts):
 def handleArgs(parser, args, allowBadOpts):
 	dest = get("destination")
 	if len(args) == 1:
-		filename = checkFileName(args[0])
+		filename = checkFileName(args[0], parser)
 	elif len(args) == 0:
 		if get("command") == "copy":
-			filename = checkFileName(generateImageName())
+			filename = checkFileName(generateImageName(), parser)
 		else:
 			parser.error("Missing image filename")
 	elif len(args) > 1:
 		if allowBadOpts:
-			filename = checkFileName(args[0])
+			filename = checkFileName(args[0], parser)
 			del args[0]
 			cairn.Options.__extraOpts = args
 		else:
@@ -448,7 +448,7 @@ def handleArgs(parser, args, allowBadOpts):
 			setLogFile(filename + ".log")
 
 
-def checkFileName(filename):
+def checkFileName(filename, parser):
 	dest = get("destination")
 	if (filename.find("/") >= 0) and dest:
 		parser.error("Can not specify --dest and an image file name that is has any directory components in it")
@@ -464,7 +464,7 @@ def checkFileName(filename):
 def generateImageName():
 	name = "%s-%s.cimg" % (platform.node(), time.strftime("%d-%m-%Y"))
 	if get("destination"):
-		return os.path.abspath(os.path.join(get("destination"), name))
+		return name
 	else:
 		return os.path.abspath(name)
 
