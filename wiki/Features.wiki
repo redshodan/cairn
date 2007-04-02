@@ -1,4 +1,5 @@
 #summary Feature list
+#labels Featured
 
   * Easy to use full backup and restore of a computer.
   * Adjusts the image to match the hardware during restore.
